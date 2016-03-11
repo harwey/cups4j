@@ -1,1 +1,2 @@
-# cups4j
+Cups4J - the java printing library for CUPS.
+
