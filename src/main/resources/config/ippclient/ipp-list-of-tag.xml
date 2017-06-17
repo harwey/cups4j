@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2008 ITS of ETH Zurich, Switzerland, Sarah Windler Burri
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published
+by the Free Software Foundation; either version 3 of the License,
+or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program; if not, see <http://www.gnu.org/licenses/>.
+--> 
+<tag-list xmlns="http://www.vppserver.ethz.ch/schema/ippclient"
+		   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		   xsi:schemaLocation="http://www.vppserver.ethz.ch/schema/ippclient 
+					http://www.vppserver.ethz.ch/schema/ippclient/ipp-tag.xsd">
+	<tag value="0x00" name="unassigned" description="used for separators"/>
+	<tag value="0x01" name="operation-attributes-tag" description="operation group"/>
+	<tag value="0x02" name="job-attributes-tag" description="job group"/>
+	<tag value="0x03" name="end-attributes-tag"/>
+	<tag value="0x04" name="printer-attributes-tag" description="printer group"/>
+	<tag value="0x05" name="unsupported-attributes-tag" description="unsupported attributes group"/>
+	<tag value="0x06" name="subscription-attributes-tag" description="subscription group"/>
+	<tag value="0x07" name="event-notification-attributes-tag" description="event group"/>
+	<tag value="0x08" name="unassigned" description="unassigned"/>
+    <tag value="0x09" name="event-notification-attributes-tag" description="event group"/>
+    <tag value="0x10" name="unsupported" description="unsupported value"/>
+	<tag value="0x11" name="default" description="default value"/>
+	<tag value="0x12" name="unknown" description="unknown value"/>
+	<tag value="0x13" name="no-value" description="no-value value"/>
+	<tag value="0x15" name="not-settable" description="not-settable value"/>
+	<tag value="0x16" name="delete-attribute" description="delete-attribute value"/>
+	<tag value="0x17" name="admin-define" description="admin-defined value"/>
+	<tag value="0x21" name="integer" description="integer value"/>
+	<tag value="0x22" name="boolean" description="boolean value"/>
+	<tag value="0x23" name="enum" description="enumeration value"/>
+	<tag value="0x30" name="octetString" description="octet string value" max="1023"/>
+	<tag value="0x31" name="dateTime"  description="date/time value" max="11"/>
+	<tag value="0x32" name="resolution" description="resolution value"/>
+	<tag value="0x33" name="rangeOfInteger"  description="range value"/>
+	<tag value="0x34" name="begCollection" description="beginning of collection value"/>
+	<tag value="0x35" name="textWithLanguage" max="1023" description="text-with-language value"/>
+	<tag value="0x36" name="nameWithLanguage" description="name-with-language value" max="255"/>
+	<tag value="0x37" name="endCollection" description="end of collection value"/>
+	<tag value="0x41" name="textWithoutLanguage" description="text value" max="1023"/>
+	<tag value="0x42" name="nameWithoutLanguage" description="name value" max="255"/>
+	<tag value="0x44" name="keyword" description="keyword value" max="255"/>
+	<tag value="0x45" name="uri" description="URI value" max="1023"/>
+	<tag value="0x46" name="uriScheme" description="URI scheme value" max="63"/>
+	<tag value="0x47" name="charset" description="character set value" max="63"/>
+	<tag value="0x48" name="naturalLanguage" description="language value" max="63"/>
+	<tag value="0x49" name="mimeMediaType" description="MIME media type value" max="255"/>
+	<tag value="0x4A" name="memberAttrName" description="collection member name value"/>
+</tag-list>

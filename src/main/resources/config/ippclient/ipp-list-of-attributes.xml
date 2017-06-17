@@ -1,0 +1,2387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2008 ITS of ETH Zurich, Switzerland, Sarah Windler Burri
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published
+by the Free Software Foundation; either version 3 of the License,
+or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program; if not, see <http://www.gnu.org/licenses/>.
+
+List of attributes based on http://www.iana.org/assignments/ipp-registrations
+--> 
+<attribute-list xmlns="http://www.vppserver.ethz.ch/schema/ippclient" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.vppserver.ethz.ch/schema/ippclient 
+					http://www.vppserver.ethz.ch/schema/ippclient/ipp-attribute.xsd">
+	<attribute-group tag="0x01" tag-name="operation-attributes-tag" description="operation attributes">
+		<attribute name="attributes-charset">
+			<attribute-value tag="0x47" tag-name="charset"/>
+		</attribute>
+		<attribute name="attributes-natural-language">
+			<attribute-value tag="0x48" tag-name="naturalLanguage"/>
+		</attribute>	
+		<attribute name="compression">
+			<attribute-value tag="0x44" tag-name="keyword" description="type3 keyword">
+				 <set-of-keyword>
+					<keyword value="compress"/>
+					<keyword value="deflate"/>
+					<keyword value="gzip"/>
+					<keyword value="none"/>
+				 </set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="detailed-name">
+			<attribute-value tag="0x35" tag-name="textWithLanguage" description="text(MAX)"/>
+			<attribute-value tag="0x41" tag-name="textWithoutLanguage" description="text(MAX)"/>
+		</attribute>
+		<attribute name="document-access-error">
+			<attribute-value tag="0x35" tag-name="textWithLanguage" description="text(MAX)"/>
+			<attribute-value tag="0x41" tag-name="textWithoutLanguage" description="text(MAX)"/>
+		</attribute>
+		<attribute name="document-format">
+			<attribute-value tag="0x49" tag-name="mimeMediaType"/>
+		</attribute> 
+		<attribute name="document-name">
+			<attribute-value tag="0x36" tag-name="nameWithLanguage" description="name(MAX)"/>
+			<attribute-value tag="0x42" tag-name="nameWithoutLanguage" description="name(MAX)"/>
+		</attribute>
+		<attribute name="document-natural-language">
+			<attribute-value tag="0x48" tag-name="naturalLanguage"/>
+		</attribute>	
+		<attribute name="ipp-attribute-fidelity">
+			<attribute-value tag="0x22" tag-name="boolean"/>
+		</attribute>
+		<attribute name="job-hold-until">
+			<attribute-value tag="0x44" tag-name="keyword" description="type3 keyword | name(MAX)">
+				<set-of-keyword>
+					<keyword value="day-time"/>
+					<keyword value="evening"/>
+					<keyword value="indefinite"/>
+					<keyword value="night"/>
+					<keyword value="no-hold"/>
+					<keyword value="second-shift"/>
+					<keyword value="third-shift"/>
+					<keyword value="weekend"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="job-id">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:MAX)"/>
+		</attribute>
+		<attribute name="job-impressions">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:MAX)"/>
+		</attribute>
+		<attribute name="job-k-octets">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(0:MAX)"/>
+		</attribute>
+		<attribute name="job-media-sheets">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(0:MAX)"/>
+		</attribute>
+		<attribute name="job-message-from-operator">
+			<attribute-value tag="0x35" tag-name="textWithLanguage" description="text(127)"/>
+			<attribute-value tag="0x41" tag-name="textWithoutLanguage" description="text(127)"/>
+		</attribute>
+		<attribute name="job-name">
+			<attribute-value tag="0x36" tag-name="nameWithLanguage" description="name(MAX)"/>
+			<attribute-value tag="0x42" tag-name="nameWithoutLanguage" description="name(MAX)"/>
+		</attribute>
+		<attribute name="job-state">
+			<attribute-value tag="0x23" tag-name="enum" description="type1 enum">
+				<set-of-enum>
+					<enum value="3" name="pending" description="job is waiting to be printed"/>
+					<enum value="4" name="pending-held" description="job is held for printing"/>
+					<enum value="5" name="processing" description="job is currently printing"/>
+					<enum value="6" name="processing-stopped" description="job has been stopped"/>
+					<enum value="7" name="canceled" description="job has been canceled"/>
+					<enum value="8" name="aborted" description="job has aborted due to error"/>
+					<enum value="9" name="completed" description="job has completed successfully"/>
+				</set-of-enum>
+			</attribute-value>
+		</attribute>
+		<attribute name="job-state-message">
+			<attribute-value tag="0x35" tag-name="textWithLanguage" description="text(MAX)"/>
+			<attribute-value tag="0x41" tag-name="textWithoutLanguage" description="text(MAX)"/>
+		</attribute>
+		<attribute name="job-state-reasons">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword">
+				<set-of-keyword>
+					<keyword value="aborted-by-system"/>
+					<keyword value="compression-error"/>
+					<keyword value="document-access-error"/>
+					<keyword value="document-format-error"/>
+					<keyword value="job-canceled-at-device"/>
+					<keyword value="job-canceled-by-operator"/>
+					<keyword value="job-canceled-by-user"/>
+					<keyword value="job-completed-successfully"/>
+					<keyword value="job-completed-with-errors"/>
+					<keyword value="job-completed-with-warnings"/>
+					<keyword value="job-data-insufficient"/>
+					<keyword value="job-hold-until-specified"/>
+					<keyword value="job-incoming"/>
+					<keyword value="job-interpreting"/>
+					<keyword value="job-outgoing"/>
+					<keyword value="job-printing"/>
+					<keyword value="job-queued"/>
+					<keyword value="job-queued-for-marker"/>
+					<keyword value="job-restartable"/>
+					<keyword value="job-suspended"/>
+					<keyword value="job-transforming"/>
+					<keyword value="none"/>
+					<keyword value="printer-stopped"/>
+					<keyword value="printer-stopped-partly"/>
+					<keyword value="processing-to-stop-point"/>
+					<keyword value="queued-in-device"/>
+					<keyword value="resources-are-not-ready"/>
+					<keyword value="service-off-line"/>
+					<keyword value="submission-interrupted"/>
+					<keyword value="unsupported-compression"/>
+					<keyword value="unsupported-document-format"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="job-uri">
+			<attribute-value tag="0x45" tag-name="uri"/>
+		</attribute>
+		<attribute name="last-document">
+			<attribute-value tag="0x22" tag-name="boolean"/>
+		</attribute>
+		<attribute name="limit">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:MAX)"/>
+		</attribute>
+		<attribute name="message">
+			<attribute-value tag="0x35" tag-name="textWithLanguage" description="text(127)"/>
+			<attribute-value tag="0x41" tag-name="textWithoutLanguage" description="text(127)"/>
+		</attribute>
+		<attribute name="my-jobs">
+			<attribute-value tag="0x22" tag-name="boolean"/>
+		</attribute>
+		<attribute name="number-of-intervening-jobs">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(0:MAX)"/>
+		</attribute>
+		<attribute name="original-requesting-user-name">
+			<attribute-value tag="0x36" tag-name="nameWithLanguage" description="name(MAX)"/>
+			<attribute-value tag="0x42" tag-name="nameWithoutLanguage" description="name(MAX)"/>
+		</attribute>
+		<attribute name="printer-message-from-operator">
+			<attribute-value tag="0x35" tag-name="textWithLanguage" description="text(127)"/>
+			<attribute-value tag="0x41" tag-name="textWithoutLanguage" description="text(127)"/>
+		</attribute>
+		<attribute name="printer-uri">
+			<attribute-value tag="0x45" tag-name="uri"/>
+		</attribute>
+		<attribute name="requested-attributes">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf keyword"/>
+		</attribute>
+		<attribute name="requesting-user-name">
+			<attribute-value tag="0x36" tag-name="nameWithLanguage" description="name(MAX)"/>
+			<attribute-value tag="0x42" tag-name="nameWithoutLanguage" description="name(MAX)"/>
+		</attribute>
+		<attribute name="status-code">
+		<attribute-value tag="0x23" tag-name="enum" description="type2 enum">
+				<set-of-enum>
+					<enum value="0x0000" name="successful-ok"/>
+					<enum value="0x0001" name="successful-ok-ignored-substituted-attributes"/>
+					<enum value="0x0002" name="successful-ok-conflicting-attributes"/>
+					<enum value="0x0400" name="client-error-bad-request"/>
+					<enum value="0x0401" name="client-error-forbidden"/>
+					<enum value="0x0402" name="client-error-not-authenticated"/>
+					<enum value="0x0403" name="client-error-not-authorized"/>
+					<enum value="0x0404" name="client-error-not-possible"/>
+					<enum value="0x0405" name="client-error-timeout"/>
+					<enum value="0x0406" name="client-error-not-found"/>
+					<enum value="0x0407" name="client-error-gone"/>
+					<enum value="0x0408" name="client-error-request-entity-too-large"/>
+					<enum value="0x0409" name="client-error-request-status-code-too-long"/>
+					<enum value="0x040a" name="client-error-document-format-not-supported"/>
+					<enum value="0x040b" name="client-error-attributes-or-status-codes-not-supported"/>
+					<enum value="0x040c" name="client-error-uri-scheme-not-supported"/>
+					<enum value="0x040d" name="client-eror-charset-not-supported"/>
+					<enum value="0x040e" name="client-error-conflicting-attribute"/>
+					<enum value="0x040f" name="client-error-compession-not-supported"/>
+					<enum value="0x0410" name="client-error-compression-error"/>
+					<enum value="0x0411" name="client-error-document-format-error"/>
+					<enum value="0x0412" name="client-error-document-access-error"/>
+					<enum value="0x0500" name="server-error-internal-error"/>
+					<enum value="0x0501" name="server-error-operation-not-supported"/>
+					<enum value="0x0502" name="sever-error-service-unavailable"/>
+					<enum value="0x0503" name="server-error-version-not-supported"/>
+					<enum value="0x0504" name="server-error-device-error"/>
+					<enum value="0x0505" name="server-error-temporary-error"/>
+					<enum value="0x0506" name="server-error-not-accepting-jobs"/>
+					<enum value="0x0507" name="server-error-busy"/>
+					<enum value="0x0508" name="server-error-job-canceled"/>
+					<enum value="0x0509" name="server-error-multiple-document-jobs-not-supported"/>
+					<enum value="0x050A" name="server-error-printer-is-deactivated"/>
+					<enum value="0x00FF" name="successful-ok"/> 
+				</set-of-enum>
+			</attribute-value>
+		</attribute>
+		<attribute name="status-message">
+			<attribute-value tag="0x35" tag-name="textWithLanguage" description="text(255)"/>
+			<attribute-value tag="0x41" tag-name="textWithoutLanguage" description="text(255)"/>
+		</attribute>
+		<attribute name="which-jobs">
+			<attribute-value tag="0x44" tag-name="keyword" description="type2 keyword"/>
+		</attribute>
+	</attribute-group>
+	<attribute-group tag="0x02" tag-name="job-attributes-tag" description="job description attributes, job template attributes, job object attributes, requested attributes(get-job-attributes)">
+		<attribute name="attributes-charset">
+			<attribute-value tag="0x47" tag-name="charset"/>
+		</attribute>
+		<attribute name="attributes-natural-language">
+			<attribute-value tag="0x48" tag-name="naturalLanguage"/>
+		</attribute>	
+		<attribute name="date-time-at-completed">
+			<attribute-value tag="0x31" tag-name="dateTime"/>
+		</attribute>
+		<attribute name="date-time-at-creation">
+			<attribute-value tag="0x31" tag-name="dateTime"/>
+		</attribute>
+		<attribute name="date-time-at-processing">
+			<attribute-value tag="0x31" tag-name="dateTime"/>
+		</attribute>
+		<attribute name="impressions-completed-current-copy">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(0:MAX)"/>
+		</attribute>
+		<attribute name="job-collation-type">
+			<attribute-value tag="0x23" tag-name="enum" description="type2 enum">
+				<set-of-enum>
+					<enum value="1" name="other"/>
+					<enum value="2" name="unknown"/>
+					<enum value="3" name="collated-documents"/>
+					<enum value="4" name="collated-documents"/>
+					<enum value="5" name="uncollated-documents"/>
+				</set-of-enum>
+			</attribute-value>
+		</attribute>
+		<attribute name="job-detailed-names">
+			<attribute-value tag="0x35" tag-name="textWithLanguage" description="1setOf text(MAX)"/>
+			<attribute-value tag="0x41" tag-name="textWithoutLanguage" description="1setOf text(MAX)"/>
+		</attribute>
+		<attribute name="job-document-access-errors">
+			<attribute-value tag="0x35" tag-name="textWithLanguage" description="1setOf text(MAX)"/>
+			<attribute-value tag="0x41" tag-name="textWithoutLanguage" description="1setOf text(MAX)"/>
+		</attribute>
+		<attribute name="job-id">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:MAX)"/>
+		</attribute>
+		<attribute name="job-impressions">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(0:MAX)"/>
+		</attribute>
+		<attribute name="job-impressions-completed">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(0:MAX)"/>
+		</attribute>
+		<attribute name="job-k-octets">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(0:MAX)"/>
+		</attribute>
+		<attribute name="job-k-octets-processed">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(0:MAX)"/>
+		</attribute>
+		<attribute name="job-media-sheets">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(0:MAX)"/>
+		</attribute>
+		<attribute name="job-media-sheets-completed">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(0:MAX)"/>
+		</attribute>
+		<attribute name="job-message-from-operator">
+			<attribute-value tag="0x35" tag-name="textWithLanguage" description="text(127)"/>
+			<attribute-value tag="0x41" tag-name="textWithoutLanguage" description="text(127)"/>
+		</attribute>
+		<attribute name="job-more-info">
+			<attribute-value tag="0x45" tag-name="uri"/>
+		</attribute>
+		<attribute name="job-name">
+			<attribute-value tag="0x36" tag-name="nameWithLanguage" description="name(MAX)"/>
+			<attribute-value tag="0x42" tag-name="nameWithoutLanguage" description="name(MAX)"/>
+		</attribute>
+		<attribute name="job-originating-user-name">
+			<attribute-value tag="0x36" tag-name="nameWithLanguage" description="name(MAX)"/>
+			<attribute-value tag="0x42" tag-name="nameWithoutLanguage" description="name(MAX)"/>
+		</attribute>
+		<attribute name="job-printer-up-time">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:MAX)"/>
+		</attribute>
+		<attribute name="job-printer-uri">
+			<attribute-value tag="0x45" tag-name="uri"/>
+		</attribute>
+		<attribute name="job-state">
+			<attribute-value tag="0x23" tag-name="enum" description="type1 enum">
+				<set-of-enum>
+					<enum value="3" name="pending"/>
+					<enum value="4" name="pending-held"/>
+					<enum value="5" name="processing"/>
+					<enum value="6" name="processing-stopped"/>
+					<enum value="7" name="canceled"/>
+					<enum value="8" name="aborted"/>
+					<enum value="9" name="completed"/>
+				</set-of-enum>
+			</attribute-value>
+		</attribute>
+		<attribute name="job-state-message">
+			<attribute-value tag="0x35" tag-name="textWithLanguage" description="text(MAX)"/>
+			<attribute-value tag="0x41" tag-name="textWithoutLanguage" description="text(MAX)"/>
+		</attribute>
+		<attribute name="job-state-reasons">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword">
+				<set-of-keyword>
+					<keyword value="aborted-by-system"/>
+					<keyword value="compression-error"/>
+					<keyword value="document-access-error"/>
+					<keyword value="document-format-error"/>
+					<keyword value="job-canceled-at-device"/>
+					<keyword value="job-canceled-by-operator"/>
+					<keyword value="job-canceled-by-user"/>
+					<keyword value="job-completed-successfully"/>
+					<keyword value="job-completed-with-errors"/>
+					<keyword value="job-completed-with-warnings"/>
+					<keyword value="job-data-insufficient"/>
+					<keyword value="job-hold-until-specified"/>
+					<keyword value="job-incoming"/>
+					<keyword value="job-interpreting"/>
+					<keyword value="job-outgoing"/>
+					<keyword value="job-printing"/>
+					<keyword value="job-queued"/>
+					<keyword value="job-queued-for-marker"/>
+					<keyword value="job-restartable"/>
+					<keyword value="job-suspended"/>
+					<keyword value="job-transforming"/>
+					<keyword value="none"/>
+					<keyword value="printer-stopped"/>
+					<keyword value="printer-stopped-partly"/>
+					<keyword value="processing-to-stop-point"/>
+					<keyword value="queued-in-device"/>
+					<keyword value="resources-are-not-ready"/>
+					<keyword value="service-off-line"/>
+					<keyword value="submission-interrupted"/>
+					<keyword value="unsupported-compression"/>
+					<keyword value="unsupported-document-format"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="job-uri">
+			<attribute-value tag="0x45" tag-name="uri"/>
+		</attribute>
+		<attribute name="number-of-documents">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(0:MAX)"/>
+		</attribute>
+		<attribute name="number-of-intervening-jobs">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(0:MAX)"/>
+		</attribute>
+		<attribute name="original-requesting-user-name">
+			<attribute-value tag="0x36" tag-name="nameWithLanguage" description="name(MAX)"/>
+			<attribute-value tag="0x42" tag-name="nameWithoutLanguage" description="name(MAX)"/>
+		</attribute>
+		<attribute name="output-device-assigned">
+			<attribute-value tag="0x36" tag-name="nameWithLanguage" description="name(127)"/>
+			<attribute-value tag="0x42" tag-name="nameWithoutLanguage" description="name(127)"/>
+		</attribute>
+		<attribute name="sheet-completed-copy-number">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(0:MAX)"/>
+		</attribute>
+		<attribute name="sheet-completed-document-number">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(0:MAX)"/>
+		</attribute>
+		<attribute name="time-at-completed">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(MIN:MAX)"/>
+		</attribute>
+		<attribute name="time-at-creation">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(MIN:MAX)"/>
+		</attribute>
+		<attribute name="time-at-processing">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(MIN:MAX)"/>
+		</attribute>
+		<attribute name="copies">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:MAX)"/>
+		</attribute>
+		<attribute name="copies-default">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:MAX)"/>
+		</attribute>
+		<attribute name="copies-supported">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:MAX)"/>
+		</attribute>
+		<attribute name="finishings">
+			<attribute-value tag="0x23" tag-name="enum" description="1setOf type2 enum">
+				<set-of-enum>
+					<enum value="3" name="none" description="no finishing"/>
+					<enum value="4" name="staple" description="staple (any location)"/>
+					<enum value="5" name="punch" description="punch (any location/count)"/>
+					<enum value="6" name="cover" description="add cover"/>
+					<enum value="7" name="bind" description="bind"/>
+					<enum value="8" name="saddle-stitch" description="staple interior"/>
+					<enum value="9" name="edge-stitch" description="stitch along any side"/>
+					<enum value="20" name="staple-top-left" description="staple top left corner"/>
+					<enum value="21" name="staple-bottom-left" description="staple bottom left corner"/>
+					<enum value="22" name="staple-top-right" description="staple top right corner"/>
+					<enum value="23" name="staple-bottom-right" description="staple bottom right corner"/>
+					<enum value="24" name="edge-stitch-left" description="stitch along left side"/>
+					<enum value="25" name="edge-stitch-top" description="stitch along top edge"/>
+					<enum value="26" name="edge-stitch-right" description="stitch along right side"/>
+					<enum value="27" name="edge-stitch-bottom" description="stitch along bottom edge"/>
+					<enum value="28" name="staple-dual-left" description="two staples on left"/>
+					<enum value="29" name="staple-dual-top" description="two staples on top"/>
+					<enum value="30" name="staple-dual-right" description="two staples on right"/>
+					<enum value="31" name="staple-dual-bottom" description="two staples on bottom"/>
+				</set-of-enum>
+			</attribute-value>
+		</attribute>
+		<attribute name="finishings-default">
+			<attribute-value tag="0x23" tag-name="enum" description="1setOf type2 enum">
+				<set-of-enum>
+					<enum value="3" name="none" description="no finishing"/>
+					<enum value="4" name="staple" description="staple (any location)"/>
+					<enum value="5" name="punch" description="punch (any location/count)"/>
+					<enum value="6" name="cover" description="add cover"/>
+					<enum value="7" name="bind" description="bind"/>
+					<enum value="8" name="saddle-stitch" description="staple interior"/>
+					<enum value="9" name="edge-stitch" description="stitch along any side"/>
+					<enum value="20" name="staple-top-left" description="staple top left corner"/>
+					<enum value="21" name="staple-bottom-left" description="staple bottom left corner"/>
+					<enum value="22" name="staple-top-right" description="staple top right corner"/>
+					<enum value="23" name="staple-bottom-right" description="staple bottom right corner"/>
+					<enum value="24" name="edge-stitch-left" description="stitch along left side"/>
+					<enum value="25" name="edge-stitch-top" description="stitch along top edge"/>
+					<enum value="26" name="edge-stitch-right" description="stitch along right side"/>
+					<enum value="27" name="edge-stitch-bottom" description="stitch along bottom edge"/>
+					<enum value="28" name="staple-dual-left" description="two staples on left"/>
+					<enum value="29" name="staple-dual-top" description="two staples on top"/>
+					<enum value="30" name="staple-dual-right" description="two staples on right"/>
+					<enum value="31" name="staple-dual-bottom" description="two staples on bottom"/>
+				</set-of-enum>
+			</attribute-value>
+		</attribute>
+		<attribute name="finishings-supported">
+			<attribute-value tag="0x23" tag-name="enum" description="1setOf type2 enum">
+				<set-of-enum>
+					<enum value="3" name="none" description="no finishing"/>
+					<enum value="4" name="staple" description="staple (any location)"/>
+					<enum value="5" name="punch" description="punch (any location/count)"/>
+					<enum value="6" name="cover" description="add cover"/>
+					<enum value="7" name="bind" description="bind"/>
+					<enum value="8" name="saddle-stitch" description="staple interior"/>
+					<enum value="9" name="edge-stitch" description="stitch along any side"/>
+					<enum value="20" name="staple-top-left" description="staple top left corner"/>
+					<enum value="21" name="staple-bottom-left" description="staple bottom left corner"/>
+					<enum value="22" name="staple-top-right" description="staple top right corner"/>
+					<enum value="23" name="staple-bottom-right" description="staple bottom right corner"/>
+					<enum value="24" name="edge-stitch-left" description="stitch along left side"/>
+					<enum value="25" name="edge-stitch-top" description="stitch along top edge"/>
+					<enum value="26" name="edge-stitch-right" description="stitch along right side"/>
+					<enum value="27" name="edge-stitch-bottom" description="stitch along bottom edge"/>
+					<enum value="28" name="staple-dual-left" description="two staples on left"/>
+					<enum value="29" name="staple-dual-top" description="two staples on top"/>
+					<enum value="30" name="staple-dual-right" description="two staples on right"/>
+					<enum value="31" name="staple-dual-bottom" description="two staples on bottom"/>
+				</set-of-enum>
+			</attribute-value>
+		</attribute>
+		<attribute name="job-hold-until">
+			<attribute-value tag="0x44" tag-name="keyword" description="type3 keyword | name(MAX)">
+				<set-of-keyword>
+					<keyword value="day-time"/>
+					<keyword value="evening"/>
+					<keyword value="indefinite"/>
+					<keyword value="night"/>
+					<keyword value="no-hold"/>
+					<keyword value="second-shift"/>
+					<keyword value="third-shift"/>
+					<keyword value="weekend"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="job-hold-until-default">
+			<attribute-value tag="0x44" tag-name="keyword" description="type3 keyword | name(MAX)">
+				<set-of-keyword>
+					<keyword value="day-time"/>
+					<keyword value="evening"/>
+					<keyword value="indefinite"/>
+					<keyword value="night"/>
+					<keyword value="no-hold"/>
+					<keyword value="second-shift"/>
+					<keyword value="third-shift"/>
+					<keyword value="weekend"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="job-hold-until-supported">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf (type3 keyword | name(MAX))">
+				<set-of-keyword>
+					<keyword value="day-time"/>
+					<keyword value="evening"/>
+					<keyword value="indefinite"/>
+					<keyword value="night"/>
+					<keyword value="no-hold"/>
+					<keyword value="second-shift"/>
+					<keyword value="third-shift"/>
+					<keyword value="weekend"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="job-priority">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:100)"/>
+		</attribute>
+		<attribute name="job-priority-default">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:100)"/>
+		</attribute>
+		<attribute name="job-priority-supported">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:100)"/>
+		</attribute>
+		<attribute name="job-sheets">
+			<attribute-value tag="0x44" tag-name="keyword" description="type3 keyword | name(MAX)">
+				<set-of-keyword>
+					<keyword value="none"/>
+					<keyword value="standard"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="job-sheets-default">
+			<attribute-value tag="0x44" tag-name="keyword" description="type3 keyword|name(MAX)">
+				<set-of-keyword>
+					<keyword value="none"/>
+					<keyword value="standard"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="job-sheets-supported">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf (type3 keyword | name(MAX))">
+				<set-of-keyword>
+					<keyword value="none"/>
+					<keyword value="standard"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="media">
+			<attribute-value tag="0x44" tag-name="keyword" description="type3 keyword | name(MAX)">
+				<set-of-keyword>
+					<keyword value="a" description="size name"/>
+					<keyword value="arch-a" description="size name"/>
+					<keyword value="arch-a-translucent" description="media name"/>
+					<keyword value="arch-a-transparent" description="media name"/>
+					<keyword value="arch-a-white" description="media name"/>
+					<keyword value="arch-axsynchro-translucent" description="media name"/>
+					<keyword value="arch-axsynchro-transparent" description="media name"/>
+					<keyword value="arch-axsynchro-white" description="media name"/>
+					<keyword value="arch-b" description="size name"/>
+					<keyword value="arch-b-translucent" description="media name"/>
+					<keyword value="arch-b-transparent" description="media name"/>
+					<keyword value="arch-b-white" description="media name"/>
+					<keyword value="arch-bxsynchro-translucent" description="media name"/>
+					<keyword value="arch-bxsynchro-transparent" description="media name"/>
+					<keyword value="arch-bxsynchro-white" description="media name"/>
+					<keyword value="arch-c" description="size name"/>
+					<keyword value="arch-c-translucent" description="media name"/>
+					<keyword value="arch-c-transparent" description="media name"/>
+					<keyword value="arch-c-white" description="media name"/>
+					<keyword value="arch-cxsynchro-translucent" description="media name"/>
+					<keyword value="arch-cxsynchro-transparent" description="media name"/>
+					<keyword value="arch-cxsynchro-white" description="media name"/>
+					<keyword value="arch-d" description="size name"/>
+					<keyword value="arch-d-translucent" description="media name"/>
+					<keyword value="arch-d-transparent" description="media name"/>
+					<keyword value="arch-d-white" description="media name"/>
+					<keyword value="arch-dxsynchro-translucent" description="media name"/>
+					<keyword value="arch-dxsynchro-transparent" description="media name"/>
+					<keyword value="arch-dxsynchro-white" description="media name"/>
+					<keyword value="arch-e" description="size name"/>
+					<keyword value="arch-e-translucent" description="media name"/>
+					<keyword value="arch-e-transparent" description="media name"/>
+					<keyword value="arch-e-white" description="media name"/>
+					<keyword value="arch-exsynchro-translucent" description="media name"/>
+					<keyword value="arch-exsynchro-transparent" description="media name"/>
+					<keyword value="arch-exsynchro-white" description="media name"/>
+					<keyword value="a-translucent" description="media name"/>
+					<keyword value="a-transparent" description="media name"/>
+					<keyword value="auto-fixed-size-translucent" description="media name"/>
+					<keyword value="auto-fixed-size-transparent" description="media name"/>
+					<keyword value="auto-fixed-size-white" description="media name"/>
+					<keyword value="auto-synchro-translucent" description="media name"/>
+					<keyword value="auto-synchro-transparent" description="media name"/>
+					<keyword value="auto-synchro-white" description="media name"/>
+					<keyword value="auto-translucent" description="media name"/>
+					<keyword value="auto-transparent" description="media name"/>
+					<keyword value="auto-white" description="media name"/>
+					<keyword value="a-white" description="media name"/>
+					<keyword value="axsyncrho-translucent" description="media name"/>
+					<keyword value="axsynchro-transparent" description="media name"/>
+					<keyword value="axsynchro-white" description="media name"/>
+					<keyword value="b" description="size name"/>
+					<keyword value="bottom" description="input tray"/>
+					<keyword value="b-translucent" description="media name"/>
+					<keyword value="b-transparent" description="media name"/>
+					<keyword value="b-white" description="media name"/>
+					<keyword value="bxsynchro-translucent" description="media name"/>
+					<keyword value="bxsynchro-transparent" description="media name"/>
+					<keyword value="bxsynchro-white" description="media name"/>
+					<keyword value="c" description="size name"/>
+					<keyword value="c-tanslucent" description="media name"/>
+					<keyword value="c-tansparent" description="media name"/>
+					<keyword value="c-white" description="media name"/>
+					<keyword value="cxsynchro-translucent" description="media name"/>
+					<keyword value="cxsynchro-transparent" description="media name"/>
+					<keyword value="cxsynchro-white" description="media name"/>					
+					<keyword value="d" description="size name"/>
+					<keyword value="default" description="media name"/>
+					<keyword value="d-tanslucent" description="media name"/>
+					<keyword value="d-tansparent" description="media name"/>
+					<keyword value="d-white" description="media name"/>
+					<keyword value="dxsynchro-translucent" description="media name"/>
+					<keyword value="dxsynchro-transparent" description="media name"/>
+					<keyword value="dxsynchro-white" description="media name"/>				
+					<keyword value="e" description="size name"/>
+					<keyword value="envelope" description="input tray"/>
+					<keyword value="e-tanslucent" description="media name"/>
+					<keyword value="e-tansparent" description="media name"/>
+					<keyword value="e-white" description="media name"/>
+					<keyword value="executive" description="size name"/>
+					<keyword value="executive-white" description="media name"/>
+					<keyword value="exsynchro-translucent" description="media name"/>
+					<keyword value="exsynchro-transparent" description="media name"/>
+					<keyword value="exsynchro-white" description="media name"/>
+					<keyword value="folio" description="size name"/>
+					<keyword value="folio-white" description="media name"/>
+					<keyword value="invoice" description="size name"/>
+					<keyword value="invoice-white" description="media name"/>
+					<keyword value="iso-a0" description="size name"/>
+					<keyword value="iso-a0-translucent" description="media name"/>
+					<keyword value="iso-a0-transparent" description="media name"/>
+					<keyword value="iso-a0-white" description="media name"/>
+					<keyword value="iso-a0xsynchro-translucent" description="media name"/>
+					<keyword value="iso-a0xsynchro-transparent" description="media name"/>
+					<keyword value="iso-a0xsynchro-white" description="media name"/>
+					<keyword value="iso-a1" description="size name"/>
+					<keyword value="iso-a10" description="size name"/>
+					<keyword value="iso-a10-white" description="media name"/>
+					<keyword value="iso-a1-translucent" description="media name"/>
+					<keyword value="iso-a1-transparent" description="media name"/>
+					<keyword value="iso-a1-white" description="media name"/>
+					<keyword value="iso-a1x3-translucent" description="media name"/>
+					<keyword value="iso-a1x3-transparent" description="media name"/>
+					<keyword value="iso-a1x3-white" description="media name"/>
+					<keyword value="iso-a1x4-translucent" description="media name"/>
+					<keyword value="iso-a1x4-transparent" description="media name"/>
+					<keyword value="iso-a1x4-white" description="media name"/>
+					<keyword value="iso-a1xsynchro-translucent" description="media name"/>
+					<keyword value="iso-a1xsynchro-transparent" description="media name"/>
+					<keyword value="iso-a1xsynchro-white" description="media name"/>
+					<keyword value="iso-a2" description="size name"/>
+					<keyword value="iso-a2-translucent" description="media name"/>
+					<keyword value="iso-a2-transparent" description="media name"/>
+					<keyword value="iso-a2-white" description="media name"/>
+					<keyword value="iso-a2x3-translucent" description="media name"/>
+					<keyword value="iso-a2x3-transparent" description="media name"/>
+					<keyword value="iso-a2x3-white" description="media name"/>
+					<keyword value="iso-a2x4-translucent" description="media name"/>
+					<keyword value="iso-a2x4-transparent" description="media name"/>
+					<keyword value="iso-a2x4-white" description="media name"/>
+					<keyword value="iso-a2x5-translucent" description="media name"/>
+					<keyword value="iso-a2x5-transparent" description="media name"/>
+					<keyword value="iso-a2x5-white" description="media name"/>
+					<keyword value="iso-a2xsynchro-translucent" description="media name"/>
+					<keyword value="iso-a2xsynchro-transparent" description="media name"/>
+					<keyword value="iso-a2xsynchro-white" description="media name"/>
+					<keyword value="iso-a3" description="size name"/>
+					<keyword value="iso-a3-colored" description="media name"/>
+					<keyword value="iso-a3-translucent" description="media name"/>
+					<keyword value="iso-a3-transparent" description="media name"/>
+					<keyword value="iso-a3-white" description="media name"/>
+					<keyword value="iso-a3x3-translucent" description="media name"/>
+					<keyword value="iso-a3x3-transparent" description="media name"/>
+					<keyword value="iso-a3x3-white" description="media name"/>
+					<keyword value="iso-a3x4-translucent" description="media name"/>
+					<keyword value="iso-a3x4-transparent" description="media name"/>
+					<keyword value="iso-a3x4-white" description="media name"/>
+					<keyword value="iso-a3x5-translucent" description="media name"/>
+					<keyword value="iso-a3x5-transparent" description="media name"/>
+					<keyword value="iso-a3x5-white" description="media name"/>
+					<keyword value="iso-a3x6-translucent" description="media name"/>
+					<keyword value="iso-a3x6-transparent" description="media name"/>
+					<keyword value="iso-a3x6-white" description="media name"/>
+					<keyword value="iso-a3x7-translucent" description="media name"/>
+					<keyword value="iso-a3x7-transparent" description="media name"/>
+					<keyword value="iso-a3x7-white" description="media name"/>			
+					<keyword value="iso-a3xsynchro-translucent" description="media name"/>
+					<keyword value="iso-a3xsynchro-transparent"/>
+					<keyword value="iso-a3xsynchro-white" description="media name"/>					
+					<keyword value="iso-a4" description="size name"/>
+					<keyword value="iso-a4-colored" description="media name"/>
+					<keyword value="iso-a4-translucent" description="media name"/>
+					<keyword value="iso-a4-transparent" description="media name"/>
+					<keyword value="iso-a4-white" description="media name"/>
+					<keyword value="iso-a4x3-translucent" description="media name"/>
+					<keyword value="iso-a4x3-transparent" description="media name"/>
+					<keyword value="iso-a4x3-white" description="media name"/>
+					<keyword value="iso-a4x4-translucent" description="media name"/>
+					<keyword value="iso-a4x4-transparent" description="media name"/>
+					<keyword value="iso-a4x4-white" description="media name"/>
+					<keyword value="iso-a4x5-translucent" description="media name"/>
+					<keyword value="iso-a4x5-transparent" description="media name"/>
+					<keyword value="iso-a4x5-white" description="media name"/>
+					<keyword value="iso-a4x6-translucent" description="media name"/>
+					<keyword value="iso-a4x6-transparent" description="media name"/>
+					<keyword value="iso-a4x6-white" description="media name"/>
+					<keyword value="iso-a4x7-translucent" description="media name"/>
+					<keyword value="iso-a4x7-transparent" description="media name"/>
+					<keyword value="iso-a4x7-white" description="media name"/>	
+					<keyword value="iso-a4x8-translucent" description="media name"/>
+					<keyword value="iso-a4x8-transparent" description="media name"/>
+					<keyword value="iso-a4x8-white" description="media name"/>
+					<keyword value="iso-a4x9-translucent" description="media name"/>
+					<keyword value="iso-a4x9-transparent" description="media name"/>
+					<keyword value="iso-a4x9-white" description="media name"/>							
+					<keyword value="iso-a4xsynchro-translucent" description="media name"/>
+					<keyword value="iso-a4xsynchro-transparent" description="media name"/>
+					<keyword value="iso-a4xsynchro-white" description="media name"/>				
+					<keyword value="iso-a5" description="size name"/>
+					<keyword value="iso-a5-colored" description="media name"/>
+					<keyword value="iso-a5-translucent" description="media name"/>
+					<keyword value="iso-a5-transparent" description="media name"/>
+					<keyword value="iso-a5-white" description="media name"/>
+					<keyword value="iso-a6" description="size name"/>
+					<keyword value="iso-a6-white" description="media name"/>
+					<keyword value="iso-a7" description="size name"/>
+					<keyword value="iso-a7-white" description="media name"/>
+					<keyword value="iso-a8" description="size name"/>
+					<keyword value="iso-a8-white" description="media name"/>
+					<keyword value="iso-a9" description="size name"/>
+					<keyword value="iso-a9-white" description="media name"/>
+					<keyword value="iso-b0" description="size name"/>
+					<keyword value="iso-b0-white" description="media name"/>
+					<keyword value="iso-b1" description="size name"/>
+					<keyword value="iso-b10" description="size name"/>
+					<keyword value="iso-b10-white" description="media name"/>
+					<keyword value="iso-b1-white" description="media name"/>
+					<keyword value="iso-b2" description="size name"/>
+					<keyword value="iso-b2-white" description="media name"/>
+					<keyword value="iso-b3" description="size name"/>
+					<keyword value="iso-b3-white" description="media name"/>
+					<keyword value="iso-b4" description="size name"/>
+					<keyword value="iso-b4-colored" description="media name"/>
+					<keyword value="iso-b4-envelope" description="envelope name"/>
+					<keyword value="iso-b4-white" description="media name"/>
+					<keyword value="iso-b5" description="size name"/>
+					<keyword value="iso-b5-colored" description="media name"/>
+					<keyword value="iso-b5-envelope" description="envelope name"/>
+					<keyword value="iso-b5-white" description="media name"/>
+					<keyword value="iso-b6" description="size name"/>
+					<keyword value="iso-b6-white" description="media name"/>
+					<keyword value="iso-b7" description="size name"/>
+					<keyword value="iso-b7-white" description="media name"/>
+					<keyword value="iso-b8" description="size name"/>
+					<keyword value="iso-b8-white" description="media name"/>
+					<keyword value="iso-b9" description="size name"/>
+					<keyword value="iso-b9-white" description="media name"/>
+					<keyword value="iso-c3" description="size name"/>
+					<keyword value="iso-c3-envelope" description="envelope name"/>
+					<keyword value="iso-c4" description="size name"/>
+					<keyword value="iso-c4-envelope" description="envelope name"/>
+					<keyword value="iso-c5" description="size name"/>
+					<keyword value="iso-c5-envelope" description="envelope name"/>
+					<keyword value="iso-c6" description="size name"/>
+					<keyword value="iso-c6-envelope" description="envelope name"/>				
+					<keyword value="iso-designated-long" description="size name"/>
+					<keyword value="iso-designated-long-envelope" description="envelope name"/>
+					<keyword value="jis-b0" description="size name"/>
+					<keyword value="jis-b0-translucent" description="media name"/>
+					<keyword value="jis-b0-transparent" description="media name"/>
+					<keyword value="jis-b0-white" description="media name"/>
+					<keyword value="jis-b1" description="size name"/>
+					<keyword value="jis-b10" description="size name"/>
+					<keyword value="jis-b10-white" description="media name"/>
+					<keyword value="jis-b1-translucent" description="media name"/>
+					<keyword value="jis-b1-transparent" description="media name"/>
+					<keyword value="jis-b1-white" description="media name"/>
+					<keyword value="jis-b2" description="size name"/>
+					<keyword value="jis-b2-translucent" description="media name"/>
+					<keyword value="jis-b2-transparent" description="media name"/>
+					<keyword value="jis-b2-white" description="media name"/>
+					<keyword value="jis-b3" description="size name"/>
+					<keyword value="jis-b3-translucent" description="media name"/>
+					<keyword value="jis-b3-transparent" description="media name"/>
+					<keyword value="jis-b3-white" description="media name"/>
+					<keyword value="jis-b4" description="size name"/>
+					<keyword value="jis-b4-translucent" description="media name"/>
+					<keyword value="jis-b4-transparent" description="media name"/>
+					<keyword value="jis-b4-white" description="media name"/>
+					<keyword value="jis-b5" description="size name"/>
+					<keyword value="jis-b5-translucent" description="media name"/>
+					<keyword value="jis-b5-transparent" description="media name"/>
+					<keyword value="jis-b5-white" description="media name"/>
+					<keyword value="jis-b6" description="size name"/>
+					<keyword value="jis-b6-white" description="media name"/>
+					<keyword value="jis-b7" description="size name"/>
+					<keyword value="jis-b7-white" description="media name"/>
+					<keyword value="jis-b8" description="size name"/>
+					<keyword value="jis-b8-white" description="media name"/>
+					<keyword value="jis-b9" description="size name"/>
+					<keyword value="jis-b9-white" description="media name"/>
+					<keyword value="large-capacity" description="input tray"/>
+					<keyword value="ledger" description="size name"/>
+					<keyword value="ledger-white" description="media name"/>
+					<keyword value="main" description="input tray"/>
+					<keyword value="manual" description="input tray"/>
+					<keyword value="middle" description="input tray"/>
+					<keyword value="monarch" description="size name"/>
+					<keyword value="monarch-envelope" description="envelope name"/>
+					<keyword value="na-10x13" description="size name"/>
+					<keyword value="na-10x13-envelope" description="envelope name"/>
+					<keyword value="na-10x14" description="size name"/>
+					<keyword value="na-10x14-envelope" description="envelope name"/>
+					<keyword value="na-10x15" description="size name"/>
+					<keyword value="na-10x15-envelope" description="envelope name"/>
+					<keyword value="na-5x7" description="size name"/>
+					<keyword value="na-6x9" description="size name"/>
+					<keyword value="na-6x9-envelope" description="envelope name"/>
+					<keyword value="na-7x9" description="size name"/>
+					<keyword value="na-7x9-envelope" description="envelope name"/>
+					<keyword value="na-8x10" description="size name"/>
+					<keyword value="na-9x11" description="size name"/>
+					<keyword value="na-9x11-envelope" description="envelope name"/>
+					<keyword value="na-9x12" description="size name"/>
+					<keyword value="na-9x12-envelope" description="envelope name"/>
+					<keyword value="na-legal" description="size name"/>
+					<keyword value="na-legal-colored" description="media name"/>
+					<keyword value="na-legal-white" description="media name"/>
+					<keyword value="na-letter" description="size name"/>
+					<keyword value="na-letter-colored" description="media name"/>
+					<keyword value="na-letter-transparent" description="media name"/>
+					<keyword value="na-letter-white" description="media name"/>
+					<keyword value="na-number-10" description="size name"/>
+					<keyword value="na-number-10-envelope" description="envelope name"/>
+					<keyword value="na-number-9" description="size name"/>
+					<keyword value="na-number-9-envelope" description="envelope name"/>
+					<keyword value="quarto" description="size name"/>
+					<keyword value="quarto-white" description="media name"/>
+					<keyword value="side" description="input tray"/>
+					<keyword value="top" description="input tray"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="media-default">
+			 <attribute-value tag="0x44" tag-name="keyword" description="type3 keyword | name(MAX)">
+			 	<set-of-keyword>
+					<keyword value="a" description="size name"/>
+					<keyword value="arch-a" description="size name"/>
+					<keyword value="arch-a-translucent" description="media name"/>
+					<keyword value="arch-a-transparent" description="media name"/>
+					<keyword value="arch-a-white" description="media name"/>
+					<keyword value="arch-axsynchro-translucent" description="media name"/>
+					<keyword value="arch-axsynchro-transparent" description="media name"/>
+					<keyword value="arch-axsynchro-white" description="media name"/>
+					<keyword value="arch-b" description="size name"/>
+					<keyword value="arch-b-translucent" description="media name"/>
+					<keyword value="arch-b-transparent" description="media name"/>
+					<keyword value="arch-b-white" description="media name"/>
+					<keyword value="arch-bxsynchro-translucent" description="media name"/>
+					<keyword value="arch-bxsynchro-transparent" description="media name"/>
+					<keyword value="arch-bxsynchro-white" description="media name"/>
+					<keyword value="arch-c" description="size name"/>
+					<keyword value="arch-c-translucent" description="media name"/>
+					<keyword value="arch-c-transparent" description="media name"/>
+					<keyword value="arch-c-white" description="media name"/>
+					<keyword value="arch-cxsynchro-translucent" description="media name"/>
+					<keyword value="arch-cxsynchro-transparent" description="media name"/>
+					<keyword value="arch-cxsynchro-white" description="media name"/>
+					<keyword value="arch-d" description="size name"/>
+					<keyword value="arch-d-translucent" description="media name"/>
+					<keyword value="arch-d-transparent" description="media name"/>
+					<keyword value="arch-d-white" description="media name"/>
+					<keyword value="arch-dxsynchro-translucent" description="media name"/>
+					<keyword value="arch-dxsynchro-transparent" description="media name"/>
+					<keyword value="arch-dxsynchro-white" description="media name"/>
+					<keyword value="arch-e" description="size name"/>
+					<keyword value="arch-e-translucent" description="media name"/>
+					<keyword value="arch-e-transparent" description="media name"/>
+					<keyword value="arch-e-white" description="media name"/>
+					<keyword value="arch-exsynchro-translucent" description="media name"/>
+					<keyword value="arch-exsynchro-transparent" description="media name"/>
+					<keyword value="arch-exsynchro-white" description="media name"/>
+					<keyword value="a-translucent" description="media name"/>
+					<keyword value="a-transparent" description="media name"/>
+					<keyword value="auto-fixed-size-translucent" description="media name"/>
+					<keyword value="auto-fixed-size-transparent" description="media name"/>
+					<keyword value="auto-fixed-size-white" description="media name"/>
+					<keyword value="auto-synchro-translucent" description="media name"/>
+					<keyword value="auto-synchro-transparent" description="media name"/>
+					<keyword value="auto-synchro-white" description="media name"/>
+					<keyword value="auto-translucent" description="media name"/>
+					<keyword value="auto-transparent" description="media name"/>
+					<keyword value="auto-white" description="media name"/>
+					<keyword value="a-white" description="media name"/>
+					<keyword value="axsyncrho-translucent" description="media name"/>
+					<keyword value="axsynchro-transparent" description="media name"/>
+					<keyword value="axsynchro-white" description="media name"/>
+					<keyword value="b" description="size name"/>
+					<keyword value="bottom" description="input tray"/>
+					<keyword value="b-translucent" description="media name"/>
+					<keyword value="b-transparent" description="media name"/>
+					<keyword value="b-white" description="media name"/>
+					<keyword value="bxsynchro-translucent" description="media name"/>
+					<keyword value="bxsynchro-transparent" description="media name"/>
+					<keyword value="bxsynchro-white" description="media name"/>
+					<keyword value="c" description="size name"/>
+					<keyword value="c-tanslucent" description="media name"/>
+					<keyword value="c-tansparent" description="media name"/>
+					<keyword value="c-white" description="media name"/>
+					<keyword value="cxsynchro-translucent" description="media name"/>
+					<keyword value="cxsynchro-transparent" description="media name"/>
+					<keyword value="cxsynchro-white" description="media name"/>					
+					<keyword value="d" description="size name"/>
+					<keyword value="default" description="media name"/>
+					<keyword value="d-tanslucent" description="media name"/>
+					<keyword value="d-tansparent" description="media name"/>
+					<keyword value="d-white" description="media name"/>
+					<keyword value="dxsynchro-translucent" description="media name"/>
+					<keyword value="dxsynchro-transparent" description="media name"/>
+					<keyword value="dxsynchro-white" description="media name"/>				
+					<keyword value="e" description="size name"/>
+					<keyword value="envelope" description="input tray"/>
+					<keyword value="e-tanslucent" description="media name"/>
+					<keyword value="e-tansparent" description="media name"/>
+					<keyword value="e-white" description="media name"/>
+					<keyword value="executive" description="size name"/>
+					<keyword value="executive-white" description="media name"/>
+					<keyword value="exsynchro-translucent" description="media name"/>
+					<keyword value="exsynchro-transparent" description="media name"/>
+					<keyword value="exsynchro-white" description="media name"/>
+					<keyword value="folio" description="size name"/>
+					<keyword value="folio-white" description="media name"/>
+					<keyword value="invoice" description="size name"/>
+					<keyword value="invoice-white" description="media name"/>
+					<keyword value="iso-a0" description="size name"/>
+					<keyword value="iso-a0-translucent" description="media name"/>
+					<keyword value="iso-a0-transparent" description="media name"/>
+					<keyword value="iso-a0-white" description="media name"/>
+					<keyword value="iso-a0xsynchro-translucent" description="media name"/>
+					<keyword value="iso-a0xsynchro-transparent" description="media name"/>
+					<keyword value="iso-a0xsynchro-white" description="media name"/>
+					<keyword value="iso-a1" description="size name"/>
+					<keyword value="iso-a10" description="size name"/>
+					<keyword value="iso-a10-white" description="media name"/>
+					<keyword value="iso-a1-translucent" description="media name"/>
+					<keyword value="iso-a1-transparent" description="media name"/>
+					<keyword value="iso-a1-white" description="media name"/>
+					<keyword value="iso-a1x3-translucent" description="media name"/>
+					<keyword value="iso-a1x3-transparent" description="media name"/>
+					<keyword value="iso-a1x3-white" description="media name"/>
+					<keyword value="iso-a1x4-translucent" description="media name"/>
+					<keyword value="iso-a1x4-transparent" description="media name"/>
+					<keyword value="iso-a1x4-white" description="media name"/>
+					<keyword value="iso-a1xsynchro-translucent" description="media name"/>
+					<keyword value="iso-a1xsynchro-transparent" description="media name"/>
+					<keyword value="iso-a1xsynchro-white" description="media name"/>
+					<keyword value="iso-a2" description="size name"/>
+					<keyword value="iso-a2-translucent" description="media name"/>
+					<keyword value="iso-a2-transparent" description="media name"/>
+					<keyword value="iso-a2-white" description="media name"/>
+					<keyword value="iso-a2x3-translucent" description="media name"/>
+					<keyword value="iso-a2x3-transparent" description="media name"/>
+					<keyword value="iso-a2x3-white" description="media name"/>
+					<keyword value="iso-a2x4-translucent" description="media name"/>
+					<keyword value="iso-a2x4-transparent" description="media name"/>
+					<keyword value="iso-a2x4-white" description="media name"/>
+					<keyword value="iso-a2x5-translucent" description="media name"/>
+					<keyword value="iso-a2x5-transparent" description="media name"/>
+					<keyword value="iso-a2x5-white" description="media name"/>
+					<keyword value="iso-a2xsynchro-translucent" description="media name"/>
+					<keyword value="iso-a2xsynchro-transparent" description="media name"/>
+					<keyword value="iso-a2xsynchro-white" description="media name"/>
+					<keyword value="iso-a3" description="size name"/>
+					<keyword value="iso-a3-colored" description="media name"/>
+					<keyword value="iso-a3-translucent" description="media name"/>
+					<keyword value="iso-a3-transparent" description="media name"/>
+					<keyword value="iso-a3-white" description="media name"/>
+					<keyword value="iso-a3x3-translucent" description="media name"/>
+					<keyword value="iso-a3x3-transparent" description="media name"/>
+					<keyword value="iso-a3x3-white" description="media name"/>
+					<keyword value="iso-a3x4-translucent" description="media name"/>
+					<keyword value="iso-a3x4-transparent" description="media name"/>
+					<keyword value="iso-a3x4-white" description="media name"/>
+					<keyword value="iso-a3x5-translucent" description="media name"/>
+					<keyword value="iso-a3x5-transparent" description="media name"/>
+					<keyword value="iso-a3x5-white" description="media name"/>
+					<keyword value="iso-a3x6-translucent" description="media name"/>
+					<keyword value="iso-a3x6-transparent" description="media name"/>
+					<keyword value="iso-a3x6-white" description="media name"/>
+					<keyword value="iso-a3x7-translucent" description="media name"/>
+					<keyword value="iso-a3x7-transparent" description="media name"/>
+					<keyword value="iso-a3x7-white" description="media name"/>			
+					<keyword value="iso-a3xsynchro-translucent" description="media name"/>
+					<keyword value="iso-a3xsynchro-transparent"/>
+					<keyword value="iso-a3xsynchro-white" description="media name"/>					
+					<keyword value="iso-a4" description="size name"/>
+					<keyword value="iso-a4-colored" description="media name"/>
+					<keyword value="iso-a4-translucent" description="media name"/>
+					<keyword value="iso-a4-transparent" description="media name"/>
+					<keyword value="iso-a4-white" description="media name"/>
+					<keyword value="iso-a4x3-translucent" description="media name"/>
+					<keyword value="iso-a4x3-transparent" description="media name"/>
+					<keyword value="iso-a4x3-white" description="media name"/>
+					<keyword value="iso-a4x4-translucent" description="media name"/>
+					<keyword value="iso-a4x4-transparent" description="media name"/>
+					<keyword value="iso-a4x4-white" description="media name"/>
+					<keyword value="iso-a4x5-translucent" description="media name"/>
+					<keyword value="iso-a4x5-transparent" description="media name"/>
+					<keyword value="iso-a4x5-white" description="media name"/>
+					<keyword value="iso-a4x6-translucent" description="media name"/>
+					<keyword value="iso-a4x6-transparent" description="media name"/>
+					<keyword value="iso-a4x6-white" description="media name"/>
+					<keyword value="iso-a4x7-translucent" description="media name"/>
+					<keyword value="iso-a4x7-transparent" description="media name"/>
+					<keyword value="iso-a4x7-white" description="media name"/>	
+					<keyword value="iso-a4x8-translucent" description="media name"/>
+					<keyword value="iso-a4x8-transparent" description="media name"/>
+					<keyword value="iso-a4x8-white" description="media name"/>
+					<keyword value="iso-a4x9-translucent" description="media name"/>
+					<keyword value="iso-a4x9-transparent" description="media name"/>
+					<keyword value="iso-a4x9-white" description="media name"/>							
+					<keyword value="iso-a4xsynchro-translucent" description="media name"/>
+					<keyword value="iso-a4xsynchro-transparent" description="media name"/>
+					<keyword value="iso-a4xsynchro-white" description="media name"/>				
+					<keyword value="iso-a5" description="size name"/>
+					<keyword value="iso-a5-colored" description="media name"/>
+					<keyword value="iso-a5-translucent" description="media name"/>
+					<keyword value="iso-a5-transparent" description="media name"/>
+					<keyword value="iso-a5-white" description="media name"/>
+					<keyword value="iso-a6" description="size name"/>
+					<keyword value="iso-a6-white" description="media name"/>
+					<keyword value="iso-a7" description="size name"/>
+					<keyword value="iso-a7-white" description="media name"/>
+					<keyword value="iso-a8" description="size name"/>
+					<keyword value="iso-a8-white" description="media name"/>
+					<keyword value="iso-a9" description="size name"/>
+					<keyword value="iso-a9-white" description="media name"/>
+					<keyword value="iso-b0" description="size name"/>
+					<keyword value="iso-b0-white" description="media name"/>
+					<keyword value="iso-b1" description="size name"/>
+					<keyword value="iso-b10" description="size name"/>
+					<keyword value="iso-b10-white" description="media name"/>
+					<keyword value="iso-b1-white" description="media name"/>
+					<keyword value="iso-b2" description="size name"/>
+					<keyword value="iso-b2-white" description="media name"/>
+					<keyword value="iso-b3" description="size name"/>
+					<keyword value="iso-b3-white" description="media name"/>
+					<keyword value="iso-b4" description="size name"/>
+					<keyword value="iso-b4-colored" description="media name"/>
+					<keyword value="iso-b4-envelope" description="envelope name"/>
+					<keyword value="iso-b4-white" description="media name"/>
+					<keyword value="iso-b5" description="size name"/>
+					<keyword value="iso-b5-colored" description="media name"/>
+					<keyword value="iso-b5-envelope" description="envelope name"/>
+					<keyword value="iso-b5-white" description="media name"/>
+					<keyword value="iso-b6" description="size name"/>
+					<keyword value="iso-b6-white" description="media name"/>
+					<keyword value="iso-b7" description="size name"/>
+					<keyword value="iso-b7-white" description="media name"/>
+					<keyword value="iso-b8" description="size name"/>
+					<keyword value="iso-b8-white" description="media name"/>
+					<keyword value="iso-b9" description="size name"/>
+					<keyword value="iso-b9-white" description="media name"/>
+					<keyword value="iso-c3" description="size name"/>
+					<keyword value="iso-c3-envelope" description="envelope name"/>
+					<keyword value="iso-c4" description="size name"/>
+					<keyword value="iso-c4-envelope" description="envelope name"/>
+					<keyword value="iso-c5" description="size name"/>
+					<keyword value="iso-c5-envelope" description="envelope name"/>
+					<keyword value="iso-c6" description="size name"/>
+					<keyword value="iso-c6-envelope" description="envelope name"/>				
+					<keyword value="iso-designated-long" description="size name"/>
+					<keyword value="iso-designated-long-envelope" description="envelope name"/>
+					<keyword value="jis-b0" description="size name"/>
+					<keyword value="jis-b0-translucent" description="media name"/>
+					<keyword value="jis-b0-transparent" description="media name"/>
+					<keyword value="jis-b0-white" description="media name"/>
+					<keyword value="jis-b1" description="size name"/>
+					<keyword value="jis-b10" description="size name"/>
+					<keyword value="jis-b10-white" description="media name"/>
+					<keyword value="jis-b1-translucent" description="media name"/>
+					<keyword value="jis-b1-transparent" description="media name"/>
+					<keyword value="jis-b1-white" description="media name"/>
+					<keyword value="jis-b2" description="size name"/>
+					<keyword value="jis-b2-translucent" description="media name"/>
+					<keyword value="jis-b2-transparent" description="media name"/>
+					<keyword value="jis-b2-white" description="media name"/>
+					<keyword value="jis-b3" description="size name"/>
+					<keyword value="jis-b3-translucent" description="media name"/>
+					<keyword value="jis-b3-transparent" description="media name"/>
+					<keyword value="jis-b3-white" description="media name"/>
+					<keyword value="jis-b4" description="size name"/>
+					<keyword value="jis-b4-translucent" description="media name"/>
+					<keyword value="jis-b4-transparent" description="media name"/>
+					<keyword value="jis-b4-white" description="media name"/>
+					<keyword value="jis-b5" description="size name"/>
+					<keyword value="jis-b5-translucent" description="media name"/>
+					<keyword value="jis-b5-transparent" description="media name"/>
+					<keyword value="jis-b5-white" description="media name"/>
+					<keyword value="jis-b6" description="size name"/>
+					<keyword value="jis-b6-white" description="media name"/>
+					<keyword value="jis-b7" description="size name"/>
+					<keyword value="jis-b7-white" description="media name"/>
+					<keyword value="jis-b8" description="size name"/>
+					<keyword value="jis-b8-white" description="media name"/>
+					<keyword value="jis-b9" description="size name"/>
+					<keyword value="jis-b9-white" description="media name"/>
+					<keyword value="large-capacity" description="input tray"/>
+					<keyword value="ledger" description="size name"/>
+					<keyword value="ledger-white" description="media name"/>
+					<keyword value="main" description="input tray"/>
+					<keyword value="manual" description="input tray"/>
+					<keyword value="middle" description="input tray"/>
+					<keyword value="monarch" description="size name"/>
+					<keyword value="monarch-envelope" description="envelope name"/>
+					<keyword value="na-10x13" description="size name"/>
+					<keyword value="na-10x13-envelope" description="envelope name"/>
+					<keyword value="na-10x14" description="size name"/>
+					<keyword value="na-10x14-envelope" description="envelope name"/>
+					<keyword value="na-10x15" description="size name"/>
+					<keyword value="na-10x15-envelope" description="envelope name"/>
+					<keyword value="na-5x7" description="size name"/>
+					<keyword value="na-6x9" description="size name"/>
+					<keyword value="na-6x9-envelope" description="envelope name"/>
+					<keyword value="na-7x9" description="size name"/>
+					<keyword value="na-7x9-envelope" description="envelope name"/>
+					<keyword value="na-8x10" description="size name"/>
+					<keyword value="na-9x11" description="size name"/>
+					<keyword value="na-9x11-envelope" description="envelope name"/>
+					<keyword value="na-9x12" description="size name"/>
+					<keyword value="na-9x12-envelope" description="envelope name"/>
+					<keyword value="na-legal" description="size name"/>
+					<keyword value="na-legal-colored" description="media name"/>
+					<keyword value="na-legal-white" description="media name"/>
+					<keyword value="na-letter" description="size name"/>
+					<keyword value="na-letter-colored" description="media name"/>
+					<keyword value="na-letter-transparent" description="media name"/>
+					<keyword value="na-letter-white" description="media name"/>
+					<keyword value="na-number-10" description="size name"/>
+					<keyword value="na-number-10-envelope" description="envelope name"/>
+					<keyword value="na-number-9" description="size name"/>
+					<keyword value="na-number-9-envelope" description="envelope name"/>
+					<keyword value="quarto" description="size name"/>
+					<keyword value="quarto-white" description="media name"/>
+					<keyword value="side" description="input tray"/>
+					<keyword value="top" description="input tray"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="media-supported">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf (type3 keyword | name(MAX))">
+				<set-of-keyword>
+					<keyword value="a" description="size name"/>
+					<keyword value="arch-a" description="size name"/>
+					<keyword value="arch-a-translucent" description="media name"/>
+					<keyword value="arch-a-transparent" description="media name"/>
+					<keyword value="arch-a-white" description="media name"/>
+					<keyword value="arch-axsynchro-translucent" description="media name"/>
+					<keyword value="arch-axsynchro-transparent" description="media name"/>
+					<keyword value="arch-axsynchro-white" description="media name"/>
+					<keyword value="arch-b" description="size name"/>
+					<keyword value="arch-b-translucent" description="media name"/>
+					<keyword value="arch-b-transparent" description="media name"/>
+					<keyword value="arch-b-white" description="media name"/>
+					<keyword value="arch-bxsynchro-translucent" description="media name"/>
+					<keyword value="arch-bxsynchro-transparent" description="media name"/>
+					<keyword value="arch-bxsynchro-white" description="media name"/>
+					<keyword value="arch-c" description="size name"/>
+					<keyword value="arch-c-translucent" description="media name"/>
+					<keyword value="arch-c-transparent" description="media name"/>
+					<keyword value="arch-c-white" description="media name"/>
+					<keyword value="arch-cxsynchro-translucent" description="media name"/>
+					<keyword value="arch-cxsynchro-transparent" description="media name"/>
+					<keyword value="arch-cxsynchro-white" description="media name"/>
+					<keyword value="arch-d" description="size name"/>
+					<keyword value="arch-d-translucent" description="media name"/>
+					<keyword value="arch-d-transparent" description="media name"/>
+					<keyword value="arch-d-white" description="media name"/>
+					<keyword value="arch-dxsynchro-translucent" description="media name"/>
+					<keyword value="arch-dxsynchro-transparent" description="media name"/>
+					<keyword value="arch-dxsynchro-white" description="media name"/>
+					<keyword value="arch-e" description="size name"/>
+					<keyword value="arch-e-translucent" description="media name"/>
+					<keyword value="arch-e-transparent" description="media name"/>
+					<keyword value="arch-e-white" description="media name"/>
+					<keyword value="arch-exsynchro-translucent" description="media name"/>
+					<keyword value="arch-exsynchro-transparent" description="media name"/>
+					<keyword value="arch-exsynchro-white" description="media name"/>
+					<keyword value="a-translucent" description="media name"/>
+					<keyword value="a-transparent" description="media name"/>
+					<keyword value="auto-fixed-size-translucent" description="media name"/>
+					<keyword value="auto-fixed-size-transparent" description="media name"/>
+					<keyword value="auto-fixed-size-white" description="media name"/>
+					<keyword value="auto-synchro-translucent" description="media name"/>
+					<keyword value="auto-synchro-transparent" description="media name"/>
+					<keyword value="auto-synchro-white" description="media name"/>
+					<keyword value="auto-translucent" description="media name"/>
+					<keyword value="auto-transparent" description="media name"/>
+					<keyword value="auto-white" description="media name"/>
+					<keyword value="a-white" description="media name"/>
+					<keyword value="axsyncrho-translucent" description="media name"/>
+					<keyword value="axsynchro-transparent" description="media name"/>
+					<keyword value="axsynchro-white" description="media name"/>
+					<keyword value="b" description="size name"/>
+					<keyword value="bottom" description="input tray"/>
+					<keyword value="b-translucent" description="media name"/>
+					<keyword value="b-transparent" description="media name"/>
+					<keyword value="b-white" description="media name"/>
+					<keyword value="bxsynchro-translucent" description="media name"/>
+					<keyword value="bxsynchro-transparent" description="media name"/>
+					<keyword value="bxsynchro-white" description="media name"/>
+					<keyword value="c" description="size name"/>
+					<keyword value="c-tanslucent" description="media name"/>
+					<keyword value="c-tansparent" description="media name"/>
+					<keyword value="c-white" description="media name"/>
+					<keyword value="cxsynchro-translucent" description="media name"/>
+					<keyword value="cxsynchro-transparent" description="media name"/>
+					<keyword value="cxsynchro-white" description="media name"/>					
+					<keyword value="d" description="size name"/>
+					<keyword value="default" description="media name"/>
+					<keyword value="d-tanslucent" description="media name"/>
+					<keyword value="d-tansparent" description="media name"/>
+					<keyword value="d-white" description="media name"/>
+					<keyword value="dxsynchro-translucent" description="media name"/>
+					<keyword value="dxsynchro-transparent" description="media name"/>
+					<keyword value="dxsynchro-white" description="media name"/>				
+					<keyword value="e" description="size name"/>
+					<keyword value="envelope" description="input tray"/>
+					<keyword value="e-tanslucent" description="media name"/>
+					<keyword value="e-tansparent" description="media name"/>
+					<keyword value="e-white" description="media name"/>
+					<keyword value="executive" description="size name"/>
+					<keyword value="executive-white" description="media name"/>
+					<keyword value="exsynchro-translucent" description="media name"/>
+					<keyword value="exsynchro-transparent" description="media name"/>
+					<keyword value="exsynchro-white" description="media name"/>
+					<keyword value="folio" description="size name"/>
+					<keyword value="folio-white" description="media name"/>
+					<keyword value="invoice" description="size name"/>
+					<keyword value="invoice-white" description="media name"/>
+					<keyword value="iso-a0" description="size name"/>
+					<keyword value="iso-a0-translucent" description="media name"/>
+					<keyword value="iso-a0-transparent" description="media name"/>
+					<keyword value="iso-a0-white" description="media name"/>
+					<keyword value="iso-a0xsynchro-translucent" description="media name"/>
+					<keyword value="iso-a0xsynchro-transparent" description="media name"/>
+					<keyword value="iso-a0xsynchro-white" description="media name"/>
+					<keyword value="iso-a1" description="size name"/>
+					<keyword value="iso-a10" description="size name"/>
+					<keyword value="iso-a10-white" description="media name"/>
+					<keyword value="iso-a1-translucent" description="media name"/>
+					<keyword value="iso-a1-transparent" description="media name"/>
+					<keyword value="iso-a1-white" description="media name"/>
+					<keyword value="iso-a1x3-translucent" description="media name"/>
+					<keyword value="iso-a1x3-transparent" description="media name"/>
+					<keyword value="iso-a1x3-white" description="media name"/>
+					<keyword value="iso-a1x4-translucent" description="media name"/>
+					<keyword value="iso-a1x4-transparent" description="media name"/>
+					<keyword value="iso-a1x4-white" description="media name"/>
+					<keyword value="iso-a1xsynchro-translucent" description="media name"/>
+					<keyword value="iso-a1xsynchro-transparent" description="media name"/>
+					<keyword value="iso-a1xsynchro-white" description="media name"/>
+					<keyword value="iso-a2" description="size name"/>
+					<keyword value="iso-a2-translucent" description="media name"/>
+					<keyword value="iso-a2-transparent" description="media name"/>
+					<keyword value="iso-a2-white" description="media name"/>
+					<keyword value="iso-a2x3-translucent" description="media name"/>
+					<keyword value="iso-a2x3-transparent" description="media name"/>
+					<keyword value="iso-a2x3-white" description="media name"/>
+					<keyword value="iso-a2x4-translucent" description="media name"/>
+					<keyword value="iso-a2x4-transparent" description="media name"/>
+					<keyword value="iso-a2x4-white" description="media name"/>
+					<keyword value="iso-a2x5-translucent" description="media name"/>
+					<keyword value="iso-a2x5-transparent" description="media name"/>
+					<keyword value="iso-a2x5-white" description="media name"/>
+					<keyword value="iso-a2xsynchro-translucent" description="media name"/>
+					<keyword value="iso-a2xsynchro-transparent" description="media name"/>
+					<keyword value="iso-a2xsynchro-white" description="media name"/>
+					<keyword value="iso-a3" description="size name"/>
+					<keyword value="iso-a3-colored" description="media name"/>
+					<keyword value="iso-a3-translucent" description="media name"/>
+					<keyword value="iso-a3-transparent" description="media name"/>
+					<keyword value="iso-a3-white" description="media name"/>
+					<keyword value="iso-a3x3-translucent" description="media name"/>
+					<keyword value="iso-a3x3-transparent" description="media name"/>
+					<keyword value="iso-a3x3-white" description="media name"/>
+					<keyword value="iso-a3x4-translucent" description="media name"/>
+					<keyword value="iso-a3x4-transparent" description="media name"/>
+					<keyword value="iso-a3x4-white" description="media name"/>
+					<keyword value="iso-a3x5-translucent" description="media name"/>
+					<keyword value="iso-a3x5-transparent" description="media name"/>
+					<keyword value="iso-a3x5-white" description="media name"/>
+					<keyword value="iso-a3x6-translucent" description="media name"/>
+					<keyword value="iso-a3x6-transparent" description="media name"/>
+					<keyword value="iso-a3x6-white" description="media name"/>
+					<keyword value="iso-a3x7-translucent" description="media name"/>
+					<keyword value="iso-a3x7-transparent" description="media name"/>
+					<keyword value="iso-a3x7-white" description="media name"/>			
+					<keyword value="iso-a3xsynchro-translucent" description="media name"/>
+					<keyword value="iso-a3xsynchro-transparent"/>
+					<keyword value="iso-a3xsynchro-white" description="media name"/>					
+					<keyword value="iso-a4" description="size name"/>
+					<keyword value="iso-a4-colored" description="media name"/>
+					<keyword value="iso-a4-translucent" description="media name"/>
+					<keyword value="iso-a4-transparent" description="media name"/>
+					<keyword value="iso-a4-white" description="media name"/>
+					<keyword value="iso-a4x3-translucent" description="media name"/>
+					<keyword value="iso-a4x3-transparent" description="media name"/>
+					<keyword value="iso-a4x3-white" description="media name"/>
+					<keyword value="iso-a4x4-translucent" description="media name"/>
+					<keyword value="iso-a4x4-transparent" description="media name"/>
+					<keyword value="iso-a4x4-white" description="media name"/>
+					<keyword value="iso-a4x5-translucent" description="media name"/>
+					<keyword value="iso-a4x5-transparent" description="media name"/>
+					<keyword value="iso-a4x5-white" description="media name"/>
+					<keyword value="iso-a4x6-translucent" description="media name"/>
+					<keyword value="iso-a4x6-transparent" description="media name"/>
+					<keyword value="iso-a4x6-white" description="media name"/>
+					<keyword value="iso-a4x7-translucent" description="media name"/>
+					<keyword value="iso-a4x7-transparent" description="media name"/>
+					<keyword value="iso-a4x7-white" description="media name"/>	
+					<keyword value="iso-a4x8-translucent" description="media name"/>
+					<keyword value="iso-a4x8-transparent" description="media name"/>
+					<keyword value="iso-a4x8-white" description="media name"/>
+					<keyword value="iso-a4x9-translucent" description="media name"/>
+					<keyword value="iso-a4x9-transparent" description="media name"/>
+					<keyword value="iso-a4x9-white" description="media name"/>							
+					<keyword value="iso-a4xsynchro-translucent" description="media name"/>
+					<keyword value="iso-a4xsynchro-transparent" description="media name"/>
+					<keyword value="iso-a4xsynchro-white" description="media name"/>				
+					<keyword value="iso-a5" description="size name"/>
+					<keyword value="iso-a5-colored" description="media name"/>
+					<keyword value="iso-a5-translucent" description="media name"/>
+					<keyword value="iso-a5-transparent" description="media name"/>
+					<keyword value="iso-a5-white" description="media name"/>
+					<keyword value="iso-a6" description="size name"/>
+					<keyword value="iso-a6-white" description="media name"/>
+					<keyword value="iso-a7" description="size name"/>
+					<keyword value="iso-a7-white" description="media name"/>
+					<keyword value="iso-a8" description="size name"/>
+					<keyword value="iso-a8-white" description="media name"/>
+					<keyword value="iso-a9" description="size name"/>
+					<keyword value="iso-a9-white" description="media name"/>
+					<keyword value="iso-b0" description="size name"/>
+					<keyword value="iso-b0-white" description="media name"/>
+					<keyword value="iso-b1" description="size name"/>
+					<keyword value="iso-b10" description="size name"/>
+					<keyword value="iso-b10-white" description="media name"/>
+					<keyword value="iso-b1-white" description="media name"/>
+					<keyword value="iso-b2" description="size name"/>
+					<keyword value="iso-b2-white" description="media name"/>
+					<keyword value="iso-b3" description="size name"/>
+					<keyword value="iso-b3-white" description="media name"/>
+					<keyword value="iso-b4" description="size name"/>
+					<keyword value="iso-b4-colored" description="media name"/>
+					<keyword value="iso-b4-envelope" description="envelope name"/>
+					<keyword value="iso-b4-white" description="media name"/>
+					<keyword value="iso-b5" description="size name"/>
+					<keyword value="iso-b5-colored" description="media name"/>
+					<keyword value="iso-b5-envelope" description="envelope name"/>
+					<keyword value="iso-b5-white" description="media name"/>
+					<keyword value="iso-b6" description="size name"/>
+					<keyword value="iso-b6-white" description="media name"/>
+					<keyword value="iso-b7" description="size name"/>
+					<keyword value="iso-b7-white" description="media name"/>
+					<keyword value="iso-b8" description="size name"/>
+					<keyword value="iso-b8-white" description="media name"/>
+					<keyword value="iso-b9" description="size name"/>
+					<keyword value="iso-b9-white" description="media name"/>
+					<keyword value="iso-c3" description="size name"/>
+					<keyword value="iso-c3-envelope" description="envelope name"/>
+					<keyword value="iso-c4" description="size name"/>
+					<keyword value="iso-c4-envelope" description="envelope name"/>
+					<keyword value="iso-c5" description="size name"/>
+					<keyword value="iso-c5-envelope" description="envelope name"/>
+					<keyword value="iso-c6" description="size name"/>
+					<keyword value="iso-c6-envelope" description="envelope name"/>				
+					<keyword value="iso-designated-long" description="size name"/>
+					<keyword value="iso-designated-long-envelope" description="envelope name"/>
+					<keyword value="jis-b0" description="size name"/>
+					<keyword value="jis-b0-translucent" description="media name"/>
+					<keyword value="jis-b0-transparent" description="media name"/>
+					<keyword value="jis-b0-white" description="media name"/>
+					<keyword value="jis-b1" description="size name"/>
+					<keyword value="jis-b10" description="size name"/>
+					<keyword value="jis-b10-white" description="media name"/>
+					<keyword value="jis-b1-translucent" description="media name"/>
+					<keyword value="jis-b1-transparent" description="media name"/>
+					<keyword value="jis-b1-white" description="media name"/>
+					<keyword value="jis-b2" description="size name"/>
+					<keyword value="jis-b2-translucent" description="media name"/>
+					<keyword value="jis-b2-transparent" description="media name"/>
+					<keyword value="jis-b2-white" description="media name"/>
+					<keyword value="jis-b3" description="size name"/>
+					<keyword value="jis-b3-translucent" description="media name"/>
+					<keyword value="jis-b3-transparent" description="media name"/>
+					<keyword value="jis-b3-white" description="media name"/>
+					<keyword value="jis-b4" description="size name"/>
+					<keyword value="jis-b4-translucent" description="media name"/>
+					<keyword value="jis-b4-transparent" description="media name"/>
+					<keyword value="jis-b4-white" description="media name"/>
+					<keyword value="jis-b5" description="size name"/>
+					<keyword value="jis-b5-translucent" description="media name"/>
+					<keyword value="jis-b5-transparent" description="media name"/>
+					<keyword value="jis-b5-white" description="media name"/>
+					<keyword value="jis-b6" description="size name"/>
+					<keyword value="jis-b6-white" description="media name"/>
+					<keyword value="jis-b7" description="size name"/>
+					<keyword value="jis-b7-white" description="media name"/>
+					<keyword value="jis-b8" description="size name"/>
+					<keyword value="jis-b8-white" description="media name"/>
+					<keyword value="jis-b9" description="size name"/>
+					<keyword value="jis-b9-white" description="media name"/>
+					<keyword value="large-capacity" description="input tray"/>
+					<keyword value="ledger" description="size name"/>
+					<keyword value="ledger-white" description="media name"/>
+					<keyword value="main" description="input tray"/>
+					<keyword value="manual" description="input tray"/>
+					<keyword value="middle" description="input tray"/>
+					<keyword value="monarch" description="size name"/>
+					<keyword value="monarch-envelope" description="envelope name"/>
+					<keyword value="na-10x13" description="size name"/>
+					<keyword value="na-10x13-envelope" description="envelope name"/>
+					<keyword value="na-10x14" description="size name"/>
+					<keyword value="na-10x14-envelope" description="envelope name"/>
+					<keyword value="na-10x15" description="size name"/>
+					<keyword value="na-10x15-envelope" description="envelope name"/>
+					<keyword value="na-5x7" description="size name"/>
+					<keyword value="na-6x9" description="size name"/>
+					<keyword value="na-6x9-envelope" description="envelope name"/>
+					<keyword value="na-7x9" description="size name"/>
+					<keyword value="na-7x9-envelope" description="envelope name"/>
+					<keyword value="na-8x10" description="size name"/>
+					<keyword value="na-9x11" description="size name"/>
+					<keyword value="na-9x11-envelope" description="envelope name"/>
+					<keyword value="na-9x12" description="size name"/>
+					<keyword value="na-9x12-envelope" description="envelope name"/>
+					<keyword value="na-legal" description="size name"/>
+					<keyword value="na-legal-colored" description="media name"/>
+					<keyword value="na-legal-white" description="media name"/>
+					<keyword value="na-letter" description="size name"/>
+					<keyword value="na-letter-colored" description="media name"/>
+					<keyword value="na-letter-transparent" description="media name"/>
+					<keyword value="na-letter-white" description="media name"/>
+					<keyword value="na-number-10" description="size name"/>
+					<keyword value="na-number-10-envelope" description="envelope name"/>
+					<keyword value="na-number-9" description="size name"/>
+					<keyword value="na-number-9-envelope" description="envelope name"/>
+					<keyword value="quarto" description="size name"/>
+					<keyword value="quarto-white" description="media name"/>
+					<keyword value="side" description="input tray"/>
+					<keyword value="top" description="input tray"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="media-ready">
+			<attribute-value tag="0x44" tag-name="keyword" description="type3 keyword | name(MAX)">
+				<set-of-keyword>
+					<keyword value="a" description="size name"/>
+					<keyword value="arch-a" description="size name"/>
+					<keyword value="arch-a-translucent" description="media name"/>
+					<keyword value="arch-a-transparent" description="media name"/>
+					<keyword value="arch-a-white" description="media name"/>
+					<keyword value="arch-axsynchro-translucent" description="media name"/>
+					<keyword value="arch-axsynchro-transparent" description="media name"/>
+					<keyword value="arch-axsynchro-white" description="media name"/>
+					<keyword value="arch-b" description="size name"/>
+					<keyword value="arch-b-translucent" description="media name"/>
+					<keyword value="arch-b-transparent" description="media name"/>
+					<keyword value="arch-b-white" description="media name"/>
+					<keyword value="arch-bxsynchro-translucent" description="media name"/>
+					<keyword value="arch-bxsynchro-transparent" description="media name"/>
+					<keyword value="arch-bxsynchro-white" description="media name"/>
+					<keyword value="arch-c" description="size name"/>
+					<keyword value="arch-c-translucent" description="media name"/>
+					<keyword value="arch-c-transparent" description="media name"/>
+					<keyword value="arch-c-white" description="media name"/>
+					<keyword value="arch-cxsynchro-translucent" description="media name"/>
+					<keyword value="arch-cxsynchro-transparent" description="media name"/>
+					<keyword value="arch-cxsynchro-white" description="media name"/>
+					<keyword value="arch-d" description="size name"/>
+					<keyword value="arch-d-translucent" description="media name"/>
+					<keyword value="arch-d-transparent" description="media name"/>
+					<keyword value="arch-d-white" description="media name"/>
+					<keyword value="arch-dxsynchro-translucent" description="media name"/>
+					<keyword value="arch-dxsynchro-transparent" description="media name"/>
+					<keyword value="arch-dxsynchro-white" description="media name"/>
+					<keyword value="arch-e" description="size name"/>
+					<keyword value="arch-e-translucent" description="media name"/>
+					<keyword value="arch-e-transparent" description="media name"/>
+					<keyword value="arch-e-white" description="media name"/>
+					<keyword value="arch-exsynchro-translucent" description="media name"/>
+					<keyword value="arch-exsynchro-transparent" description="media name"/>
+					<keyword value="arch-exsynchro-white" description="media name"/>
+					<keyword value="a-translucent" description="media name"/>
+					<keyword value="a-transparent" description="media name"/>
+					<keyword value="auto-fixed-size-translucent" description="media name"/>
+					<keyword value="auto-fixed-size-transparent" description="media name"/>
+					<keyword value="auto-fixed-size-white" description="media name"/>
+					<keyword value="auto-synchro-translucent" description="media name"/>
+					<keyword value="auto-synchro-transparent" description="media name"/>
+					<keyword value="auto-synchro-white" description="media name"/>
+					<keyword value="auto-translucent" description="media name"/>
+					<keyword value="auto-transparent" description="media name"/>
+					<keyword value="auto-white" description="media name"/>
+					<keyword value="a-white" description="media name"/>
+					<keyword value="axsyncrho-translucent" description="media name"/>
+					<keyword value="axsynchro-transparent" description="media name"/>
+					<keyword value="axsynchro-white" description="media name"/>
+					<keyword value="b" description="size name"/>
+					<keyword value="bottom" description="input tray"/>
+					<keyword value="b-translucent" description="media name"/>
+					<keyword value="b-transparent" description="media name"/>
+					<keyword value="b-white" description="media name"/>
+					<keyword value="bxsynchro-translucent" description="media name"/>
+					<keyword value="bxsynchro-transparent" description="media name"/>
+					<keyword value="bxsynchro-white" description="media name"/>
+					<keyword value="c" description="size name"/>
+					<keyword value="c-tanslucent" description="media name"/>
+					<keyword value="c-tansparent" description="media name"/>
+					<keyword value="c-white" description="media name"/>
+					<keyword value="cxsynchro-translucent" description="media name"/>
+					<keyword value="cxsynchro-transparent" description="media name"/>
+					<keyword value="cxsynchro-white" description="media name"/>					
+					<keyword value="d" description="size name"/>
+					<keyword value="default" description="media name"/>
+					<keyword value="d-tanslucent" description="media name"/>
+					<keyword value="d-tansparent" description="media name"/>
+					<keyword value="d-white" description="media name"/>
+					<keyword value="dxsynchro-translucent" description="media name"/>
+					<keyword value="dxsynchro-transparent" description="media name"/>
+					<keyword value="dxsynchro-white" description="media name"/>				
+					<keyword value="e" description="size name"/>
+					<keyword value="envelope" description="input tray"/>
+					<keyword value="e-tanslucent" description="media name"/>
+					<keyword value="e-tansparent" description="media name"/>
+					<keyword value="e-white" description="media name"/>
+					<keyword value="executive" description="size name"/>
+					<keyword value="executive-white" description="media name"/>
+					<keyword value="exsynchro-translucent" description="media name"/>
+					<keyword value="exsynchro-transparent" description="media name"/>
+					<keyword value="exsynchro-white" description="media name"/>
+					<keyword value="folio" description="size name"/>
+					<keyword value="folio-white" description="media name"/>
+					<keyword value="invoice" description="size name"/>
+					<keyword value="invoice-white" description="media name"/>
+					<keyword value="iso-a0" description="size name"/>
+					<keyword value="iso-a0-translucent" description="media name"/>
+					<keyword value="iso-a0-transparent" description="media name"/>
+					<keyword value="iso-a0-white" description="media name"/>
+					<keyword value="iso-a0xsynchro-translucent" description="media name"/>
+					<keyword value="iso-a0xsynchro-transparent" description="media name"/>
+					<keyword value="iso-a0xsynchro-white" description="media name"/>
+					<keyword value="iso-a1" description="size name"/>
+					<keyword value="iso-a10" description="size name"/>
+					<keyword value="iso-a10-white" description="media name"/>
+					<keyword value="iso-a1-translucent" description="media name"/>
+					<keyword value="iso-a1-transparent" description="media name"/>
+					<keyword value="iso-a1-white" description="media name"/>
+					<keyword value="iso-a1x3-translucent" description="media name"/>
+					<keyword value="iso-a1x3-transparent" description="media name"/>
+					<keyword value="iso-a1x3-white" description="media name"/>
+					<keyword value="iso-a1x4-translucent" description="media name"/>
+					<keyword value="iso-a1x4-transparent" description="media name"/>
+					<keyword value="iso-a1x4-white" description="media name"/>
+					<keyword value="iso-a1xsynchro-translucent" description="media name"/>
+					<keyword value="iso-a1xsynchro-transparent" description="media name"/>
+					<keyword value="iso-a1xsynchro-white" description="media name"/>
+					<keyword value="iso-a2" description="size name"/>
+					<keyword value="iso-a2-translucent" description="media name"/>
+					<keyword value="iso-a2-transparent" description="media name"/>
+					<keyword value="iso-a2-white" description="media name"/>
+					<keyword value="iso-a2x3-translucent" description="media name"/>
+					<keyword value="iso-a2x3-transparent" description="media name"/>
+					<keyword value="iso-a2x3-white" description="media name"/>
+					<keyword value="iso-a2x4-translucent" description="media name"/>
+					<keyword value="iso-a2x4-transparent" description="media name"/>
+					<keyword value="iso-a2x4-white" description="media name"/>
+					<keyword value="iso-a2x5-translucent" description="media name"/>
+					<keyword value="iso-a2x5-transparent" description="media name"/>
+					<keyword value="iso-a2x5-white" description="media name"/>
+					<keyword value="iso-a2xsynchro-translucent" description="media name"/>
+					<keyword value="iso-a2xsynchro-transparent" description="media name"/>
+					<keyword value="iso-a2xsynchro-white" description="media name"/>
+					<keyword value="iso-a3" description="size name"/>
+					<keyword value="iso-a3-colored" description="media name"/>
+					<keyword value="iso-a3-translucent" description="media name"/>
+					<keyword value="iso-a3-transparent" description="media name"/>
+					<keyword value="iso-a3-white" description="media name"/>
+					<keyword value="iso-a3x3-translucent" description="media name"/>
+					<keyword value="iso-a3x3-transparent" description="media name"/>
+					<keyword value="iso-a3x3-white" description="media name"/>
+					<keyword value="iso-a3x4-translucent" description="media name"/>
+					<keyword value="iso-a3x4-transparent" description="media name"/>
+					<keyword value="iso-a3x4-white" description="media name"/>
+					<keyword value="iso-a3x5-translucent" description="media name"/>
+					<keyword value="iso-a3x5-transparent" description="media name"/>
+					<keyword value="iso-a3x5-white" description="media name"/>
+					<keyword value="iso-a3x6-translucent" description="media name"/>
+					<keyword value="iso-a3x6-transparent" description="media name"/>
+					<keyword value="iso-a3x6-white" description="media name"/>
+					<keyword value="iso-a3x7-translucent" description="media name"/>
+					<keyword value="iso-a3x7-transparent" description="media name"/>
+					<keyword value="iso-a3x7-white" description="media name"/>			
+					<keyword value="iso-a3xsynchro-translucent" description="media name"/>
+					<keyword value="iso-a3xsynchro-transparent"/>
+					<keyword value="iso-a3xsynchro-white" description="media name"/>					
+					<keyword value="iso-a4" description="size name"/>
+					<keyword value="iso-a4-colored" description="media name"/>
+					<keyword value="iso-a4-translucent" description="media name"/>
+					<keyword value="iso-a4-transparent" description="media name"/>
+					<keyword value="iso-a4-white" description="media name"/>
+					<keyword value="iso-a4x3-translucent" description="media name"/>
+					<keyword value="iso-a4x3-transparent" description="media name"/>
+					<keyword value="iso-a4x3-white" description="media name"/>
+					<keyword value="iso-a4x4-translucent" description="media name"/>
+					<keyword value="iso-a4x4-transparent" description="media name"/>
+					<keyword value="iso-a4x4-white" description="media name"/>
+					<keyword value="iso-a4x5-translucent" description="media name"/>
+					<keyword value="iso-a4x5-transparent" description="media name"/>
+					<keyword value="iso-a4x5-white" description="media name"/>
+					<keyword value="iso-a4x6-translucent" description="media name"/>
+					<keyword value="iso-a4x6-transparent" description="media name"/>
+					<keyword value="iso-a4x6-white" description="media name"/>
+					<keyword value="iso-a4x7-translucent" description="media name"/>
+					<keyword value="iso-a4x7-transparent" description="media name"/>
+					<keyword value="iso-a4x7-white" description="media name"/>	
+					<keyword value="iso-a4x8-translucent" description="media name"/>
+					<keyword value="iso-a4x8-transparent" description="media name"/>
+					<keyword value="iso-a4x8-white" description="media name"/>
+					<keyword value="iso-a4x9-translucent" description="media name"/>
+					<keyword value="iso-a4x9-transparent" description="media name"/>
+					<keyword value="iso-a4x9-white" description="media name"/>							
+					<keyword value="iso-a4xsynchro-translucent" description="media name"/>
+					<keyword value="iso-a4xsynchro-transparent" description="media name"/>
+					<keyword value="iso-a4xsynchro-white" description="media name"/>				
+					<keyword value="iso-a5" description="size name"/>
+					<keyword value="iso-a5-colored" description="media name"/>
+					<keyword value="iso-a5-translucent" description="media name"/>
+					<keyword value="iso-a5-transparent" description="media name"/>
+					<keyword value="iso-a5-white" description="media name"/>
+					<keyword value="iso-a6" description="size name"/>
+					<keyword value="iso-a6-white" description="media name"/>
+					<keyword value="iso-a7" description="size name"/>
+					<keyword value="iso-a7-white" description="media name"/>
+					<keyword value="iso-a8" description="size name"/>
+					<keyword value="iso-a8-white" description="media name"/>
+					<keyword value="iso-a9" description="size name"/>
+					<keyword value="iso-a9-white" description="media name"/>
+					<keyword value="iso-b0" description="size name"/>
+					<keyword value="iso-b0-white" description="media name"/>
+					<keyword value="iso-b1" description="size name"/>
+					<keyword value="iso-b10" description="size name"/>
+					<keyword value="iso-b10-white" description="media name"/>
+					<keyword value="iso-b1-white" description="media name"/>
+					<keyword value="iso-b2" description="size name"/>
+					<keyword value="iso-b2-white" description="media name"/>
+					<keyword value="iso-b3" description="size name"/>
+					<keyword value="iso-b3-white" description="media name"/>
+					<keyword value="iso-b4" description="size name"/>
+					<keyword value="iso-b4-colored" description="media name"/>
+					<keyword value="iso-b4-envelope" description="envelope name"/>
+					<keyword value="iso-b4-white" description="media name"/>
+					<keyword value="iso-b5" description="size name"/>
+					<keyword value="iso-b5-colored" description="media name"/>
+					<keyword value="iso-b5-envelope" description="envelope name"/>
+					<keyword value="iso-b5-white" description="media name"/>
+					<keyword value="iso-b6" description="size name"/>
+					<keyword value="iso-b6-white" description="media name"/>
+					<keyword value="iso-b7" description="size name"/>
+					<keyword value="iso-b7-white" description="media name"/>
+					<keyword value="iso-b8" description="size name"/>
+					<keyword value="iso-b8-white" description="media name"/>
+					<keyword value="iso-b9" description="size name"/>
+					<keyword value="iso-b9-white" description="media name"/>
+					<keyword value="iso-c3" description="size name"/>
+					<keyword value="iso-c3-envelope" description="envelope name"/>
+					<keyword value="iso-c4" description="size name"/>
+					<keyword value="iso-c4-envelope" description="envelope name"/>
+					<keyword value="iso-c5" description="size name"/>
+					<keyword value="iso-c5-envelope" description="envelope name"/>
+					<keyword value="iso-c6" description="size name"/>
+					<keyword value="iso-c6-envelope" description="envelope name"/>				
+					<keyword value="iso-designated-long" description="size name"/>
+					<keyword value="iso-designated-long-envelope" description="envelope name"/>
+					<keyword value="jis-b0" description="size name"/>
+					<keyword value="jis-b0-translucent" description="media name"/>
+					<keyword value="jis-b0-transparent" description="media name"/>
+					<keyword value="jis-b0-white" description="media name"/>
+					<keyword value="jis-b1" description="size name"/>
+					<keyword value="jis-b10" description="size name"/>
+					<keyword value="jis-b10-white" description="media name"/>
+					<keyword value="jis-b1-translucent" description="media name"/>
+					<keyword value="jis-b1-transparent" description="media name"/>
+					<keyword value="jis-b1-white" description="media name"/>
+					<keyword value="jis-b2" description="size name"/>
+					<keyword value="jis-b2-translucent" description="media name"/>
+					<keyword value="jis-b2-transparent" description="media name"/>
+					<keyword value="jis-b2-white" description="media name"/>
+					<keyword value="jis-b3" description="size name"/>
+					<keyword value="jis-b3-translucent" description="media name"/>
+					<keyword value="jis-b3-transparent" description="media name"/>
+					<keyword value="jis-b3-white" description="media name"/>
+					<keyword value="jis-b4" description="size name"/>
+					<keyword value="jis-b4-translucent" description="media name"/>
+					<keyword value="jis-b4-transparent" description="media name"/>
+					<keyword value="jis-b4-white" description="media name"/>
+					<keyword value="jis-b5" description="size name"/>
+					<keyword value="jis-b5-translucent" description="media name"/>
+					<keyword value="jis-b5-transparent" description="media name"/>
+					<keyword value="jis-b5-white" description="media name"/>
+					<keyword value="jis-b6" description="size name"/>
+					<keyword value="jis-b6-white" description="media name"/>
+					<keyword value="jis-b7" description="size name"/>
+					<keyword value="jis-b7-white" description="media name"/>
+					<keyword value="jis-b8" description="size name"/>
+					<keyword value="jis-b8-white" description="media name"/>
+					<keyword value="jis-b9" description="size name"/>
+					<keyword value="jis-b9-white" description="media name"/>
+					<keyword value="large-capacity" description="input tray"/>
+					<keyword value="ledger" description="size name"/>
+					<keyword value="ledger-white" description="media name"/>
+					<keyword value="main" description="input tray"/>
+					<keyword value="manual" description="input tray"/>
+					<keyword value="middle" description="input tray"/>
+					<keyword value="monarch" description="size name"/>
+					<keyword value="monarch-envelope" description="envelope name"/>
+					<keyword value="na-10x13" description="size name"/>
+					<keyword value="na-10x13-envelope" description="envelope name"/>
+					<keyword value="na-10x14" description="size name"/>
+					<keyword value="na-10x14-envelope" description="envelope name"/>
+					<keyword value="na-10x15" description="size name"/>
+					<keyword value="na-10x15-envelope" description="envelope name"/>
+					<keyword value="na-5x7" description="size name"/>
+					<keyword value="na-6x9" description="size name"/>
+					<keyword value="na-6x9-envelope" description="envelope name"/>
+					<keyword value="na-7x9" description="size name"/>
+					<keyword value="na-7x9-envelope" description="envelope name"/>
+					<keyword value="na-8x10" description="size name"/>
+					<keyword value="na-9x11" description="size name"/>
+					<keyword value="na-9x11-envelope" description="envelope name"/>
+					<keyword value="na-9x12" description="size name"/>
+					<keyword value="na-9x12-envelope" description="envelope name"/>
+					<keyword value="na-legal" description="size name"/>
+					<keyword value="na-legal-colored" description="media name"/>
+					<keyword value="na-legal-white" description="media name"/>
+					<keyword value="na-letter" description="size name"/>
+					<keyword value="na-letter-colored" description="media name"/>
+					<keyword value="na-letter-transparent" description="media name"/>
+					<keyword value="na-letter-white" description="media name"/>
+					<keyword value="na-number-10" description="size name"/>
+					<keyword value="na-number-10-envelope" description="envelope name"/>
+					<keyword value="na-number-9" description="size name"/>
+					<keyword value="na-number-9-envelope" description="envelope name"/>
+					<keyword value="quarto" description="size name"/>
+					<keyword value="quarto-white" description="media name"/>
+					<keyword value="side" description="input tray"/>
+					<keyword value="top" description="input tray"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="multiple-document-handling">
+			<attribute-value tag="0x44" tag-name="keyword" description="type2 keyword">
+				<set-of-keyword>
+					<keyword value="separate-documents-collated-copies"/>
+					<keyword value="separate-documents-uncollated-copies"/>
+					<keyword value="single-document"/>
+					<keyword value="single-document-new-sheet"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="multiple-document-handling-default">
+			<attribute-value tag="0x44" tag-name="keyword" description="type2 keyword">
+				<set-of-keyword>
+					<keyword value="separate-documents-collated-copies"/>
+					<keyword value="separate-documents-uncollated-copies"/>
+					<keyword value="single-document"/>
+					<keyword value="single-document-new-sheet"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="multiple-document-handling-supported">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword">
+				<set-of-keyword>
+					<keyword value="separate-documents-collated-copies"/>
+					<keyword value="separate-documents-uncollated-copies"/>
+					<keyword value="single-document"/>
+					<keyword value="single-document-new-sheet"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="number-up">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:MAX)"/>
+		</attribute>
+		<attribute name="number-up-default">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:MAX)"/>
+		</attribute>
+		<attribute name="number-up-supported">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:MAX)"/>
+		</attribute>
+		<attribute name="orientation-requested">
+			<attribute-value tag="0x23" tag-name="enum" description="type2 enum">
+				<set-of-enum>
+					<enum value="3" name="portrait" description="no rotation"/>
+					<enum value="4" name="landscape" description="90 degrees counter-clockwise"/>
+					<enum value="5" name="reverse-landscape" description="90 degrees clockwise"/>
+					<enum value="6" name="reverse-portrait" description="180 degrees"/>
+				</set-of-enum>
+			</attribute-value>
+		</attribute>
+		<attribute name="orientation-requested-default">
+			<attribute-value tag="0x23" tag-name="enum" description="type2 enum">
+				<set-of-enum>
+					<enum value="3" name="portrait" description="no rotation"/>
+					<enum value="4" name="landscape" description="90 degrees counter-clockwise"/>
+					<enum value="5" name="reverse-landscape" description="90 degrees clockwise"/>
+					<enum value="6" name="reverse-portrait" description="180 degrees"/>
+				</set-of-enum>
+			</attribute-value>
+		</attribute>
+		<attribute name="orientation-requested-supported">
+			<attribute-value tag="0x23" tag-name="enum" description="1setOf type2 enum">
+				<set-of-enum>
+					<enum value="3" name="portrait" description="no rotation"/>
+					<enum value="4" name="landscape" description="90 degrees counter-clockwise"/>
+					<enum value="5" name="reverse-landscape" description="90 degrees clockwise"/>
+					<enum value="6" name="reverse-portrait" description="180 degrees"/>				
+				</set-of-enum>
+			</attribute-value>
+		</attribute>
+		<attribute name="page-ranges">
+			<attribute-value tag="0x33" tag-name="rangeOfInteger" description="1setOf rangeOfInteger(1:MAX)"/>
+		</attribute>
+		<attribute name="page-ranges-supported">
+			<attribute-value tag="0x22" tag-name="boolean"/>
+		</attribute>
+		<attribute name="printer-resolution">
+			<attribute-value tag="0x32" tag-name="resolution"/>
+		</attribute>
+		<attribute name="printer-resolution-default">
+			<attribute-value tag="0x32" tag-name="resolution"/>
+		</attribute>
+		<attribute name="printer-resolution-supported">
+			<attribute-value tag="0x32" tag-name="resolution"/>
+		</attribute>
+		<attribute name="print-quality">
+			<attribute-value tag="0x23" tag-name="enum" description="type2 enum">
+				<set-of-enum>
+					<enum value="3" name="draft"/>
+					<enum value="4" name="normal"/>
+					<enum value="5" name="high"/>
+				</set-of-enum>
+			</attribute-value>
+		</attribute>
+		<attribute name="print-quality-default">
+			<attribute-value tag="0x23" tag-name="enum" description="type2 enum">
+				<set-of-enum>
+					<enum value="3" name="draft"/>
+					<enum value="4" name="normal"/>
+					<enum value="5" name="high"/>
+				</set-of-enum>
+			</attribute-value>
+		</attribute>
+		<attribute name="print-quality-supported">
+			<attribute-value tag="0x23" tag-name="enum" description="1setOf type2 enum">
+				<set-of-enum>
+					<enum value="3" name="draft"/>
+					<enum value="4" name="normal"/>
+					<enum value="5" name="high"/>
+				</set-of-enum>
+			</attribute-value>
+		</attribute>
+		<attribute name="sheet-collate">
+			<attribute-value tag="0x44" tag-name="keyword" description="type2 keyword">
+				<set-of-keyword>
+					<keyword value="uncollated"/>
+					<keyword value="collated"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="sheet-collate-default">
+			<attribute-value tag="0x44" tag-name="keyword" description="type2 keyword">
+				<set-of-keyword>
+					<keyword value="uncollated"/>
+					<keyword value="collated"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="sheet-collate-supported">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword">
+				<set-of-keyword>
+					<keyword value="uncollated"/>
+					<keyword value="collated"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="sides">
+			<attribute-value tag="0x44" tag-name="keyword" description="type2 keyword">
+				<set-of-keyword>
+					<keyword value="one-sided"/>
+					<keyword value="two-sided-long-edge"/>
+					<keyword value="two-sided-short-edge"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="sides-default">
+			<attribute-value tag="0x44" tag-name="keyword" description="type2 keyword">
+				<set-of-keyword>
+					<keyword value="one-sided"/>
+					<keyword value="two-sided-long-edge"/>
+					<keyword value="two-sided-short-edge"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="sides-supported">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword">
+				<set-of-keyword>
+					<keyword value="one-sided"/>
+					<keyword value="two-sided-long-edge"/>
+					<keyword value="two-sided-short-edge"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+	</attribute-group>
+	<attribute-group tag="0x04" tag-name="printer-attributes-tag" description=" printer description attributes, requested attributes (get-printer-attributes)">
+		<attribute name="charset-configured">
+			<attribute-value tag="0x47" tag-name="charset"/>
+		</attribute>
+		<attribute name="charset-supported">
+			<attribute-value tag="0x47" tag-name="charset" description="1setOf charset"/>
+		</attribute>
+		<attribute name="color-supported">
+			<attribute-value tag="0x22" tag-name="boolean"/>
+		</attribute>
+		<attribute name="compression-supported">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type3 keyword">
+				 <set-of-keyword>
+					 <keyword value="compress"/>
+					<keyword value="deflate"/>
+					<keyword value="gzip"/>
+					<keyword value="none"/>
+				 </set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="document-format-default">
+			<attribute-value tag="0x49" tag-name="mimeMediaType"/>
+		</attribute>
+		<attribute name="document-format-supported">
+			<attribute-value tag="0x49" tag-name="mimeMediaType" description="1setOf mimeMediaType"/>
+		</attribute>
+		<attribute name="document-format-varying-attributes-supported">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword">
+				<set-of-keyword>
+					<keyword value="none"/>
+					<keyword value="[any-printer-attribute-keyword-name]"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="generated-natural-language-supported">
+			<attribute-value tag="0x48" tag-name="naturalLanguage"/>
+		</attribute>
+		<attribute name="ippget-event-life">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(15:MAX)"/>
+		</attribute>
+		<attribute name="ipp-versions-supported">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword">
+				<set-of-keyword>
+					<keyword value="1.0"/>
+					<keyword value="1.1"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="job-impressions-supported">
+			<attribute-value tag="0x33" tag-name="rangeOfInteger" description="rangeOfInteger(0:MAX)"/>
+		</attribute>
+		<attribute name="job-k-octets-supported">
+			<attribute-value tag="0x33" tag-name="rangeOfInteger" description="rangeOfInteger(0:MAX)"/>
+		</attribute>
+		<attribute name="job-media-sheets-supported">
+			<attribute-value tag="0x33" tag-name="rangeOfInteger" description="rangeOfInteger(0:MAX)"/>
+		</attribute>
+		<attribute name="job-settable-attributes-supported">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword">
+				<set-of-keyword>
+					<keyword value="none"/>
+					<keyword value="[any-other-job-attribute-keyword-name]"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="multiple-document-jobs-supported">
+			<attribute-value tag="0x22" tag-name="boolean"/>
+		</attribute>
+		<attribute name="multiple-operation-time-out">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:MAX)"/>
+		</attribute>
+		<attribute name="natural-language-configured">
+			<attribute-value tag="0x48" tag-name="naturalLanguage"/>
+		</attribute>
+		<attribute name="operations-supported">
+			<attribute-value tag="0x23" tag-name="enum" description="1setOf type2 enum">
+				<set-of-enum>
+					<enum value="0x0002" name="print-job"/>
+					<enum value="0x0003" name="print-uri"/>
+					<enum value="0x0004" name="validate-job"/>
+					<enum value="0x0005" name="create-job"/>
+					<enum value="0x0006" name="send-document"/>
+					<enum value="0x0007" name="send-uri"/>
+					<enum value="0x0008" name="cancel-job"/>
+					<enum value="0x0009" name="get-job-attributes"/>
+					<enum value="0x000a" name="get-jobs"/>
+					<enum value="0x000b" name="get-printer-attributes"/>
+					<enum value="0x000c" name="hold-job"/>
+					<enum value="0x000d" name="release-job"/>
+					<enum value="0x000e" name="restart-job"/>
+					<enum value="0x0010" name="pause-printer"/>
+					<enum value="0x0011" name="resume-printer"/>
+					<enum value="0x0012" name="purge-jobs"/>
+					<enum value="0x0013" name="set-printer-attributes"/>
+					<enum value="0x0014" name="set-job-attributes"/>
+					<enum value="0x0015" name="get-printer-supported-values"/>
+					<enum value="0x0016" name="create-printer-subscriptions"/>
+					<enum value="0x0017" name="create-job-subscriptions"/>
+					<enum value="0x0018" name="get-subscription-attributes"/>
+					<enum value="0x0019" name="get-subscriptions"/>
+					<enum value="0x001a" name="renew-subscription"/>
+					<enum value="0x001b" name="cancel-subscription"/>
+					<enum value="0x001c" name="get-notifications"/>
+					<enum value="0x0022" name="enable-printer"/>
+					<enum value="0x0023" name="disable-printer"/>
+					<enum value="0x0024" name="pause-printer-after-current-job"/>
+					<enum value="0x0025" name="hold-new-jobs"/>
+					<enum value="0x0026" name="release-held-new-jobs"/>
+					<enum value="0x0027" name="deactivate-printer"/>
+					<enum value="0x0028" name="activate-printer"/>
+					<enum value="0x0029" name="restart-printer"/>
+					<enum value="0x002a" name="shutdown-printer"/>
+					<enum value="0x002b" name="startup-printer"/>
+					<enum value="0x002c" name="reprocess-job"/>
+					<enum value="0x002d" name="cancel-current-job"/>
+					<enum value="0x002e" name="suspend-current-job"/>
+					<enum value="0x002f" name="resume-job"/>
+					<enum value="0x0030" name="promote-job"/>
+					<enum value="0x0031" name="schedule-job-after"/>
+				</set-of-enum>
+			</attribute-value>
+		</attribute>
+		<attribute name="pages-per-minute">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(0:MAX)"/>
+		</attribute>
+		<attribute name="pages-per-minute-color">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(0:MAX)"/>
+		</attribute>
+		<attribute name="parent-printers-supported">
+			<attribute-value tag="0x44" tag-name="uri" description="1setOf uri"/>
+		</attribute>
+		<attribute name="pdl-override-supported">
+			<attribute-value tag="0x44" tag-name="keyword" description="type2 keyword">
+				<set-of-keyword>
+					<keyword value="attempted"/>
+					<keyword value="not-attempted"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="printer-current-time">
+			<attribute-value tag="0x31" tag-name="dateTime"/>
+		</attribute>
+		<attribute name="printer-driver-installer">
+			<attribute-value tag="0x45" tag-name="uri"/>
+		</attribute>
+		<attribute name="printer-info">
+			<attribute-value tag="0x35" tag-name="textWithLanguage" description="text(127)"/>
+			<attribute-value tag="0x41" tag-name="textWithoutLanguage" description="text(127)"/>
+		</attribute>
+		<attribute name="printer-is-accepting-jobs">
+			<attribute-value tag="0x22" tag-name="boolean"/>
+		</attribute>
+		<attribute name="printer-location">
+			<attribute-value tag="0x35" tag-name="textWithLanguage" description="text(127)"/>
+			<attribute-value tag="0x41" tag-name="textWithoutLanguage" description="text(127)"/>
+		</attribute>
+		<attribute name="printer-make-and-model">
+			<attribute-value tag="0x35" tag-name="textWithLanguage" description="text(127)"/>
+			<attribute-value tag="0x41" tag-name="textWithoutLanguage" description="text(127)"/>
+		</attribute>
+		<attribute name="printer-message-date-time">
+			<attribute-value tag="0x31" tag-name="dateTime"/>
+		</attribute>
+		<attribute name="printer-message-from-operator">
+			<attribute-value tag="0x35" tag-name="textWithLanguage" description="text(127)"/>
+			<attribute-value tag="0x41" tag-name="textWithoutLanguage" description="text(127)"/>
+		</attribute>
+		<attribute name="printer-message-time">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(MIN:MAX)"/>
+		</attribute>
+		<attribute name="printer-more-info">
+			<attribute-value tag="0x45" tag-name="uri"/>
+		</attribute>
+		<attribute name="printer-more-info-manufacturer">
+			<attribute-value tag="0x45" tag-name="uri"/>
+		</attribute>
+		<attribute name="printer-name">
+			<attribute-value tag="0x36" tag-name="nameWithLanguage" description="name(127)"/>
+			<attribute-value tag="0x42" tag-name="nameWithoutLanguage" description="name(127)"/>
+		</attribute>
+		<attribute name="printer-settable-attributes-supported">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword">
+				<set-of-keyword>
+					<keyword value="none"/>
+					<keyword value="[any-other-printer-attribute-keyword-name]"/>
+				</set-of-keyword>	
+			</attribute-value>
+		</attribute>
+		<attribute name="printer-state">
+			<attribute-value tag="0x23" tag-name="enum" description="1setOf type1 enum">
+				<set-of-enum>
+					<enum value="3" name="idle"/>
+					<enum value="4" name="processing"/>
+					<enum value="5" name="stopped"/>
+				</set-of-enum>
+			</attribute-value>
+		</attribute>
+		<attribute name="printer-state-change-date-time">
+			<attribute-value tag="0x31" tag-name="dateTime"/>
+		</attribute>
+		<attribute name="printer-state-change-time">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:MAX)"/>
+		</attribute>
+		<attribute name="printer-state-message">
+			<attribute-value tag="0x35" tag-name="textWithLanguage" description="text(MAX)"/>
+			<attribute-value tag="0x41" tag-name="textWithoutLanguage" description="text(MAX)"/>
+		</attribute>
+		<attribute name="printer-state-reasons">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword">
+				<set-of-keyword>
+					<keyword value="connecting-to-device"/>
+					<keyword value="cover-open"/>
+					<keyword value="deactivated"/>
+					<keyword value="developer-empty"/>
+					<keyword value="developer-low"/>
+					<keyword value="door-open"/>
+					<keyword value="fuser-over-temp"/>
+					<keyword value="fuser-under-temp"/>
+					<keyword value="hold-new-jobs"/>
+					<keyword value="input-tray-missing"/>
+					<keyword value="interlock-open"/>
+					<keyword value="interpreter-resource-unavailable"/>
+					<keyword value="marker-supply-empty"/>
+					<keyword value="marker-supply-low"/>
+					<keyword value="marker-waste-almost-full"/>
+					<keyword value="marker-waste-full"/>
+					<keyword value="media-empty"/>
+					<keyword value="media-jam"/>
+					<keyword value="media-low"/>
+					<keyword value="media-needed"/>
+					<keyword value="moving-to-paused"/>
+					<keyword value="none"/>
+					<keyword value="opc-life-over"/>
+					<keyword value="opc-near-eol"/>
+					<keyword value="other"/>
+					<keyword value="output-area-almost-full"/>
+					<keyword value="output-area-full"/>
+					<keyword value="output-tray-missing"/>
+					<keyword value="paused"/>
+					<keyword value="shutdown"/>
+					<keyword value="spool-area-full"/>
+					<keyword value="stopped-partly"/>
+					<keyword value="stopping"/>
+					<keyword value="timed-out"/>
+					<keyword value="toner-empty"/>
+					<keyword value="toner-low"/>
+				</set-of-keyword>	
+			</attribute-value>
+		</attribute>
+		<attribute name="printer-up-time">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:MAX)"/>
+		</attribute>
+		<attribute name="printer-uri-supported">
+			<attribute-value tag="0x45" tag-name="uri" description="1setOf uri"/>
+		</attribute>
+		<attribute name="printer-xri-supported">
+			<attribute-value tag="0x34" tag-name="begcollection" description="1setOf collection"/>
+			<attribute-value tag="0x37" tag-name="endCollection" description="1setOf collection"/>
+		</attribute>
+		<attribute name="xri-authentication">
+			<attribute-value tag="0x44" tag-name="keyword" description="type2 keyword">
+				<set-of-keyword>
+					<keyword value="none"/>
+					<keyword value="requesting-user-name"/>
+					<keyword value="basic"/>
+					<keyword value="digest"/>
+					<keyword value="certificate"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="xri-security">
+			<attribute-value tag="0x44" tag-name="keyword" description="type2 keyword">
+				<set-of-keyword>
+					<keyword value="none"/>
+					<keyword value="ssl3"/>
+					<keyword value="tls"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="xri-uri">
+			<attribute-value tag="0x45" tag-name="uri"/>
+		</attribute>
+		<attribute name="queued-job-count">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(0:MAX)"/>
+		</attribute>
+		<attribute name="reference-uri-schemes-supported">
+			<attribute-value tag="0x46" tag-name="uriScheme" description="1setOf uriScheme"/>
+		</attribute>
+		<attribute name="subordinate-printers-supported">
+			<attribute-value tag="0x45" tag-name="uri" description="1setOf uri"/>
+		</attribute>
+		<attribute name="uri-authentication-supported">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword">
+				<set-of-keyword>
+					<keyword value="none"/>
+					<keyword value="requesting-user-name"/>
+					<keyword value="basic"/>
+					<keyword value="digest"/>
+					<keyword value="certificate"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="uri-security-supported">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword">
+				<set-of-keyword>
+					<keyword value="none"/>
+					<keyword value="ssl3"/>
+					<keyword value="tls"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="xri-authentication-supported">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword">
+				<set-of-keyword>
+					<keyword value="none"/>
+					<keyword value="requesting-user-name"/>
+					<keyword value="basic"/>
+					<keyword value="digest"/>
+					<keyword value="certificate"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="xri-security-supported">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword">
+				<set-of-keyword>
+					<keyword value="none"/>
+					<keyword value="ssl3"/>
+					<keyword value="tls"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="xri-uri-scheme-supported">
+			<attribute-value tag="0x46" tag-name="uriScheme" description="1setOf uriScheme"/>
+		</attribute>
+	</attribute-group>	
+	<attribute-group tag="0x06" tag-name="subscription-attributes-tag" description="subscription description attributes">
+		<attribute name="notify-job-id">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:MAX)"/>
+		</attribute>
+		<attribute name="notify-lease-expiration-time">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(0:MAX)"/>
+		</attribute>
+		<attribute name="notify-printer-up-time">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:MAX)"/>
+		</attribute>
+		<attribute name="notify-printer-uri">
+			<attribute-value tag="0x45" tag-name="uri"/>
+		</attribute>
+		<attribute name="notify-sequence-number">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(0:MAX)"/>
+		</attribute>
+		<attribute name="notify-subscriber-user-name">
+			<attribute-value tag="0x36" tag-name="nameWithLanguage" description="name(MAX)"/>
+			<attribute-value tag="0x42" tag-name="nameWithoutLanguage" description="name(MAX)"/>
+		</attribute>
+		<attribute name="notify-subscription-id">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:MAX)"/>
+		</attribute>
+		<attribute name="notify-attributes">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword"/>
+		</attribute>
+		<attribute name="notify-attributes-supported">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword"/>
+		</attribute>
+		<attribute name="notify-charset">
+			<attribute-value tag="0x47" tag-name="charset"/>
+		</attribute>
+		<attribute name="notify-events">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword"/>
+		</attribute>
+		<attribute name="notify-events-default">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword"/>
+		</attribute>
+		<attribute name="notify-events-supported">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword">
+				<set-of-keyword description="No Events">
+					<keyword value="none"/>
+					<keyword value="printer-state-changed"/>
+					<keyword value="printer-restarted"/>
+					<keyword value="printer-shutdown"/>
+					<keyword value="printer-stopped"/>
+					<keyword value="printer-config-changed"/>
+					<keyword value="printer-media-changed"/>
+					<keyword value="printer-finishings-changed"/>
+					<keyword value="printer-queue-order-changed"/>
+					<keyword value="job-state-changed"/>
+					<keyword value="job-created"/>
+					<keyword value="job-completed"/>
+					<keyword value="job-stopped"/>
+					<keyword value="job-config-changed"/>
+					<keyword value="job-progress"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="notify-lease-duration">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:67108863)"/>
+		</attribute>
+		<attribute name="notify-lease-duration-default">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(1:67108863)"/>
+		</attribute>
+		<attribute name="notify-lease-duration-supported">
+			<attribute-value tag="0x21" tag-name="integer" description="1setOf (integer(1:67108863))"/>
+			<attribute-value tag="0x33" tag-name="rangeOfInteger" description="1setOf (rangeOfInteger(1:67108863))"/>
+		</attribute>
+		<attribute name="notify-max-events-supported">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(2:MAX)"/>
+		</attribute>
+		<attribute name="notify-natural-language">
+			<attribute-value tag="0x48" tag-name="naturalLanguage"/>
+		</attribute>	
+		<attribute name="notify-pull-method">
+			<attribute-value tag="0x44" tag-name="keyword" description="type2 keyword"/>
+		</attribute>
+		<attribute name="notify-pull-method-supported">
+			<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword">
+				<set-of-keyword>
+					<keyword value="ippget"/>
+				</set-of-keyword>
+			</attribute-value>
+		</attribute>
+		<attribute name="notify-recipient-uri">
+			<attribute-value tag="0x45" tag-name="uri"/>
+		</attribute>
+		<attribute name="notify-schemes-supported">
+			<attribute-value tag="0x46" tag-name="uriScheme" description="1setOf uriScheme"/>
+		</attribute>
+		<attribute name="notify-time-interval">
+			<attribute-value tag="0x21" tag-name="integer" description="integer(0:MAX)"/>
+		</attribute>
+		<attribute name="notify-user-data">
+			<attribute-value tag="0x30" tag-name="octetString" description="octetString(63)"/>
+		</attribute>
+	</attribute-group>
+	<attribute-group tag="0x07" tag-name="event-notification-attributes-tag" description="event notifications">
+		<attribute name="notify-subscribed-event">
+				<attribute-value tag="0x44" tag-name="keyword" description="1setOf type2 keyword"/>
+		</attribute>
+		<attribute name="notify-text">
+			<attribute-value tag="0x35" tag-name="textWithLanguage" description="text(MAX)"/>
+			<attribute-value tag="0x41" tag-name="textWithoutLanguage" description="text(MAX)"/>
+		</attribute>
+	</attribute-group>
+</attribute-list>
