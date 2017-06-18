@@ -122,6 +122,12 @@ public class CupsClient {
     return printers;
   }
 
+  /**
+   * Returns all available printers except CUPS specific default printer
+   * 
+   * @return List of Printers
+   * @throws Exception
+   */
   public List<CupsPrinter> getPrintersWithoutDefault() throws Exception {
     CupsGetPrintersOperation cgp = new CupsGetPrintersOperation();
     this.ippOperation = cgp;
@@ -130,6 +136,12 @@ public class CupsClient {
     return result;
   }
 
+  /**
+   * Cancel the current running job if possible.
+   * <p>
+   * This is especially necessary when using Cups4j within Android
+   * </p>
+   */
   public void cancelOperation() {
     if (ippOperation != null) {
       ippOperation.cancel();

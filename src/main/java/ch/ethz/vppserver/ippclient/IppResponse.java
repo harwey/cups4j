@@ -11,6 +11,8 @@ import org.cups4j.ipp.attributes.AttributeGroup;
 import org.cups4j.ipp.attributes.AttributeValue;
 import org.cups4j.ipp.attributes.SetOfEnum;
 import org.cups4j.ipp.attributes.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Copyright (C) 2008 ITS of ETH Zurich, Switzerland, Sarah Windler Burri
@@ -29,6 +31,8 @@ import org.cups4j.ipp.attributes.Tag;
  * program; if not, see <http://www.gnu.org/licenses/>.
  */
 public class IppResponse {
+  private static final Logger LOG = LoggerFactory.getLogger(IppResponse.class);
+
   private final static String CRLF = "\r\n";
 
   // Saved list of elements of 'TAG_LIST_FILENAME' and 'ATTRIBUTE_LIST_FILENAME'
@@ -64,7 +68,7 @@ public class IppResponse {
    */
   public IppResult getResponse(SocketChannel channel) throws IOException {
     if (channel == null) {
-      System.err.println("IppResponse.getResponse(): no channel given");
+      LOG.error("IppResponse.getResponse(): no channel given");
       return null;
     }
 
@@ -335,8 +339,8 @@ public class IppResponse {
   }
 
   /**
-	 * 
-	 */
+   * 
+   */
   private void closeAttributeGroup() {
     if (_attributeGroupResult != null) {
       if (_attributeResult != null) {
@@ -675,7 +679,7 @@ public class IppResponse {
    */
   private String getTagName(String tag) {
     if (tag == null) {
-      System.err.println("IppResponse.getTagName(): no tag given");
+      LOG.error("IppResponse.getTagName(): no tag given");
       return null;
     }
     int l = _tagList.size();
@@ -695,11 +699,11 @@ public class IppResponse {
    */
   private String getEnumName(String value, String nameOfAttribute) {
     if (value == null) {
-      System.err.println("IppResponse.getEnumName(String,String): value is null");
+      LOG.error("IppResponse.getEnumName(String,String): value is null");
       return null;
     }
     if (nameOfAttribute == null) {
-      System.err.println("IppResponse.getEnumName(String,String): nameOfAttribute is null");
+      LOG.error("IppResponse.getEnumName(String,String): nameOfAttribute is null");
       return null;
     }
 
@@ -722,7 +726,7 @@ public class IppResponse {
    */
   private String getEnumName(int value, String nameOfAttribute) {
     if (nameOfAttribute == null) {
-      System.err.println("IppResponse.getEnumName(int,String): nameOfAttribute is null");
+      LOG.error("IppResponse.getEnumName(int,String): nameOfAttribute is null");
       return null;
     }
     int l = _attributeGroupList.size();
@@ -761,7 +765,7 @@ public class IppResponse {
                 }
               }
             } else {
-              System.err.println("IPPResponse.getEnumName(): " + "set-of-enum is null for attribute " + attributeName
+              LOG.error("IPPResponse.getEnumName(): " + "set-of-enum is null for attribute " + attributeName
                   + ". Please control " + "the enumeration list in the XML file");
               return null;
             }

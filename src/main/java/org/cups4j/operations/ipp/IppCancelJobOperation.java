@@ -23,12 +23,15 @@ import java.util.Map;
 import org.cups4j.CupsClient;
 import org.cups4j.PrintRequestResult;
 import org.cups4j.operations.IppOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.ethz.vppserver.ippclient.IppResult;
 import ch.ethz.vppserver.ippclient.IppTag;
 
 public class IppCancelJobOperation extends IppOperation {
-
+  private static final Logger LOG = LoggerFactory.getLogger(IppCancelJobOperation.class);
+  
   public IppCancelJobOperation() {
     operationID = 0x0008;
     bufferSize = 8192;
@@ -54,7 +57,7 @@ public class IppCancelJobOperation extends IppOperation {
 
   public ByteBuffer getIppHeader(URL uri, Map<String, String> map) throws UnsupportedEncodingException {
     if (uri == null) {
-      System.err.println("IppCancelJobOperation.getIppHeader(): uri is null");
+      LOG.error("IppCancelJobOperation.getIppHeader(): uri is null");
       return null;
     }
 

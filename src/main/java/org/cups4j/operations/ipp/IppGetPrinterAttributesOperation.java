@@ -31,6 +31,12 @@ public class IppGetPrinterAttributesOperation extends IppOperation {
     bufferSize = 8192;
   }
 
+
+  public IppGetPrinterAttributesOperation(int port) {
+    this();
+    ippPort = port;
+  }
+  
   /**
    * 
    * @param url

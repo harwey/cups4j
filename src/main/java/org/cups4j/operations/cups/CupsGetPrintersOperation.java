@@ -25,11 +25,14 @@ import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
 import org.cups4j.ipp.attributes.AttributeValue;
 import org.cups4j.operations.IppOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.ethz.vppserver.ippclient.IppResult;
 
 public class CupsGetPrintersOperation extends IppOperation {
-
+  private static final Logger LOG = LoggerFactory.getLogger(CupsGetPrintersOperation.class);
+  
   public CupsGetPrintersOperation() {
     operationID = 0x4002;
     bufferSize = 8192;
@@ -111,7 +114,7 @@ public class CupsGetPrintersOperation extends IppOperation {
           printerUrl = new URL(printerURI);
         } catch (Throwable t) {
           t.printStackTrace();
-          System.err.println("Error encountered building URL from printer uri of printer " + printerName
+          LOG.error("Error encountered building URL from printer uri of printer " + printerName
               + ", uri returned was [" + printerURI + "].  Attribute group tag/description: [" + group.getTagName()
               + "/" + group.getDescription());
           throw new Exception(t);

@@ -29,10 +29,6 @@ import org.cups4j.WhichJobsEnum;
 
 public class Cups {
 
-  /**
-   * @param args
-   * @throws FileNotFoundException
-   */
   public static void main(String[] args) throws FileNotFoundException {
 
     String host = "localhost";
@@ -185,7 +181,7 @@ public class Cups {
     }
 
     for (CupsPrinter p : printers) {
-      System.out.println(p);
+      System.out.println(p.toString());
     }
     System.out.println("----\n");
   }

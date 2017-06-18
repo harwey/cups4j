@@ -17,9 +17,7 @@
 package org.cups4j;
 
 /**
- * Used while querying print jobs to define which jobs should be returned.
- * 
- * 
+ * Used when querying print jobs to define which jobs should be returned.
  */
 public enum WhichJobsEnum {
   COMPLETED("completed"), NOT_COMPLETED("not-completed"), ALL("all");

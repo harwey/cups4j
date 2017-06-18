@@ -15,7 +15,11 @@ package org.cups4j;
  * <http://www.gnu.org/licenses/>.
  */
 import java.net.URL;
+import java.text.DateFormat;
 import java.util.Date;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Holds print job attributes
@@ -23,6 +27,10 @@ import java.util.Date;
  * 
  */
 public class PrintJobAttributes {
+
+  private static final Logger LOG = LoggerFactory.getLogger(PrintJobAttributes.class);
+  private DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM);
+
   URL jobURL = null;
   URL printerURL = null;
   int jobID = -1;
@@ -118,4 +126,58 @@ public class PrintJobAttributes {
     this.size = size;
   }
 
+  @Override
+  public String toString() {
+    StringBuilder buff = new StringBuilder();
+    buff.append("job name/job id : [").append(getJobName()).append("/").append(getJobID()).append("]\n");
+    buff.append("user name : [").append(getUserName()).append("]\n");
+    buff.append("job state : [").append(getJobState()).append("]\n");
+    buff.append("job URL : [").append(getJobURL()).append("]\n");
+    buff.append("printer URL : [").append(getPrinterURL()).append("]\n");
+    buff.append("job size/pages printed : [").append(getSize()).append("kB/").append(getPagesPrinted()).append("]\n");
+    return buff.toString();
+  }
+
+  public URL getJobURL(CupsClient client) throws Exception {
+    return client.getJobAttributes(getJobID()).getJobURL();
+  }
+
+  public int getPagesPrinted(CupsClient client) throws Exception {
+    return client.getJobAttributes(getJobID()).getPagesPrinted();
+  }
+
+  public int getSize(CupsClient client) throws Exception {
+    return client.getJobAttributes(getJobID()).getSize();
+  }
+
+  public String getCreateDate(CupsClient client) throws Exception {
+    return this.dateFormat.format(client.getJobAttributes(getJobID()).getJobCreateTime());
+  }
+
+  public String getCompleteDate(CupsClient client) throws Exception {
+    return this.dateFormat.format(client.getJobAttributes(getJobID()).getJobCompleteTime());
+  }
+
+  public String toString(CupsClient client) {
+    try {
+      StringBuilder buff = new StringBuilder(toString());
+
+      Date createDate;
+      Date completeDate;
+
+      if (client != null) {
+        createDate = client.getJobAttributes(getJobID()).getJobCreateTime();
+        completeDate = client.getJobAttributes(getJobID()).getJobCompleteTime();
+
+        buff.append("job creation time : [").append(dateFormat.format(createDate.getTime())).append("]\n");
+        buff.append("job completion time : [").append(dateFormat.format(completeDate.getTime())).append("]\n");
+      }
+
+      return buff.toString();
+    } catch (Exception ex) {
+      LOG.error("Unable to get creation and/or completion time for job " + getJobID(), ex);
+      return toString();
+    }
+
+  }
 }

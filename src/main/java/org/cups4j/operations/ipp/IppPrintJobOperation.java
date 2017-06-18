@@ -20,11 +20,16 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 
 import org.cups4j.operations.IppOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.ethz.vppserver.ippclient.IppTag;
 
 public class IppPrintJobOperation extends IppOperation {
 
+
+  private static final Logger LOG = LoggerFactory.getLogger(IppPrintJobOperation.class);
+  
   public IppPrintJobOperation() {
     operationID = 0x0002;
     bufferSize = 8192;
@@ -50,7 +55,7 @@ public class IppPrintJobOperation extends IppOperation {
 
   public ByteBuffer getIppHeader(URL url, Map<String, String> map) throws UnsupportedEncodingException {
     if (url == null) {
-      System.err.println("IppPrintJobOperation.getIppHeader(): uri is null");
+      LOG.error("IppPrintJobOperation.getIppHeader(): uri is null");
       return null;
     }
 
@@ -130,7 +135,7 @@ public class IppPrintJobOperation extends IppOperation {
   private static ByteBuffer getJobAttributes(ByteBuffer ippBuf, String[] attributeBlocks)
       throws UnsupportedEncodingException {
     if (ippBuf == null) {
-      System.err.println("IppPrintJobOperation.getJobAttributes(): ippBuf is null");
+      LOG.error("IppPrintJobOperation.getJobAttributes(): ippBuf is null");
       return null;
     }
     if (attributeBlocks == null) {

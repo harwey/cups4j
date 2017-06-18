@@ -18,11 +18,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Map;
 
-/**
- * Print job class
- * 
- * 
- */
 public class PrintJob {
   private InputStream document;
   private int copies;

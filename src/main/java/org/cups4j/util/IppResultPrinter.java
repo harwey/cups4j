@@ -19,35 +19,31 @@ import java.util.List;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
 import org.cups4j.ipp.attributes.AttributeValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.ethz.vppserver.ippclient.IppResult;
 
 public class IppResultPrinter {
-  /**
-   * Print IPP response to standard output stream
-   * 
-   * @param IppResult
-   */
+
+  private static final Logger LOG = LoggerFactory.getLogger(IppResultPrinter.class);
+
   public static void print(IppResult result) {
-    System.out.println(result.getHttpStatusResponse());
-    System.out.println(result.getIppStatusResponse());
+    LOG.info(result.getHttpStatusResponse());
+    LOG.info(result.getIppStatusResponse());
     List<AttributeGroup> attributeGroupList = result.getAttributeGroupList();
     printAttributeGroupList(attributeGroupList);
   }
 
   public static void print(IppResult result, boolean nurHeader) {
     if (nurHeader) {
-      System.out.println(result.getHttpStatusResponse());
-      System.out.println(result.getIppStatusResponse());
+      LOG.info(result.getHttpStatusResponse());
+      LOG.info(result.getIppStatusResponse());
     } else {
       print(result);
     }
   }
 
-  /**
-   * 
-   * @param list
-   */
   private static void printAttributeGroupList(List<AttributeGroup> list) {
     if (list == null) {
       return;
@@ -59,23 +55,15 @@ public class IppResultPrinter {
     }
   }
 
-  /**
-   * 
-   * @param attributeGroup
-   */
   private static void printAttributeGroup(AttributeGroup attributeGroup) {
     if (attributeGroup == null) {
       return;
     }
-    System.out.println("\r\nAttribute Group: " + attributeGroup.getTagName());
+    LOG.info("\r\nAttribute Group: " + attributeGroup.getTagName());
     List<Attribute> attributeList = attributeGroup.getAttribute();
     printAttributeList(attributeList);
   }
 
-  /**
-   * 
-   * @param list
-   */
   private static void printAttributeList(List<Attribute> list) {
     if (list == null) {
       return;
@@ -87,23 +75,15 @@ public class IppResultPrinter {
     }
   }
 
-  /**
-   * 
-   * @param attr
-   */
   private static void printAttribute(Attribute attr) {
     if (attr == null) {
       return;
     }
-    System.out.println("\tAttribute Name: " + attr.getName());
+    LOG.info("\tAttribute Name: " + attr.getName());
     List<AttributeValue> attributeValueList = attr.getAttributeValue();
     printAttributeValueList(attributeValueList);
   }
 
-  /**
-   * 
-   * @param list
-   */
   private static void printAttributeValueList(List<AttributeValue> list) {
     if (list == null) {
       return;
@@ -111,8 +91,8 @@ public class IppResultPrinter {
     int l = list.size();
     for (int i = 0; i < l; i++) {
       AttributeValue attrValue = list.get(i);
-      System.out.println("\t\tAttribute Value: (" + attrValue.getTagName() + "[" + attrValue.getTag() + "] "
-          + attrValue.getValue());
+      LOG.info(
+          "\t\tAttribute Value: (" + attrValue.getTagName() + "[" + attrValue.getTag() + "] " + attrValue.getValue());
     }
   }
 
