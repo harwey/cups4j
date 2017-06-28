@@ -37,6 +37,7 @@ public class Cups {
     boolean print = false;
     boolean getPrinters = false;
     boolean getJobs = false;
+    boolean getPrinterAttributes = false;
     boolean duplex = false;
     String fileName = null;
     String userName = null;
@@ -58,6 +59,8 @@ public class Cups {
           fileName = args[++i];
         } else if (args[i].equals("getJobs")) {
           getJobs = true;
+        } else if (args[i].equals("getPrinterAttributes")) {
+          getPrinterAttributes = true;
         } else if (args[i].equals("-u")) {
           userName = args[++i];
         } else if (args[i].equals("-c")) {
@@ -84,9 +87,33 @@ public class Cups {
       if (getJobs) {
         getJobs(host, userName, printerName);
       }
+      if (getPrinterAttributes) {
+        getPrinterAttributes(host, userName, printerName);
+      }
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  private static void getPrinterAttributes(String host, String userName, String printerName) throws Exception {
+    if (host == null) {
+      host = CupsClient.DEFAULT_HOST;
+    }
+
+    if (userName == null) {
+      userName = CupsClient.DEFAULT_USER;
+    }
+    if (printerName == null) {
+      CupsClient cupsClient = new CupsClient(host, CupsClient.DEFAULT_PORT, userName);
+      printerName = cupsClient.getDefaultPrinter().getName();
+    }
+
+    CupsPrinter printer = new CupsPrinter(new URL("http://" + host + "/printers/" + printerName), printerName, false);
+    System.out.println("Media supported:");
+    for (String media : printer.getMediaSupported()) {
+      System.out.println(" Media: " + media);
+    }
+
   }
 
   private static void getJobs(String host, String userName, String printerName) throws Exception {
@@ -109,12 +136,13 @@ public class Cups {
     if (userName.equals(CupsClient.DEFAULT_USER)) {
       myJobs = false;
     }
-    List<PrintJobAttributes> jobs = cupsClient.getJobs(new CupsPrinter(new URL("http://" + host + "/printers/"
-        + printerName), printerName, false), WhichJobsEnum.ALL, userName, myJobs);
+    List<PrintJobAttributes> jobs = cupsClient.getJobs(
+        new CupsPrinter(new URL("http://" + host + "/printers/" + printerName), printerName, false), WhichJobsEnum.ALL,
+        userName, myJobs);
 
     for (PrintJobAttributes a : jobs) {
-      System.out.println("job: " + a.getJobID() + " " + a.getJobName() + " " + a.getJobState() + " "
-          + a.getPrinterURL() + " " + a.getUserName());
+      System.out.println("job: " + a.getJobID() + " " + a.getJobName() + " " + a.getJobState() + " " + a.getPrinterURL()
+          + " " + a.getUserName());
     }
   }
 
@@ -187,13 +215,13 @@ public class Cups {
   }
 
   private static void usage() {
-    System.out
-        .println("CupsTest [-h <hostname>] [getPrinters][getJobs [-u <userName>][-P <printer name>]][printFile <file name> [-P <printer name>] [-c <copies>][-p <pages>][-duplex][-job-attributes <attributes>]] -help ");
+    System.out.println(
+        "CupsTest [-h <hostname>] [getPrinters][getJobs [-u <userName>][-P <printer name>]][printFile <file name> [-P <printer name>] [-c <copies>][-p <pages>][-duplex][-job-attributes <attributes>]] -help ");
     System.out.println("  <hostname>      - CUPS host name or ip adress (default: localhost)");
     System.out.println("  getPrinters     - list all printers from <hostname>");
     System.out.println("  getJobs         - list Jobs for given printer and user name on given host.");
-    System.out
-        .println("                    defaults are: <hostname>=localhost, printer=default on <hostname>, user=anonymous");
+    System.out.println(
+        "                    defaults are: <hostname>=localhost, printer=default on <hostname>, user=anonymous");
     System.out.println("  printFile       - print the file provided in following parameter");
     System.out.println("  <filename>      - postscript file to print");
     System.out.println("  <printer name>  - printer name on <hostname>");
