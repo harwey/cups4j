@@ -42,7 +42,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>4.12</version>
       <scope>test</scope>
     </dependency>
 
@@ -58,14 +58,18 @@
       <version>4.5.2</version>
     </dependency>
 
-   
-
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>1.7.25</version>
     </dependency>
-
+    
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.7.25</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -98,12 +102,6 @@
           </archive>
         </configuration>
       </plugin>
-      <!-- plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-gpg-plugin</artifactId> <executions> <execution> <id>sign-artifacts</id> 
-        <phase>verify</phase> <goals> <goal>sign</goal> </goals> </execution> </executions> </plugin> <plugin> <groupId>org.sonatype.plugins</groupId> 
-        <artifactId>nexus-staging-maven-plugin</artifactId> <version>1.6.3</version> <extensions>true</extensions> <configuration> <serverId>ossrh</serverId> 
-        <nexusUrl>https://oss.sonatype.org/</nexusUrl> <stagingProfileId>19375019933d12</stagingProfileId> <autoReleaseAfterClose>true</autoReleaseAfterClose> 
-        </configuration> </plugin -->
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
