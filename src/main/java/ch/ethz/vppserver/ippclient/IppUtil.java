@@ -26,7 +26,7 @@ import java.util.ArrayList;
  * 
  * See the GNU Lesser General Public License for more details. You should have
  * received a copy of the GNU Lesser General Public License along with this
- * program; if not, see <http://www.gnu.org/licenses/>.
+ * program; if not, see http://www.gnu.org/licenses.
  */
 public class IppUtil {
 
@@ -209,8 +209,7 @@ public class IppUtil {
   /**
    * concatenate nio-ByteBuffers
    * 
-   * @param buffers
-   *          ArrayList<ByteBuffer>
+   * @param  ArrayList <ByteBuffer> buffers
    * @return ByteBuffer
    */
   public static ByteBuffer concatenateBytebuffers(ArrayList<ByteBuffer> buffers) {

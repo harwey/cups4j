@@ -2,10 +2,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-
   <groupId>org.cups4j</groupId>
   <artifactId>cups4j</artifactId>
-  <version>0.7.0-SNAPSHOT</version>
+  <version>0.7.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>cups4j</name>
@@ -30,9 +29,20 @@
 
   <scm>
     <connection>scm:git:git://github.com/harwey/cups4j</connection>
-    <developerConnection>scm:git:git@github.com:harwey/cups4j</developerConnection>
-    <url>git@github.com:harwey/cups4j.git</url>
+    <developerConnection>scm:git:ssh://github.com:harwey/cups4j</developerConnection>
+    <url>http://github.com/harwey/cups4j/tree/master</url>
   </scm>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -63,7 +73,7 @@
       <artifactId>slf4j-api</artifactId>
       <version>1.7.25</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
@@ -89,9 +99,11 @@
           </execution>
         </executions>
       </plugin>
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
+        <version>3.0.2</version>
         <configuration>
           <archive>
             <manifest>
@@ -102,35 +114,121 @@
           </archive>
         </configuration>
       </plugin>
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
+        <version>3.0.1</version>
         <executions>
           <execution>
             <id>attach-sources</id>
             <goals>
-              <goal>jar</goal>
+              <goal>jar-no-fork</goal>
             </goals>
           </execution>
         </executions>
       </plugin>
-
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.0.0</version>
         <executions>
           <execution>
             <id>attach-javadocs</id>
             <goals>
               <goal>jar</goal>
             </goals>
+            <configuration>
+              <!-- See profile for JDK8 -->
+              <additionalparam>-Xdoclint:none</additionalparam>
+            </configuration>
           </execution>
         </executions>
-        <configuration>
-          <additionalparam>-Xdoclint:none</additionalparam>
-        </configuration>
       </plugin>
+
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>1.6.7</version>
+            <extensions>true</extensions>
+            <configuration>
+              <serverId>ossrh</serverId>
+              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+              <autoReleaseAfterClose>true</autoReleaseAfterClose>
+            </configuration>
+          </plugin>
+          
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.0.2</version>
+            <configuration>
+              <archive>
+                <manifest>
+                  <addClasspath>true</addClasspath>
+                  <classpathPrefix>lib/</classpathPrefix>
+                  <mainClass>org.cups4j.client.Cups</mainClass>
+                </manifest>
+              </archive>
+            </configuration>
+          </plugin>
+          
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.0.1</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
 
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.0.0</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+                <configuration>
+                  <additionalparam>-Xdoclint:none</additionalparam>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.5</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+  </profiles>
 </project>

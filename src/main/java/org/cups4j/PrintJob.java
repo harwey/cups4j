@@ -93,7 +93,7 @@ public class PrintJob {
     /**
      * Page ranges
      * 
-     * @pageRanges pageRanges 1-3, 5, 8, 10-13
+     * @param String pageRanges 1-3, 5, 8, 10-13
      * @return Builder
      */
     public Builder pageRanges(String pageRanges) {
@@ -194,7 +194,7 @@ public class PrintJob {
      *          );
      *          </p>
      *          <p>
-     *          -> take a look config/ippclient/list-of-attributes.xml for more
+     *          take a look config/ippclient/list-of-attributes.xml for more
      *          information
      *          </p>
      * 
