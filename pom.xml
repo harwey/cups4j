@@ -4,7 +4,7 @@
 
   <groupId>org.cups4j</groupId>
   <artifactId>cups4j</artifactId>
-  <version>0.7.1-SNAPSHOT</version>
+  <version>0.7.1</version>
   <packaging>jar</packaging>
 
   <name>cups4j</name>
@@ -106,11 +106,11 @@
         <version>3.0.2</version>
         <configuration>
           <archive>
-            <manifest>
+            <!--manifest>
               <addClasspath>true</addClasspath>
               <classpathPrefix>lib/</classpathPrefix>
               <mainClass>org.cups4j.client.Cups</mainClass>
-            </manifest>
+            </manifest-->
           </archive>
         </configuration>
       </plugin>
@@ -172,11 +172,11 @@
             <version>3.0.2</version>
             <configuration>
               <archive>
-                <manifest>
+                <!--manifest>
                   <addClasspath>true</addClasspath>
                   <classpathPrefix>lib/</classpathPrefix>
                   <mainClass>org.cups4j.client.Cups</mainClass>
-                </manifest>
+                </manifest-->
               </archive>
             </configuration>
           </plugin>
