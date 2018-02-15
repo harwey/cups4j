@@ -50,12 +50,13 @@ public abstract class IppOperation {
 
   private final static String IPP_MIME_TYPE = "application/ipp";
   private HttpPost httpCall;
-  
-  
+
   //
   private String httpStatusLine = null;
+  private int httpStatusCode = -1;
 
   private static final Logger LOG = LoggerFactory.getLogger(IppOperation.class);
+
   /**
    * Gets the IPP header
    * 
@@ -129,11 +130,14 @@ public abstract class IppOperation {
    * @param ippBuf
    * 
    * @return result
-   * @throws IOException
-   * @throws JAXBException
+   * @throws Exception 
    */
-  private IppResult sendRequest(URL url, ByteBuffer ippBuf) throws Exception {
-    return sendRequest(url, ippBuf, null);
+  private IppResult sendRequest(URL url, ByteBuffer ippBuf) throws Exception  {
+    IppResult result = sendRequest(url, ippBuf, null);
+    if (result.getHttpStatusCode() >= 300) {
+      throw new IOException("HTTP error! Status code:  " + result.getHttpStatusResponse());
+    }
+    return result;
   }
 
   /**
@@ -156,33 +160,34 @@ public abstract class IppOperation {
       return null;
     }
 
-//    HttpClient client = new DefaultHttpClient();
-//
-//    // will not work with older versions of CUPS!
-//    client.getParams().setParameter("http.protocol.version", HttpVersion.HTTP_1_1);
-//    client.getParams().setParameter("http.socket.timeout", new Integer(10000));
-//    client.getParams().setParameter("http.connection.timeout", new Integer(10000));
-//    client.getParams().setParameter("http.protocol.content-charset", "UTF-8");
-//    client.getParams().setParameter("http.method.response.buffer.warnlimit", new Integer(8092));
-//
-//    // probabaly not working with older CUPS versions
-//    client.getParams().setParameter("http.protocol.expect-continue", Boolean.valueOf(true));
+    // HttpClient client = new DefaultHttpClient();
+    //
+    // // will not work with older versions of CUPS!
+    // client.getParams().setParameter("http.protocol.version",
+    // HttpVersion.HTTP_1_1);
+    // client.getParams().setParameter("http.socket.timeout", new
+    // Integer(10000));
+    // client.getParams().setParameter("http.connection.timeout", new
+    // Integer(10000));
+    // client.getParams().setParameter("http.protocol.content-charset",
+    // "UTF-8");
+    // client.getParams().setParameter("http.method.response.buffer.warnlimit",
+    // new Integer(8092));
+    //
+    // // probabaly not working with older CUPS versions
+    // client.getParams().setParameter("http.protocol.expect-continue",
+    // Boolean.valueOf(true));
 
     HttpClient client = HttpClientBuilder.create().build();
-    RequestConfig requestConfig = RequestConfig.custom()
-            .setSocketTimeout(10000)
-            .setConnectTimeout(10000)
-            .build();
-    
+    RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(10000).setConnectTimeout(10000).build();
+
     HttpPost httpPost = new HttpPost(new URI("http://" + url.getHost() + ":" + ippPort) + url.getPath());
     httpPost.setConfig(requestConfig);
     httpCall = httpPost;
- 
-//    httpPost.getParams().setParameter("http.socket.timeout", new Integer(10000));
 
-    
-    
-    
+    // httpPost.getParams().setParameter("http.socket.timeout", new
+    // Integer(10000));
+
     byte[] bytes = new byte[ippBuf.limit()];
     ippBuf.get(bytes);
 
@@ -201,11 +206,13 @@ public abstract class IppOperation {
     httpPost.setEntity(requestEntity);
 
     httpStatusLine = null;
+    httpStatusCode = -1;
 
     ResponseHandler<byte[]> handler = new ResponseHandler<byte[]>() {
       public byte[] handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
         HttpEntity entity = response.getEntity();
         httpStatusLine = response.getStatusLine().toString();
+        httpStatusCode = response.getStatusLine().getStatusCode();
         if (entity != null) {
           return EntityUtils.toByteArray(entity);
         } else {
@@ -220,6 +227,7 @@ public abstract class IppOperation {
 
     ippResult = ippResponse.getResponse(ByteBuffer.wrap(result));
     ippResult.setHttpStatusResponse(httpStatusLine);
+    ippResult.setHttpStatusCode(httpStatusCode);
 
     // IppResultPrinter.print(ippResult);
 

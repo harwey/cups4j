@@ -21,9 +21,10 @@ import org.cups4j.ipp.attributes.AttributeGroup;
  * program; if not, see <http://www.gnu.org/licenses/>.
  */
 public class IppResult {
-  String _httpStatusResponse = null;
-  String _ippStatusResponse = null;
-  List<AttributeGroup> _attributeGroupList = null;
+  private String httpStatusResponse = null;
+  private String ippStatusResponse = null;
+  private List<AttributeGroup> attributeGroupList = null;
+  private int httpStatusCode;
 
   public IppResult() {
   }
@@ -33,7 +34,7 @@ public class IppResult {
    * @return
    */
   public String getHttpStatusResponse() {
-    return _httpStatusResponse;
+    return httpStatusResponse;
   }
 
   /**
@@ -41,7 +42,7 @@ public class IppResult {
    * @param statusResponse
    */
   public void setHttpStatusResponse(String statusResponse) {
-    _httpStatusResponse = statusResponse;
+    httpStatusResponse = statusResponse;
   }
 
   /**
@@ -49,7 +50,7 @@ public class IppResult {
    * @return
    */
   public String getIppStatusResponse() {
-    return _ippStatusResponse;
+    return ippStatusResponse;
   }
 
   /**
@@ -57,7 +58,7 @@ public class IppResult {
    * @param statusResponse
    */
   public void setIppStatusResponse(String statusResponse) {
-    _ippStatusResponse = statusResponse;
+    ippStatusResponse = statusResponse;
   }
 
   /**
@@ -65,7 +66,7 @@ public class IppResult {
    * @return
    */
   public List<AttributeGroup> getAttributeGroupList() {
-    return _attributeGroupList;
+    return attributeGroupList;
   }
 
   /**
@@ -73,6 +74,15 @@ public class IppResult {
    * @param group
    */
   public void setAttributeGroupList(List<AttributeGroup> group) {
-    _attributeGroupList = group;
+    attributeGroupList = group;
   }
+
+  public int getHttpStatusCode() {
+    return httpStatusCode;
+  }
+
+  public void setHttpStatusCode(int httpStatusCode) {
+    this.httpStatusCode = httpStatusCode;
+  }
+  
 }
