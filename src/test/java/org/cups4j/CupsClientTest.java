@@ -1,5 +1,6 @@
 package org.cups4j;
 
+import cups4j.TestCups;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -18,7 +19,7 @@ public class CupsClientTest {
 
     @BeforeClass
     public static void setUpClient() throws Exception {
-        client = new CupsClient();
+        client = TestCups.getCupsClient();
     }
 
     @Test
