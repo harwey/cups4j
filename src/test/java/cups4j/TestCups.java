@@ -1,15 +1,15 @@
 package cups4j;
 
-import java.util.List;
-
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
 import org.junit.Test;
 
+import java.util.List;
+
 public class TestCups {
   @Test
   public void testCupsClient() throws Exception {
-    CupsClient client = new CupsClient();
+    CupsClient client = getCupsClient();
     List<CupsPrinter> printers = client.getPrinters();
     for (CupsPrinter p : printers) {
       System.out.println("Printer: " + p.toString());
@@ -27,4 +27,22 @@ public class TestCups {
       }
     }
   }
+
+  /**
+   * If you have no CUPS running on your local machine you must set the
+   * envrionment variables 'host' and 'port' to your CUPS server in the
+   * network. Otherwise the test fails.
+   * 
+   * @return your CupsClient for testing
+   */
+  public static CupsClient getCupsClient() {
+    String host = System.getProperty("host", "localhost");
+    int port = Integer.parseInt(System.getProperty("port", "631"));
+    try {
+      return new CupsClient(host, port);
+    } catch (Exception ex) {
+      throw new IllegalStateException("cannot get CUPS client for " + host + ":" + port);
+    }
+  }
+
 }
