@@ -34,10 +34,13 @@ public final class CupsPrinterTest {
     }
 
     @Test
-    public void testPrint() {
-        File testPDF = new File("src/test/resources/test.pdf");
-        assertTrue(testPDF.exists());
-        print(printer, testPDF);
+    public void testPrintPDF() {
+        print(printer, new File("src/test/resources/test.pdf"));
+    }
+    
+    @Test
+    public void testPrintText() {
+        print(printer, new File("src/test/resources/test.txt"));
     }
 
     private PrintRequestResult print(CupsPrinter printer, File file) {
