@@ -9,19 +9,19 @@ import java.nio.ByteBuffer;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Unit-tests for {@link IppCreateJobOperation} class.
+ * Unit-Tests fuer {@link IppSendDocumentOperation}-Klasse.
  *
  * @author oboehm
  * @since 0.7.2 (23.03.2018)
  */
-public class IppCreateJobOperationTest extends AbstractIppOperationTest {
-    
-    private final IppCreateJobOperation operation = new IppCreateJobOperation();
+public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
+
+    private final IppSendDocumentOperation operation = new IppSendDocumentOperation();
 
     @Test
     public void testGetIppHeader() throws MalformedURLException, UnsupportedEncodingException {
         ByteBuffer buffer = getIppHeader(operation);
-        assertEquals(5, buffer.get(3));
+        assertEquals(6, buffer.get(3));
     }
-
+    
 }
