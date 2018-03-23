@@ -15,18 +15,14 @@ package org.cups4j;
  * <http://www.gnu.org/licenses/>.
  */
 
-import java.net.URL;
-import java.util.List;
-
 import org.cups4j.operations.IppOperation;
 import org.cups4j.operations.cups.CupsGetDefaultOperation;
 import org.cups4j.operations.cups.CupsGetPrintersOperation;
 import org.cups4j.operations.cups.CupsMoveJobOperation;
-import org.cups4j.operations.ipp.IppCancelJobOperation;
-import org.cups4j.operations.ipp.IppGetJobAttributesOperation;
-import org.cups4j.operations.ipp.IppGetJobsOperation;
-import org.cups4j.operations.ipp.IppHoldJobOperation;
-import org.cups4j.operations.ipp.IppReleaseJobOperation;
+import org.cups4j.operations.ipp.*;
+
+import java.net.URL;
+import java.util.List;
 
 /**
  * Main Client for accessing CUPS features like
@@ -174,6 +170,28 @@ public class CupsClient {
         printer = p;
     }
     return printer;
+  }
+
+  /**
+   * Returns the printer with the given name. The search of the name is
+   * not case sensitiv.
+   * 
+   * @param name name of the printer
+   * @return printer
+   */
+  public CupsPrinter getPrinter(String name) {
+    try {
+      List<CupsPrinter> printers = getPrinters();
+      CupsPrinter printer = null;
+      for (CupsPrinter p : printers) {
+        if (name.equalsIgnoreCase(p.getName())) {
+          return p;
+        }
+      }
+      throw new IllegalArgumentException("not a valid printer name: " + name);
+    } catch (Exception ex) {
+      throw new IllegalStateException("cannot get printers", ex);
+    }
   }
 
   /**
