@@ -2,16 +2,15 @@ package org.cups4j;
 
 import cups4j.TestCups;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-
-import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link CupsPrinter} class.
@@ -44,19 +43,29 @@ public final class CupsPrinterTest {
     }
 
     private PrintRequestResult print(CupsPrinter printer, File file) {
-        String jobname = generateJobnameFor(file);
-        InputStream istream = null;
+        PrintJob job = createPrintJob(file);
+        LOG.info("Druckjob '{}' wird zu {} geschickt.", job, printer);
         try {
-            istream = new FileInputStream(file);
-            PrintJob job = new PrintJob.Builder(istream).jobName(jobname).build();
-            LOG.info("Druckjob '{}' wird zu {} geschickt.", jobname, printer);
             return printer.print(job);
-        } catch (IOException ioe) {
-            throw new IllegalArgumentException("cannot read '"+ file + "'", ioe);
         } catch (Exception ex) {
             throw new IllegalStateException("print of '" + file + "' failed", ex);
-        } finally {
-            close(istream);
+        }
+    }
+    
+    @Test
+    public void testPrintList() {
+        File file = new File("src/test/resources/test.txt");
+        PrintJob job = createPrintJob(file);
+        printer.print(job, job);
+    }
+    
+    private PrintJob createPrintJob(File file) {
+        String jobname = generateJobnameFor(file);
+        try {
+            byte[] content = FileUtils.readFileToByteArray(file);
+            return new PrintJob.Builder(content).jobName(jobname).build();
+        } catch (IOException ioe) {
+            throw new IllegalArgumentException("cannot read '" + file + "'", ioe);
         }
     }
 
@@ -66,14 +75,4 @@ public final class CupsPrinterTest {
         return basename + new String(epochTime).substring(2);
     }
     
-    private static void close(InputStream istream) {
-        if (istream != null) {
-            try {
-                istream.close();
-            } catch (IOException ex) {
-                LOG.warn("Close of {} failed:", istream, ex);
-            }
-        }
-    }
-
 }

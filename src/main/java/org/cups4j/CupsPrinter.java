@@ -14,20 +14,19 @@ package org.cups4j;
  * the GNU Lesser General Public License along with this program; if not, see
  * <http://www.gnu.org/licenses/>.
  */
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import ch.ethz.vppserver.ippclient.IppResult;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
 import org.cups4j.operations.ipp.IppGetJobAttributesOperation;
 import org.cups4j.operations.ipp.IppGetJobsOperation;
 import org.cups4j.operations.ipp.IppPrintJobOperation;
 
-import ch.ethz.vppserver.ippclient.IppResult;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a printer on your IPP server
@@ -164,6 +163,21 @@ public class CupsPrinter {
     }
     result.setJobId(ippJobID);
     return result;
+  }
+
+  /**
+   * Print method for several print jobs which should be not interrupted by
+   * another print job. The printer must support
+   * 'multiple-document-jobs-supported' which is a recommended option.
+   *
+   * @param job1 first print job
+   * @param moreJobs more print jobs
+   * @return PrintRequestResult
+   * @since 0.7.2
+   * @author oboehm
+   */
+  public PrintRequestResult print(PrintJob job1, PrintJob... moreJobs) {
+    throw new UnsupportedOperationException("not yet impelmented");
   }
 
   /**
