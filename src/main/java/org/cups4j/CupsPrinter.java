@@ -14,19 +14,16 @@ package org.cups4j;
  * the GNU Lesser General Public License along with this program; if not, see
  * <http://www.gnu.org/licenses/>.
  */
+
 import ch.ethz.vppserver.ippclient.IppResult;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
-import org.cups4j.operations.ipp.IppGetJobAttributesOperation;
-import org.cups4j.operations.ipp.IppGetJobsOperation;
-import org.cups4j.operations.ipp.IppPrintJobOperation;
+import org.cups4j.operations.IppOperation;
+import org.cups4j.operations.ipp.*;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represents a printer on your IPP server
@@ -73,97 +70,101 @@ public class CupsPrinter {
    * @throws Exception
    */
   public PrintRequestResult print(PrintJob printJob) throws Exception {
-    int ippJobID = -1;
-    InputStream document = printJob.getDocument();
-    String userName = printJob.getUserName();
-    String jobName = printJob.getJobName();
-    int copies = printJob.getCopies();
-    String pageRanges = printJob.getPageRanges();
-    String resolution = printJob.getResolution();
+    IppOperation command = new IppPrintJobOperation(printerURL.getPort());
+    return request(command, printJob);
+  }
 
-    String pageFormat = printJob.getPageFormat();
-    boolean color = printJob.isColor();
-    boolean portrait = printJob.isPortrait();
+    private PrintRequestResult request(IppOperation command, PrintJob printJob) throws Exception {
+        int ippJobID = -1;
+        InputStream document = printJob.getDocument();
+        String userName = printJob.getUserName();
+        String jobName = printJob.getJobName();
+        int copies = printJob.getCopies();
+        String pageRanges = printJob.getPageRanges();
+        String resolution = printJob.getResolution();
 
-    Map<String, String> attributes = printJob.getAttributes();
+        String pageFormat = printJob.getPageFormat();
+        boolean color = printJob.isColor();
+        boolean portrait = printJob.isPortrait();
 
-    if (userName == null) {
-      userName = CupsClient.DEFAULT_USER;
-    }
-    if (attributes == null) {
-      attributes = new HashMap<String, String>();
-    }
+        Map<String, String> attributes = printJob.getAttributes();
 
-    attributes.put("requesting-user-name", userName);
-    attributes.put("job-name", jobName);
-
-    String copiesString = null;
-    StringBuffer rangesString = new StringBuffer();
-    if (copies > 0) {// other values are considered bad value by CUPS
-      copiesString = "copies:integer:" + copies;
-      addAttribute(attributes, "job-attributes", copiesString);
-    }
-    if (portrait) {
-      addAttribute(attributes, "job-attributes", "orientation-requested:enum:3");
-    } else {
-      addAttribute(attributes, "job-attributes", "orientation-requested:enum:4");
-    }
-
-    if (color) {
-      addAttribute(attributes, "job-attributes", "output-mode:keyword:color");
-    } else {
-      addAttribute(attributes, "job-attributes", "output-mode:keyword:monochrome");
-    }
-
-    if (pageFormat != null && !"".equals(pageFormat)) {
-      addAttribute(attributes, "job-attributes", "media:keyword:" + pageFormat);
-    }
-
-    if (resolution != null && !"".equals(resolution)) {
-      addAttribute(attributes, "job-attributes", "printer-resolution:resolution:" + resolution);
-    }
-
-    if (pageRanges != null && !"".equals(pageRanges.trim()) && !"1-".equals(pageRanges.trim())) {
-      String[] ranges = pageRanges.split(",");
-
-      String delimeter = "";
-
-      rangesString.append("page-ranges:setOfRangeOfInteger:");
-      for (String range : ranges) {
-        range = range.trim();
-
-        String[] values = range.split("-");
-        if (values.length == 1) {
-          range = range + "-" + range;
+        if (userName == null) {
+          userName = CupsClient.DEFAULT_USER;
+        }
+        if (attributes == null) {
+          attributes = new HashMap<String, String>();
         }
 
-        rangesString.append(delimeter).append(range);
-        // following ranges need to be separated with ","
-        delimeter = ",";
-      }
-      addAttribute(attributes, "job-attributes", rangesString.toString());
-    }
+        attributes.put("requesting-user-name", userName);
+        attributes.put("job-name", jobName);
 
-    if (printJob.isDuplex()) {
-      addAttribute(attributes, "job-attributes", "sides:keyword:two-sided-long-edge");
-    }
-    IppPrintJobOperation command = new IppPrintJobOperation(printerURL.getPort());
-    IppResult ippResult = command.request(printerURL, attributes, document);
-    PrintRequestResult result = new PrintRequestResult(ippResult);
-    // IppResultPrinter.print(result);
+        String copiesString = null;
+        StringBuffer rangesString = new StringBuffer();
+        if (copies > 0) {// other values are considered bad value by CUPS
+          copiesString = "copies:integer:" + copies;
+          addAttribute(attributes, "job-attributes", copiesString);
+        }
+        if (portrait) {
+          addAttribute(attributes, "job-attributes", "orientation-requested:enum:3");
+        } else {
+          addAttribute(attributes, "job-attributes", "orientation-requested:enum:4");
+        }
 
-    for (AttributeGroup group : ippResult.getAttributeGroupList()) {
-      if (group.getTagName().equals("job-attributes-tag")) {
-        for (Attribute attr : group.getAttribute()) {
-          if (attr.getName().equals("job-id")) {
-            ippJobID = Integer.parseInt(attr.getAttributeValue().get(0).getValue());
+        if (color) {
+          addAttribute(attributes, "job-attributes", "output-mode:keyword:color");
+        } else {
+          addAttribute(attributes, "job-attributes", "output-mode:keyword:monochrome");
+        }
+
+        if (pageFormat != null && !"".equals(pageFormat)) {
+          addAttribute(attributes, "job-attributes", "media:keyword:" + pageFormat);
+        }
+
+        if (resolution != null && !"".equals(resolution)) {
+          addAttribute(attributes, "job-attributes", "printer-resolution:resolution:" + resolution);
+        }
+
+        if (pageRanges != null && !"".equals(pageRanges.trim()) && !"1-".equals(pageRanges.trim())) {
+          String[] ranges = pageRanges.split(",");
+
+          String delimeter = "";
+
+          rangesString.append("page-ranges:setOfRangeOfInteger:");
+          for (String range : ranges) {
+            range = range.trim();
+
+            String[] values = range.split("-");
+            if (values.length == 1) {
+              range = range + "-" + range;
+            }
+
+            rangesString.append(delimeter).append(range);
+            // following ranges need to be separated with ","
+            delimeter = ",";
+          }
+          addAttribute(attributes, "job-attributes", rangesString.toString());
+        }
+
+        if (printJob.isDuplex()) {
+          addAttribute(attributes, "job-attributes", "sides:keyword:two-sided-long-edge");
+        }
+        IppResult ippResult = command.request(printerURL, attributes, document);
+        PrintRequestResult result = new PrintRequestResult(ippResult);
+        // IppResultPrinter.print(result);
+
+        for (AttributeGroup group : ippResult.getAttributeGroupList()) {
+          if (group.getTagName().equals("job-attributes-tag")) {
+            for (Attribute attr : group.getAttribute()) {
+              if (attr.getName().equals("job-id")) {
+                ippJobID = Integer.parseInt(attr.getAttributeValue().get(0).getValue());
+              }
+            }
           }
         }
-      }
+        result.setJobId(ippJobID);
+        return result;
     }
-    result.setJobId(ippJobID);
-    return result;
-  }
 
   /**
    * Print method for several print jobs which should be not interrupted by
@@ -177,7 +178,33 @@ public class CupsPrinter {
    * @author oboehm
    */
   public PrintRequestResult print(PrintJob job1, PrintJob... moreJobs) {
-    throw new UnsupportedOperationException("not yet impelmented");
+      createPrintJob(job1);
+      List<PrintJob> printJobs = new ArrayList<PrintJob>();
+      printJobs.add(job1);
+      printJobs.addAll(Arrays.asList(moreJobs));
+      for (int i = 0; i < printJobs.size() - 1; i++) {
+          sendDocument(printJobs.get(i));
+      }
+      throw new UnsupportedOperationException("not yet impelmented");
+  }
+
+  private IppResult createPrintJob(PrintJob printJob) {
+      Map<String, String> attributes = printJob.getAttributes();
+      IppCreateJobOperation command = new IppCreateJobOperation();
+      try {
+          return command.request(printerURL, attributes);
+      } catch (Exception ex) {
+          throw new IllegalStateException("cannot create print-job for " + printJob, ex);
+      }
+  }
+
+  private PrintRequestResult sendDocument(PrintJob job) {
+      IppSendDocumentOperation command = new IppSendDocumentOperation();
+      try {
+        return request(command, job);
+      } catch (Exception ex) {
+          throw new IllegalStateException("cannot send-document for " + job, ex);
+      }
   }
 
   /**
