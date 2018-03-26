@@ -17,6 +17,8 @@
  */
 package org.cups4j.operations.ipp;
 
+import org.cups4j.CupsClient;
+
 /**
  * The class IppCreateJobOperation represents  he 
  *
@@ -26,7 +28,12 @@ package org.cups4j.operations.ipp;
 public class IppSendDocumentOperation extends IppPrintJobOperation {
     
     public IppSendDocumentOperation() {
-        operationID = 0x0006;
+        this(CupsClient.DEFAULT_PORT);
+    }
+    
+    public IppSendDocumentOperation(int port) {
+        super(port);
+        this.operationID = 0x0006;
     }
     
 }

@@ -26,9 +26,14 @@ import org.cups4j.operations.IppOperation;
  * @since 0.7.2 (23.03.2018)
  */
 public class IppCreateJobOperation extends IppOperation {
-    
+
     public IppCreateJobOperation() {
         operationID = 0x0005;
     }
-    
+
+    public IppCreateJobOperation(int port) {
+        this();
+        this.ippPort = port;
+    }
+
 }
