@@ -178,7 +178,10 @@ public class CupsPrinter {
    * @author oboehm
    */
   public PrintRequestResult print(PrintJob job1, PrintJob... moreJobs) {
-      createPrintJob();
+      IppResult ippResult = createPrintJob();
+      AttributeGroup attrGroup = ippResult.getAttributeGroup("job-attributes-tag");
+      //TODO: continue
+      ippResult.getAttributeGroupList().get(1).getAttribute();
       List<PrintJob> printJobs = new ArrayList<PrintJob>();
       printJobs.add(job1);
       printJobs.addAll(Arrays.asList(moreJobs));

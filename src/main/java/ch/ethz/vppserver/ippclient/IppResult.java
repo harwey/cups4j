@@ -1,8 +1,8 @@
 package ch.ethz.vppserver.ippclient;
 
-import java.util.List;
-
 import org.cups4j.ipp.attributes.AttributeGroup;
+
+import java.util.List;
 
 /**
  * Copyright (C) 2008 ITS of ETH Zurich, Switzerland, Sarah Windler Burri
@@ -67,6 +67,15 @@ public class IppResult {
    */
   public List<AttributeGroup> getAttributeGroupList() {
     return attributeGroupList;
+  }
+
+  public AttributeGroup getAttributeGroup(String tagName) {
+      for (AttributeGroup group : attributeGroupList) {
+          if (tagName.equalsIgnoreCase(group.getTagName())) {
+              return group;
+          }
+      }
+      throw new IllegalArgumentException("tag '" + tagName + "' not found in " + attributeGroupList);
   }
 
   /**
