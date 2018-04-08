@@ -65,7 +65,7 @@ public class AttributeGroup {
               return attr;
           }
       }
-      throw new IllegalArgumentException("attribute not found: " + name);
+      return new Attribute();
   }
 
   /**

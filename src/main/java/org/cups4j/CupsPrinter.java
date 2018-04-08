@@ -233,7 +233,7 @@ public class CupsPrinter {
     int statusCode = Integer.decode(result.getResultCode());
     if (statusCode >= 0x0400) {
       throw new IllegalStateException("request to " + this.printerURL + " failed: " + result.getResultCode() + " " +
-              result.getResultDescription());
+              result.getResultDescription() + " - " + result.getResultMessage());
     }
   }
   

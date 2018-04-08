@@ -14,10 +14,12 @@ package org.cups4j;
  * the GNU Lesser General Public License along with this program; if not, see
  * <http://www.gnu.org/licenses/>.
  */
+import ch.ethz.vppserver.ippclient.IppResult;
+import org.cups4j.ipp.attributes.AttributeValue;
+
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import ch.ethz.vppserver.ippclient.IppResult;
 
 /**
  * Result of a print request
@@ -28,6 +30,7 @@ public class PrintRequestResult {
   private int jobId;
   private String resultCode = "";
   private String resultDescription = "";
+  private String resultMessage = "";
 
   public PrintRequestResult(IppResult ippResult) {
     if ((ippResult == null) || isNullOrEmpty(ippResult.getHttpStatusResponse())) {
@@ -45,6 +48,11 @@ public class PrintRequestResult {
     if (m.find()) {
       this.resultCode = m.group(1);
       this.resultDescription = m.group(2);
+      List<AttributeValue> values = ippResult.getAttributeGroup("operation-attributes-tag")
+                                                     .getAttribute("status-message").getAttributeValue();
+      if (!values.isEmpty()) {
+        this.resultMessage = values.get(0).getValue();
+      }
     }
   }
 
@@ -71,6 +79,10 @@ public class PrintRequestResult {
 
   public String getResultDescription() {
     return resultDescription;
+  }
+
+  public String getResultMessage() {
+    return resultMessage;
   }
 
   public int getJobId() {
