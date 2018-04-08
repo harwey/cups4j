@@ -23,13 +23,15 @@ public final class CupsPrinterTest {
     private static CupsPrinter printer;
     
     @BeforeClass
-    public static void setUpPrinter() {
+    public static void setUpPrinter() throws Exception {
         String name = System.getProperty("printer");
         if (name == null) {
             LOG.info("To specify printer please set system property 'printer'.");
+            printer = TestCups.getCupsClient().getDefaultPrinter();
         } else {
             printer = TestCups.getCupsClient().getPrinter(name);
         }
+        LOG.info("Printer {} was choosen.", printer);
     }
 
     @Test
