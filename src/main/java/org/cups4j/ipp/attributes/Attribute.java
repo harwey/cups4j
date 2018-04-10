@@ -7,11 +7,11 @@
 
 package org.cups4j.ipp.attributes;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Root(name = "attribute")
 public class Attribute {
@@ -51,6 +51,21 @@ public class Attribute {
       attributeValue = new ArrayList<AttributeValue>();
     }
     return this.attributeValue;
+  }
+
+  /**
+   * Gets the attribute value as CSV string.
+   *
+   * @return all attribute values as CSV
+   */
+  public String getValue() {
+    StringBuilder buf = new StringBuilder();
+    for (AttributeValue av : getAttributeValue()) {
+      buf.append(',');
+      buf.append(av.getValue());
+    }
+    buf.append(' ');
+    return buf.substring(1).trim();
   }
 
   /**

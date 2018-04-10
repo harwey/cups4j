@@ -3,7 +3,6 @@ package org.cups4j.operations.ipp;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.nio.ByteBuffer;
 
 import static org.junit.Assert.assertEquals;
@@ -19,7 +18,7 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
     private final IppCreateJobOperation operation = new IppCreateJobOperation();
 
     @Test
-    public void testGetIppHeader() throws MalformedURLException, UnsupportedEncodingException {
+    public void testGetIppHeader() throws UnsupportedEncodingException {
         ByteBuffer buffer = getIppHeader(operation);
         assertEquals(5, buffer.get(3));
     }

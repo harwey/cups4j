@@ -180,15 +180,14 @@ public class CupsPrinter {
   public PrintRequestResult print(PrintJob job1, PrintJob... moreJobs) {
       IppResult ippResult = createPrintJob();
       AttributeGroup attrGroup = ippResult.getAttributeGroup("job-attributes-tag");
-      //TODO: continue
-      ippResult.getAttributeGroupList().get(1).getAttribute();
+      int jobId = Integer.parseInt(attrGroup.getAttribute("job-id").getValue());
       List<PrintJob> printJobs = new ArrayList<PrintJob>();
       printJobs.add(job1);
       printJobs.addAll(Arrays.asList(moreJobs));
       for (int i = 0; i < printJobs.size() - 1; i++) {
-          sendDocument(printJobs.get(i), false);
+          sendDocument(printJobs.get(i), jobId, false);
       }
-      return sendDocument(printJobs.get(printJobs.size()), true);
+      return sendDocument(printJobs.get(printJobs.size()), jobId, true);
   }
 
   private IppResult createPrintJob() {
@@ -203,13 +202,13 @@ public class CupsPrinter {
       }
   }
   
-  private PrintRequestResult sendDocument(PrintJob job, boolean lastDocument) {
+  private PrintRequestResult sendDocument(PrintJob job, int jobId, boolean lastDocument) {
       IppSendDocumentOperation command = new IppSendDocumentOperation(printerURL.getPort());
       Map<String, String> attributes = job.getAttributes();
       if (attributes == null) {
         attributes = new HashMap<String, String>();
       }
-      //addAttribute(attributes, "last-document", Boolean.toString(lastDocument));
+      addAttribute(attributes, "operation-attributes", "job-id:" + jobId);
       addAttribute(attributes, "operation-attributes", "last-document:" + Boolean.toString(lastDocument));
       job.setAttributes(attributes);
       try {
