@@ -14,10 +14,10 @@ package org.cups4j;
  * the GNU Lesser General Public License along with this program; if not, see
  * <http://www.gnu.org/licenses/>.
  */
-import ch.ethz.vppserver.ippclient.IppResult;
-import org.cups4j.ipp.attributes.AttributeValue;
 
-import java.util.List;
+import ch.ethz.vppserver.ippclient.IppResult;
+import org.cups4j.ipp.attributes.AttributeGroup;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,9 +30,10 @@ public class PrintRequestResult {
   private int jobId;
   private String resultCode = "";
   private String resultDescription = "";
-  private String resultMessage = "";
+  private final IppResult ippResult;
 
   public PrintRequestResult(IppResult ippResult) {
+    this.ippResult = ippResult;
     if ((ippResult == null) || isNullOrEmpty(ippResult.getHttpStatusResponse())) {
       return;
     }
@@ -48,11 +49,6 @@ public class PrintRequestResult {
     if (m.find()) {
       this.resultCode = m.group(1);
       this.resultDescription = m.group(2);
-      List<AttributeValue> values = ippResult.getAttributeGroup("operation-attributes-tag")
-                                                     .getAttribute("status-message").getAttributeValue();
-      if (!values.isEmpty()) {
-        this.resultMessage = values.get(0).getValue();
-      }
     }
   }
 
@@ -70,11 +66,15 @@ public class PrintRequestResult {
   }
 
   public boolean isSuccessfulResult() {
-    return (resultCode != null) && resultCode.startsWith("0x00");
+    return (resultCode != null) && getResultCode().startsWith("0x00");
   }
 
   public String getResultCode() {
-    return resultCode;
+    if (ippResult.getHttpStatusCode() < 400) {
+      return resultCode;
+    } else {
+      return "0x" + ippResult.getHttpStatusCode();
+    }
   }
 
   public String getResultDescription() {
@@ -82,7 +82,12 @@ public class PrintRequestResult {
   }
 
   public String getResultMessage() {
-    return resultMessage;
+    if (ippResult.hasAttributeGroup("operation-attributes-tag")) {
+      AttributeGroup attributeGroup = ippResult.getAttributeGroup("operation-attributes-tag");
+      return attributeGroup.getAttribute("status-message").getValue();
+    } else {
+      return ippResult.getHttpStatusResponse();
+    }
   }
 
   public int getJobId() {

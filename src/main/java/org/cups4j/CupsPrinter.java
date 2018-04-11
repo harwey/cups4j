@@ -208,8 +208,8 @@ public class CupsPrinter {
       if (attributes == null) {
         attributes = new HashMap<String, String>();
       }
-      addAttribute(attributes, "operation-attributes", "job-id:" + jobId);
-      addAttribute(attributes, "operation-attributes", "last-document:" + Boolean.toString(lastDocument));
+      addAttribute(attributes, "operation-attributes", "job-id:integer:" + jobId);
+      addAttribute(attributes, "operation-attributes", "last-document:boolean:" + Boolean.toString(lastDocument));
       job.setAttributes(attributes);
       try {
         PrintRequestResult result = request(command, job);

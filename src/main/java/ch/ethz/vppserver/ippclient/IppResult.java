@@ -70,12 +70,21 @@ public class IppResult {
   }
 
   public AttributeGroup getAttributeGroup(String tagName) {
-      for (AttributeGroup group : attributeGroupList) {
-          if (tagName.equalsIgnoreCase(group.getTagName())) {
-              return group;
-          }
+    for (AttributeGroup group : attributeGroupList) {
+      if (tagName.equalsIgnoreCase(group.getTagName())) {
+        return group;
       }
-      throw new IllegalArgumentException("tag '" + tagName + "' not found in " + attributeGroupList);
+    }
+    throw new IllegalArgumentException("tag '" + tagName + "' not found in " + attributeGroupList);
+  }
+
+  public boolean hasAttributeGroup(String tagName) {
+    for (AttributeGroup group : attributeGroupList) {
+      if (tagName.equalsIgnoreCase(group.getTagName())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
