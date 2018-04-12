@@ -3,7 +3,6 @@ package org.cups4j.operations.ipp;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Map;
@@ -28,7 +27,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
      * @throws UnsupportedEncodingException in case of encoding problemss
      */
     @Test
-    public void testGetIppHeader() throws MalformedURLException, UnsupportedEncodingException {
+    public void testGetIppHeader() throws UnsupportedEncodingException {
         ByteBuffer buffer = getIppHeader(operation);
         assertEquals(6, buffer.get(3));
     }
@@ -40,7 +39,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
      * @throws UnsupportedEncodingException in case of encoding problemss
      */
     @Test
-    public void getGetIppHeaderWithJobId() throws UnsupportedEncodingException {
+    public void testGetIppHeaderWithJobId() throws UnsupportedEncodingException {
         URL printerURL = createURL("http://localhost:631/test-printer");
         Map<String, String> attributes = setUpAttributes();
         attributes.put("operation-attributes", "job-id:integer:40#last-document:boolean:false");
@@ -49,10 +48,26 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
         assertThat(new String(header), containsString("job-id"));
     }
 
+    /**
+     * We should see the login user in the header. Otherwise we may get a
+     * 401-response (forbidden).
+     *
+     * @throws UnsupportedEncodingException in case of encoding problemss
+     */
+    @Test
+    public void testGetIppHeaderWithUser() throws UnsupportedEncodingException {
+        URL printerURL = createURL("http://localhost:631/test-printer");
+        Map<String, String> attributes = setUpAttributes();
+        ByteBuffer buffer = operation.getIppHeader(printerURL, attributes);
+        byte[] header = toByteArray(buffer);
+        String user = System.getProperty("user.name", "anonymous");
+        assertThat(new String(header), containsString(user));
+    }
+
     private static byte[] toByteArray(ByteBuffer buffer) {
         byte[] bytes = new byte[buffer.limit()];
         buffer.get(bytes);
         return bytes;
     }
-    
+
 }

@@ -65,7 +65,8 @@ public final class CupsPrinterTest {
         String jobname = generateJobnameFor(file);
         try {
             byte[] content = FileUtils.readFileToByteArray(file);
-            return new PrintJob.Builder(content).jobName(jobname).build();
+            String userName = System.getProperty("user.name", CupsClient.DEFAULT_USER);
+            return new PrintJob.Builder(content).jobName(jobname).userName(userName).build();
         } catch (IOException ioe) {
             throw new IllegalArgumentException("cannot read '" + file + "'", ioe);
         }

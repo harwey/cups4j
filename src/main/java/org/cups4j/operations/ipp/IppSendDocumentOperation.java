@@ -71,7 +71,11 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
             return ippBuf;
         }
 
-        ippBuf = IppTag.getNameWithoutLanguage(ippBuf, "requesting-user-name", map.get("requesting-user-name"));
+        String userName = map.get("requesting-user-name");
+        if (userName == null) {
+            userName = System.getProperty("user.name", CupsClient.DEFAULT_USER);
+        }
+        ippBuf = IppTag.getNameWithoutLanguage(ippBuf, "requesting-user-name", userName);
 
         if (map.get("job-name") != null) {
             ippBuf = IppTag.getNameWithoutLanguage(ippBuf, "job-name", map.get("job-name"));
