@@ -1,12 +1,15 @@
 package org.cups4j;
 
+import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
-import org.cups4j.ipp.attributes.AttributeGroup;
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
-import java.util.Collections;
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Unit tests for class {@link PrintRequestResult}.
@@ -23,13 +26,19 @@ public class PrintRequestResultTest {
     }
 
     private static IppResult createIppResult401() {
-        IppResult ippResult = new IppResult();
+        IppResult ippResult = readIppResponse("error401.html");
         ippResult.setHttpStatusResponse("HTTP/1.1 401 Nicht autorisiert");
-        ippResult.setIppStatusResponse("Major Version:0x3c Minor Version:0x21 Request Id:1129601360\n" +
-                "Status Code:0x444f(enum name not found in IANA list: 17487)");
         ippResult.setHttpStatusCode(401);
-        ippResult.setAttributeGroupList(Collections.<AttributeGroup>emptyList());
         return ippResult;
+    }
+
+    private static IppResult readIppResponse(String filename) {
+        try {
+            byte[] data = FileUtils.readFileToByteArray(new File("src/test/resources/ipp", filename));
+            return new IppResponse().getResponse(ByteBuffer.wrap(data));
+        } catch (IOException ioe) {
+            throw new IllegalArgumentException("cannot load '" + filename + "'", ioe);
+        }
     }
 
 }
