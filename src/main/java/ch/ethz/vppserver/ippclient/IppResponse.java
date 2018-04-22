@@ -145,8 +145,12 @@ public class IppResponse {
     // read IPP header
     if ((!ippHeaderResponse) && (buffer.hasRemaining())) {
       _buf = buffer;
-      result.setIppStatusResponse(getIPPHeader());
-      ippHeaderResponse = true;
+      if (buffer.get(0) > 0x20) {
+        result.setIppStatusResponse(parseErrorText());
+      } else {
+        result.setIppStatusResponse(getIPPHeader());
+        ippHeaderResponse = true;
+      }
     }
 
     _buf = buffer;
@@ -219,6 +223,13 @@ public class IppResponse {
       return sb.toString();
     }
     return null;
+  }
+
+  private String parseErrorText() {
+    byte[] buffer = new byte[_buf.capacity() - _buf.position()];
+    _buf.get(buffer);
+    String errorText = new String(buffer);
+    return errorText;
   }
 
   /**
