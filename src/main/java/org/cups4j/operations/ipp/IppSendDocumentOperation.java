@@ -17,18 +17,21 @@
  */
 package org.cups4j.operations.ipp;
 
+import ch.ethz.vppserver.ippclient.IppResult;
 import ch.ethz.vppserver.ippclient.IppTag;
 import org.cups4j.CupsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
 /**
- * The class IppCreateJobOperation represents  he 
+ * The class IppSendDocumentOperation represents the operation for sending
+ * a document.
  *
  * @author oboehm
  * @since 0.7.2 (23.03.2018)
@@ -44,6 +47,10 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
     public IppSendDocumentOperation(int port) {
         super(port);
         this.operationID = 0x0006;
+    }
+
+    public IppResult request(URL url, Map<String, String> map, InputStream document) throws Exception {
+        return sendRequest(url.toURI(), getIppHeader(url, map), document);
     }
 
     /**
@@ -134,7 +141,7 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         ippBuf.flip();
         return ippBuf;
     }
-
+    
     private static ByteBuffer getOperationAttributes(ByteBuffer ippBuf, String[] attributeBlocks)
             throws UnsupportedEncodingException {
         if (ippBuf == null) {
