@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 
+import static org.junit.Assert.assertNotNull;
+
 /**
  * Unit tests for {@link CupsPrinter} class.
  *
@@ -32,6 +34,7 @@ public final class CupsPrinterTest {
         } else {
             printer = getPrinter(name);
         }
+        assertNotNull(printer);
         LOG.info("Printer {} was choosen.", printer);
     }
 
@@ -59,7 +62,7 @@ public final class CupsPrinterTest {
     public void testPrintList() {
         File file = new File("src/test/resources/test.txt");
         PrintJob job = createPrintJob(file);
-        //printer.print(job, job);
+        printer.print(job, job);
     }
 
     private PrintJob createPrintJob(File file) {
