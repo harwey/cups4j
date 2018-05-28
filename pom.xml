@@ -85,7 +85,6 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>RELEASE</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 

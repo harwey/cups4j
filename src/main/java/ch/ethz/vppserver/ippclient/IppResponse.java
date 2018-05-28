@@ -50,7 +50,7 @@ public class IppResponse {
   // read IPP response in global buffer
   ByteBuffer _buf = null;
 
-  public IppResponse() throws Exception {
+  public IppResponse() {
     ippAttributeProvider = IppAttributeProviderFactory.createIppAttributeProvider();
 
     _tagList = ippAttributeProvider.getTagList();

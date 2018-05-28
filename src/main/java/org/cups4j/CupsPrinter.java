@@ -180,6 +180,7 @@ public class CupsPrinter {
    */
   public PrintRequestResult print(PrintJob job1, PrintJob... moreJobs) {
     IppCreateJobOperation command = new IppCreateJobOperation(printerURL.getPort());
+    IppResult ippResult = command.request(printerURL);
     throw new UnsupportedOperationException("not yet implemented");
   }
 

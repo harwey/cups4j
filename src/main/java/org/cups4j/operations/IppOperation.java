@@ -14,16 +14,9 @@ package org.cups4j.operations;
  * the GNU Lesser General Public License along with this program; if not, see
  * <http://www.gnu.org/licenses/>.
  */
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.SequenceInputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.util.Map;
-
+import ch.ethz.vppserver.ippclient.IppResponse;
+import ch.ethz.vppserver.ippclient.IppResult;
+import ch.ethz.vppserver.ippclient.IppTag;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -39,16 +32,18 @@ import org.cups4j.ipp.attributes.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.ethz.vppserver.ippclient.IppResponse;
-import ch.ethz.vppserver.ippclient.IppResult;
-import ch.ethz.vppserver.ippclient.IppTag;
+import java.io.*;
+import java.net.URI;
+import java.net.URL;
+import java.nio.ByteBuffer;
+import java.util.Map;
 
 public abstract class IppOperation {
   protected short operationID = -1; // IPP operation ID
   protected short bufferSize = 8192; // BufferSize for this operation
   protected int ippPort = CupsClient.DEFAULT_PORT;
 
-  private final static String IPP_MIME_TYPE = "application/ipp";
+  protected final static String IPP_MIME_TYPE = "application/ipp";
   private HttpPost httpCall;
 
   //

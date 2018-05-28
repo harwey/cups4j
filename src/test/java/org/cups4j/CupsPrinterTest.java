@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -26,16 +27,10 @@ public final class CupsPrinterTest {
     private static CupsPrinter printer;
 
     @BeforeClass
-    public static void setUpPrinter() throws Exception {
-        String name = System.getProperty("printer");
-        if (name == null) {
-            LOG.info("To specify printer please set system property 'printer'.");
-            printer = TestCups.getCupsClient().getDefaultPrinter();
-        } else {
-            printer = getPrinter(name);
-        }
+    public static void setUpPrinter() {
+        getPrinter();
         assertNotNull(printer);
-        LOG.info("Printer {} was choosen.", printer);
+        LOG.info("Printer {} was choosen for testing.", printer);
     }
 
     @Test
@@ -59,7 +54,7 @@ public final class CupsPrinterTest {
     }
 
     @Test
-    public void testPrintList() {
+    public void testPrintList() throws UnsupportedEncodingException {
         File file = new File("src/test/resources/test.txt");
         PrintJob job = createPrintJob(file);
         printer.print(job, job);
@@ -80,6 +75,26 @@ public final class CupsPrinterTest {
         String basename = file.getName().split("\\.")[0];
         byte[] epochTime = Base64.encodeBase64(BigInteger.valueOf(System.currentTimeMillis()).toByteArray());
         return basename + new String(epochTime).substring(2);
+    }
+
+    /**
+     * Gets a printer for testing. This is either the printer defined by the
+     * system property 'printer' or the default printer.
+     *
+     * @return the printer
+     */
+    public static CupsPrinter getPrinter()  {
+        String name = System.getProperty("printer");
+        if (name == null) {
+            LOG.info("To specify printer please set system property 'printer'.");
+            try {
+                return TestCups.getCupsClient().getDefaultPrinter();
+            } catch (Exception ex) {
+                throw new IllegalStateException("no printer configured by system property 'printer'", ex);
+            }
+        } else {
+            return getPrinter(name);
+        }
     }
 
     /**
