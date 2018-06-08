@@ -14,16 +14,15 @@ package org.cups4j.operations.ipp;
  * the GNU Lesser General Public License along with this program; if not, see
  * <http://www.gnu.org/licenses/>.
  */
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.util.Map;
-
+import ch.ethz.vppserver.ippclient.IppTag;
 import org.cups4j.operations.IppOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.ethz.vppserver.ippclient.IppTag;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.nio.ByteBuffer;
+import java.util.Map;
 
 public class IppPrintJobOperation extends IppOperation {
 
@@ -132,7 +131,7 @@ public class IppPrintJobOperation extends IppOperation {
    * @return
    * @throws UnsupportedEncodingException
    */
-  private static ByteBuffer getJobAttributes(ByteBuffer ippBuf, String[] attributeBlocks)
+  protected static ByteBuffer getJobAttributes(ByteBuffer ippBuf, String[] attributeBlocks)
       throws UnsupportedEncodingException {
     if (ippBuf == null) {
       LOG.error("IppPrintJobOperation.getJobAttributes(): ippBuf is null");

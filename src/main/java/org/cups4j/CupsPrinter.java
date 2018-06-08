@@ -18,17 +18,11 @@ package org.cups4j;
 import ch.ethz.vppserver.ippclient.IppResult;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
-import org.cups4j.operations.ipp.IppCreateJobOperation;
-import org.cups4j.operations.ipp.IppGetJobAttributesOperation;
-import org.cups4j.operations.ipp.IppGetJobsOperation;
-import org.cups4j.operations.ipp.IppPrintJobOperation;
+import org.cups4j.operations.ipp.*;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represents a printer on your IPP server
@@ -181,7 +175,23 @@ public class CupsPrinter {
   public PrintRequestResult print(PrintJob job1, PrintJob... moreJobs) {
     IppCreateJobOperation command = new IppCreateJobOperation(printerURL.getPort());
     IppResult ippResult = command.request(printerURL);
-    throw new UnsupportedOperationException("not yet implemented");
+    AttributeGroup attrGroup = ippResult.getAttributeGroup("job-attributes-tag");
+    int jobId = Integer.parseInt(attrGroup.getAttribute("job-id").getValue());
+    List<PrintJob> printJobs = new ArrayList<PrintJob>();
+    printJobs.add(job1);
+    printJobs.addAll(Arrays.asList(moreJobs));
+    for (int i = 0; i < printJobs.size() - 1; i++) {
+      sendDocument(printJobs.get(i), jobId, false);
+    }
+    ippResult = sendDocument(printJobs.get(printJobs.size()-1), jobId, true);
+    PrintRequestResult result = new PrintRequestResult(ippResult);
+    result.setJobId(jobId);
+    return result;
+  }
+  
+  private IppResult sendDocument(PrintJob job, int jobId, boolean lastDocument) {
+    IppSendDocumentOperation op = new IppSendDocumentOperation(printerURL.getPort(), jobId, false);
+    return op.request(printerURL, job);
   }
 
   /**
