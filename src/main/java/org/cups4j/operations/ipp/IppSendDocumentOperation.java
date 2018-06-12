@@ -163,7 +163,14 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
     }
 
     public IppResult request(URL url, Map<String, String> map, InputStream document) throws Exception {
-        return sendRequest(url.toURI(), getIppHeader(url, map), document);
+        ByteBuffer ippHeader = getIppHeader(url, map);
+        IppResult ippResult = sendRequest(url.toURI(), ippHeader, document);
+        if ((ippResult.getHttpStatusCode() == 426) && "http".equalsIgnoreCase(url.getProtocol())) {
+            URI https = URI.create(url.toURI().toString().replace("http", "https"));
+            LOG.warn("Access with {} failed - will try now {} as printerURL.", url, https);
+            ippResult = sendRequest(https, getIppHeader(url, map), document);
+        }
+        return ippResult;
     }
 
     /**
@@ -254,19 +261,28 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         try {
             CloseableHttpResponse httpResponse = client.execute(httpPost);
             LOG.info("Received from {}: {}", uri, httpResponse);
-            InputStream istream = httpResponse.getEntity().getContent();
-            try {
-                byte[] result = IOUtils.toByteArray(istream);
-                IppResponse ippResponse = new IppResponse();
-                IppResult ippResult = ippResponse.getResponse(ByteBuffer.wrap(result));
-                ippResult.setHttpStatusResponse(httpResponse.getStatusLine().toString());
-                ippResult.setHttpStatusCode(httpResponse.getStatusLine().getStatusCode());
-                return ippResult;
-            } finally {
-                istream.close();
-            }
+            return getIppResult(httpResponse);
         } finally {
             client.close();
+        }
+    }
+
+    private static IppResult getIppResult(CloseableHttpResponse httpResponse) throws IOException {
+        InputStream istream = httpResponse.getEntity().getContent();
+        try {
+            byte[] result = IOUtils.toByteArray(istream);
+            IppResponse ippResponse = new IppResponse();
+            IppResult ippResult = ippResponse.getResponse(ByteBuffer.wrap(result));
+            ippResult.setHttpStatusCode(httpResponse.getStatusLine().getStatusCode());
+            if (ippResult.getHttpStatusCode() == 426) {
+                ippResult.setHttpStatusResponse(new String(result));
+                LOG.warn("Received {} after send-document.", ippResult);
+            } else {
+                ippResult.setHttpStatusResponse(httpResponse.getStatusLine().toString());
+            }
+            return ippResult;
+        } finally {
+            istream.close();
         }
     }
 

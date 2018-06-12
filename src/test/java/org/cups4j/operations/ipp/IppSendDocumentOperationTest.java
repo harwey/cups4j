@@ -81,7 +81,6 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
     @Test
     public void testRequest() throws Exception {
         CupsPrinter printer = CupsPrinterTest.getPrinter();
-        URL printerURL = printer.getPrinterURL();
         if (printer == null) {
             LOG.info("You must set system property 'printer' to activate this test!");
             LOG.info("testRequest() is SKIPPED.");
