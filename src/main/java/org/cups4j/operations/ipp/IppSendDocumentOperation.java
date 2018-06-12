@@ -176,30 +176,16 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
      */
     @Override
     public ByteBuffer getIppHeader(URL url, Map<String, String> map) throws UnsupportedEncodingException {
-        if (url == null) {
-            LOG.error("IppPrintJobOperation.getIppHeader(): uri is null");
-            return null;
-        }
-
+        assert(url != null);
         ByteBuffer ippBuf = ByteBuffer.allocateDirect(bufferSize);
         ippBuf = IppTag.getOperation(ippBuf, operationID);
         ippBuf = IppTag.getUri(ippBuf, "printer-uri", stripPortNumber(url));
-
-        if (map == null) {
-            ippBuf = IppTag.getEnd(ippBuf);
-            ippBuf.flip();
-            return ippBuf;
-        }
-
         String userName = map.get("requesting-user-name");
         if (userName == null) {
             userName = System.getProperty("user.name", CupsClient.DEFAULT_USER);
         }
         ippBuf = IppTag.getNameWithoutLanguage(ippBuf, "requesting-user-name", userName);
-
-        if (map.get("job-name") != null) {
-            ippBuf = IppTag.getNameWithoutLanguage(ippBuf, "job-name", map.get("job-name"));
-        }
+        ippBuf = IppTag.getNameWithoutLanguage(ippBuf, "job-name", map.get("job-name"));
 
         if (map.get("ipp-attribute-fidelity") != null) {
             boolean value = false;
@@ -240,19 +226,11 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
             ippBuf = IppTag.getInteger(ippBuf, "job-media-sheets", value);
         }
 
-        String operationAttributes = map.get("operation-attributes");
-        if (operationAttributes == null) {
-            operationAttributes = "";
-        } else {
-            operationAttributes += "#";
-        }
-        operationAttributes += "job-id:integer:" + jobId + "#last-document:boolean:" + Boolean.toString(lastDocument);
+        String operationAttributes = "job-id:integer:" + jobId + "#last-document:boolean:" + Boolean.toString(lastDocument);
         ippBuf = getOperationAttributes(ippBuf, operationAttributes.split("#"));
 
-        if (map.get("job-attributes") != null) {
-            String[] attributeBlocks = map.get("job-attributes").split("#");
-            ippBuf = getJobAttributes(ippBuf, attributeBlocks);
-        }
+        String[] attributeBlocks = map.get("job-attributes").split("#");
+        ippBuf = getJobAttributes(ippBuf, attributeBlocks);
 
         ippBuf = IppTag.getEnd(ippBuf);
         ippBuf.flip();
@@ -268,13 +246,9 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         ByteArrayInputStream headerStream = new ByteArrayInputStream(bytes);
 
         InputStream inputStream = new SequenceInputStream(headerStream, documentStream);
-
-        // set length to -1 to advice the entity to read until EOF
         InputStreamEntity requestEntity = new InputStreamEntity(inputStream, -1);
-
         requestEntity.setContentType(IPP_MIME_TYPE);
         httpPost.setEntity(requestEntity);
-        //httpPost.setEntity(new ByteArrayEntity(bytes));
 
         CloseableHttpClient client = HttpClients.custom().build();
         try {

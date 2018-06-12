@@ -94,7 +94,6 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
         Map<String, String> attributes = new HashMap<String, String>();
         attributes.put("job-attributes", "copies:integer:1#orientation-requested:enum:3#output-mode:keyword:monochrome");
         attributes.put("job-name", "testosteron");
-        attributes.put("operation-attributes", "job-id:integer:4711#last-document:boolean:false");
         attributes.put("requesting-user-name", "oboehm");
         ByteArrayInputStream document = new ByteArrayInputStream("Hello World!\n".getBytes());
         IppResult ippResult = operation.request(printerURL, attributes, document);
