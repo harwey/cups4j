@@ -1,6 +1,8 @@
 package org.cups4j.operations.ipp;
 
 import ch.ethz.vppserver.ippclient.IppResult;
+import org.cups4j.CupsPrinter;
+import org.cups4j.CupsPrinterTest;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,18 +80,19 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
 
     @Test
     public void testRequest() throws Exception {
-        String printerURL = System.getProperty("printerURL");
-        if (printerURL == null) {
-            LOG.info("You must set system property 'printerURL' to activate this test!");
+        CupsPrinter printer = CupsPrinterTest.getPrinter();
+        URL printerURL = printer.getPrinterURL();
+        if (printer == null) {
+            LOG.info("You must set system property 'printer' to activate this test!");
             LOG.info("testRequest() is SKIPPED.");
         } else {
-            checkRequest(new URL(printerURL));
+            checkRequest(printer.getPrinterURL());
         }
     }
 
     private void checkRequest(URL printerURL) throws Exception {
         Map<String, String> attributes = new HashMap<String, String>();
-        attributes.put("job-attribtes", "copies:integer:1#orientation-requested:enum:3#output-mode:keyword:monochrome");
+        attributes.put("job-attributes", "copies:integer:1#orientation-requested:enum:3#output-mode:keyword:monochrome");
         attributes.put("job-name", "testosteron");
         attributes.put("operation-attributes", "job-id:integer:4711#last-document:boolean:false");
         attributes.put("requesting-user-name", "oboehm");

@@ -24,7 +24,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -268,19 +267,14 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         ippBuf.get(bytes);
         ByteArrayInputStream headerStream = new ByteArrayInputStream(bytes);
 
-        // If we need to send a document, concatenate InputStreams
-        InputStream inputStream = headerStream;
-        if (documentStream != null) {
-            inputStream = new SequenceInputStream(headerStream, documentStream);
-        }
+        InputStream inputStream = new SequenceInputStream(headerStream, documentStream);
 
         // set length to -1 to advice the entity to read until EOF
         InputStreamEntity requestEntity = new InputStreamEntity(inputStream, -1);
 
         requestEntity.setContentType(IPP_MIME_TYPE);
         httpPost.setEntity(requestEntity);
-        
-        httpPost.setEntity(new ByteArrayEntity(bytes));
+        //httpPost.setEntity(new ByteArrayEntity(bytes));
 
         CloseableHttpClient client = HttpClients.custom().build();
         try {

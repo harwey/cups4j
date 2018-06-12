@@ -35,7 +35,7 @@ import java.util.Map;
 public abstract class AbstractIppOperationTest {
 
     protected static ByteBuffer getIppHeader(IppOperation operation) throws UnsupportedEncodingException {
-        URL printerURL = createURL("http://localhost:631/test-printer");
+        URL printerURL = createURL("http://localhost:631/printers/test-printer");
         Map<String, String> attributes = setUpAttributes();
         return operation.getIppHeader(printerURL, attributes);
     }
