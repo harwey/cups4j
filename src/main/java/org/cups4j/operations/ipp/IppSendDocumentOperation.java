@@ -29,11 +29,13 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.cups4j.CupsClient;
 import org.cups4j.PrintJob;
+import org.cups4j.ipp.attributes.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -141,11 +143,13 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         try {
             IppResult ippResult = request(printerURL, attributes, document);
             if (ippResult.getHttpStatusCode() >= 300) {
+                Attribute statusMessage = ippResult.getAttributeGroupList().get(0).getAttribute("status-message");
                 throw new IllegalStateException(
-                        "IPP request to " + printerURL + " was not successful: " + ippResult.getHttpStatusResponse());
+                        "IPP request to " + printerURL + " was not successful: " + ippResult.getHttpStatusResponse() +
+                                " (" + statusMessage.getValue() + ")");
             }
             return ippResult;
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             throw new IllegalStateException("request to " + printerURL + " failed", ex);
         }
     }
@@ -162,15 +166,20 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         }
     }
 
-    public IppResult request(URL url, Map<String, String> map, InputStream document) throws Exception {
+    @Override
+    public IppResult request(URL url, Map<String, String> map, InputStream document) throws IOException {
         ByteBuffer ippHeader = getIppHeader(url, map);
-        IppResult ippResult = sendRequest(url.toURI(), ippHeader, document);
-        if ((ippResult.getHttpStatusCode() == 426) && "http".equalsIgnoreCase(url.getProtocol())) {
-            URI https = URI.create(url.toURI().toString().replace("http", "https"));
-            LOG.warn("Access with {} failed - will try now {} as printerURL.", url, https);
-            ippResult = sendRequest(https, getIppHeader(url, map), document);
+        try {
+            IppResult ippResult = sendRequest(url.toURI(), ippHeader, document);
+            if ((ippResult.getHttpStatusCode() == 426) && "http".equalsIgnoreCase(url.getProtocol())) {
+                URI https = URI.create(url.toURI().toString().replace("http", "https"));
+                LOG.warn("Access with {} failed - will try now {} as printerURL.", url, https);
+                ippResult = sendRequest(https, getIppHeader(url, map), document);
+            }
+            return ippResult;
+        } catch (URISyntaxException ex) {
+            throw new IllegalArgumentException("cannot handle " + url + " as URI", ex);
         }
-        return ippResult;
     }
 
     /**
@@ -301,7 +310,7 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         int l = attributeBlocks.length;
         for (int i = 0; i < l; i++) {
             String[] attr = attributeBlocks[i].split(":");
-            if ((attr == null) || (attr.length != 3)) {
+            if (attr.length != 3) {
                 throw new IllegalArgumentException(attributeBlocks[i] + ": 'name:type:value' expected as attribute");
             }
             String name = attr[0];
