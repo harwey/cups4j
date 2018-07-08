@@ -29,7 +29,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.cups4j.CupsClient;
 import org.cups4j.PrintJob;
-import org.cups4j.ipp.attributes.Attribute;
+import org.cups4j.ipp.attributes.AttributeGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +39,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -66,7 +67,6 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
     }
 
     public IppResult request(URL printerURL, PrintJob printJob) {
-        int ippJobID = -1;
         InputStream document = printJob.getDocument();
         String userName = printJob.getUserName();
         String jobName = printJob.getJobName();
@@ -143,10 +143,14 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         try {
             IppResult ippResult = request(printerURL, attributes, document);
             if (ippResult.getHttpStatusCode() >= 300) {
-                Attribute statusMessage = ippResult.getAttributeGroupList().get(0).getAttribute("status-message");
+                String msg = "";
+                List<AttributeGroup> attributeGroupList = ippResult.getAttributeGroupList();
+                if (!attributeGroupList.isEmpty()) {
+                    msg = " (" + attributeGroupList.get(0).getAttribute("status-message").getValue() + ")";
+                }
                 throw new IllegalStateException(
                         "IPP request to " + printerURL + " was not successful: " + ippResult.getHttpStatusResponse() +
-                                " (" + statusMessage.getValue() + ")");
+                                msg);
             }
             return ippResult;
         } catch (IOException ex) {
@@ -196,6 +200,9 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         ByteBuffer ippBuf = ByteBuffer.allocateDirect(bufferSize);
         ippBuf = IppTag.getOperation(ippBuf, operationID);
         ippBuf = IppTag.getUri(ippBuf, "printer-uri", stripPortNumber(url));
+        ippBuf = IppTag.getInteger(ippBuf, "job-id", jobId);
+        ippBuf = IppTag.getBoolean(ippBuf, "last-document", lastDocument);
+
         String userName = map.get("requesting-user-name");
         if (userName == null) {
             userName = System.getProperty("user.name", CupsClient.DEFAULT_USER);
@@ -241,9 +248,6 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
             int value = Integer.parseInt(map.get("job-media-sheets"));
             ippBuf = IppTag.getInteger(ippBuf, "job-media-sheets", value);
         }
-
-        String operationAttributes = "job-id:integer:" + jobId + "#last-document:boolean:" + Boolean.toString(lastDocument);
-        ippBuf = getOperationAttributes(ippBuf, operationAttributes.split("#"));
 
         String[] attributeBlocks = map.get("job-attributes").split("#");
         ippBuf = getJobAttributes(ippBuf, attributeBlocks);

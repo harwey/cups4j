@@ -1,20 +1,27 @@
 package org.cups4j.operations.ipp;
 
+import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
 import org.cups4j.CupsPrinter;
 import org.cups4j.CupsPrinterTest;
+import org.cups4j.ipp.attributes.AttributeGroup;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
@@ -54,6 +61,22 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
         ByteBuffer buffer = operation.getIppHeader(printerURL, attributes);
         byte[] header = toByteArray(buffer);
         assertThat(new String(header), containsString("job-id"));
+        checkIppRequest(header);
+    }
+
+    private static void checkIppRequest(byte[] header) {
+        IppResponse ippResponse = new IppResponse();
+        try {
+            IppResult ippResult = ippResponse.getResponse(ByteBuffer.wrap(header));
+            Set<String> groupTagNames = new HashSet<String>();
+            for (AttributeGroup group : ippResult.getAttributeGroupList()) {
+                String tagName = group.getTagName();
+                assertThat("duplicate tag name", groupTagNames, not(hasItem(tagName)));
+                groupTagNames.add(tagName);
+            }
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("cannot parse header with " + header.length + " bytes", ex);
+        }
     }
 
     /**
