@@ -32,6 +32,7 @@ import org.cups4j.operations.IppOperation;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -40,7 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The class IppCreateJobOperation represents  he
+ * The class IppCreateJobOperation represents the create-job operation.
  *
  * @author oboehm
  * @since 0.7.2 (23.03.2018)
@@ -54,6 +55,32 @@ public class IppCreateJobOperation extends IppOperation {
     public IppCreateJobOperation(int port) {
         this();
         this.ippPort = port;
+    }
+
+    /**
+     * Gets the IPP header with requesting-user-name.
+     *
+     * @param url where to send the request
+     * @return IPP header
+     * @throws UnsupportedEncodingException if encoding is not supported.
+     */
+    @Override
+    public ByteBuffer getIppHeader(URL url) throws UnsupportedEncodingException {
+        return getIppHeader(url, new HashMap<String, String>());
+    }
+
+    /**
+     * Gets the IPP header with requesting-user-name.
+     *
+     * @param url where to send the request
+     * @param map attributes
+     * @return IPP header
+     * @throws UnsupportedEncodingException if encoding is not supported.
+     */
+    @Override
+    public ByteBuffer getIppHeader(URL url, Map<String, String> map) throws UnsupportedEncodingException {
+        map.put("requesting-user-name", System.getProperty("user.name", "anonymous"));
+        return super.getIppHeader(url, map);
     }
 
     public IppResult request(URL url) {

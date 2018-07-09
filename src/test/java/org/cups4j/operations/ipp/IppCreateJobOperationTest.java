@@ -1,5 +1,6 @@
 package org.cups4j.operations.ipp;
 
+import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
 import org.cups4j.CupsPrinter;
 import org.cups4j.CupsPrinterTest;
@@ -9,12 +10,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.*;
 
 /**
@@ -39,11 +40,27 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
         URL printerURL = createURL("http://localhost:631/test-printer");
         ByteBuffer buffer = operation.getIppHeader(printerURL);
         checkAttribute(buffer, "printer-uri");
+        checkAttribute(buffer, "requesting-user-name");
     }
 
     private static void checkAttribute(ByteBuffer buffer, String name) {
-        String s = new String(toByteArray(buffer));
-        assertThat(s, containsString(name));
+        IppResponse ippResponse = new IppResponse();
+        try {
+            buffer.rewind();
+            IppResult ippResult = ippResponse.getResponse(buffer);
+            for (AttributeGroup group : ippResult.getAttributeGroupList()) {
+                for (Attribute attr : group.getAttribute()) {
+                    if (name.equals(attr.getName())) {
+                        String value = attr.getValue();
+                        assertNotEquals("attribute '" + name + "' is empty", 0, value.length());
+                        return;
+                    }
+                }
+            }
+        } catch (IOException ioe) {
+            throw new IllegalArgumentException("invalid ByteBuffer " + buffer, ioe);
+        }
+        fail("Attribute '" + name + "' not found.");
     }
 
     private static byte[] toByteArray(ByteBuffer buffer) {
@@ -53,7 +70,7 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
     }
     
     @Test
-    public void testRequest() throws UnsupportedEncodingException {
+    public void testRequest() {
         CupsPrinter cupsPrinter = CupsPrinterTest.getPrinter();
         IppResult ippResult = operation.request(cupsPrinter.getPrinterURL());
         assertNotNull(ippResult);
