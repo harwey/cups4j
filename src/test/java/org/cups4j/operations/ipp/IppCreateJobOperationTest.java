@@ -39,11 +39,12 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
     public void testGetIppHeader() throws UnsupportedEncodingException {
         URL printerURL = createURL("http://localhost:631/test-printer");
         ByteBuffer buffer = operation.getIppHeader(printerURL);
-        checkAttribute(buffer, "printer-uri");
-        checkAttribute(buffer, "requesting-user-name");
+        checkAttribute(buffer, "printer-uri", "http://localhost:631/test-printer");
+        checkAttribute(buffer, "requesting-user-name", System.getProperty("user.name"));
+        
     }
 
-    private static void checkAttribute(ByteBuffer buffer, String name) {
+    private static void checkAttribute(ByteBuffer buffer, String name, String expectedValue) {
         IppResponse ippResponse = new IppResponse();
         try {
             buffer.rewind();
@@ -52,7 +53,7 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
                 for (Attribute attr : group.getAttribute()) {
                     if (name.equals(attr.getName())) {
                         String value = attr.getValue();
-                        assertNotEquals("attribute '" + name + "' is empty", 0, value.length());
+                        assertEquals(expectedValue, value);
                         return;
                     }
                 }

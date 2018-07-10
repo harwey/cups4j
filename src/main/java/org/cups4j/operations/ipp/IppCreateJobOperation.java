@@ -19,6 +19,7 @@ package org.cups4j.operations.ipp;
 
 import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
+import ch.ethz.vppserver.ippclient.IppTag;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
@@ -79,8 +80,31 @@ public class IppCreateJobOperation extends IppOperation {
      */
     @Override
     public ByteBuffer getIppHeader(URL url, Map<String, String> map) throws UnsupportedEncodingException {
-        map.put("requesting-user-name", System.getProperty("user.name", "anonymous"));
-        return super.getIppHeader(url, map);
+        ByteBuffer ippBuf = ByteBuffer.allocateDirect(bufferSize);
+        ippBuf = IppTag.getOperation(ippBuf, operationID);
+        ippBuf = IppTag.getUri(ippBuf, "printer-uri", url.toString());
+        ippBuf = IppTag.getNameWithoutLanguage(ippBuf, "requesting-user-name",
+                System.getProperty("user.name", "anonymous"));
+
+        if (map.get("limit") != null) {
+            int value = Integer.parseInt(map.get("limit"));
+            ippBuf = IppTag.getInteger(ippBuf, "limit", value);
+        }
+
+        if (map.get("requested-attributes") != null) {
+            String[] sta = map.get("requested-attributes").split(" ");
+            if (sta != null) {
+                ippBuf = IppTag.getKeyword(ippBuf, "requested-attributes", sta[0]);
+                int l = sta.length;
+                for (int i = 1; i < l; i++) {
+                    ippBuf = IppTag.getKeyword(ippBuf, null, sta[i]);
+                }
+            }
+        }
+
+        ippBuf = IppTag.getEnd(ippBuf);
+        ippBuf.flip();
+        return ippBuf;
     }
 
     public IppResult request(URL url) {
