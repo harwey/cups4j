@@ -17,14 +17,22 @@
  */
 package org.cups4j.operations.ipp;
 
+import ch.ethz.vppserver.ippclient.IppResponse;
+import ch.ethz.vppserver.ippclient.IppResult;
+import org.cups4j.ipp.attributes.Attribute;
+import org.cups4j.ipp.attributes.AttributeGroup;
 import org.cups4j.operations.IppOperation;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Klasse AbstractIppOperationTest.
@@ -62,5 +70,26 @@ public abstract class AbstractIppOperationTest {
             throw new IllegalArgumentException("not a URL: " + url, ex);
         }
     }
+
+    protected static void checkAttribute(ByteBuffer buffer, String name, String expectedValue) {
+        IppResponse ippResponse = new IppResponse();
+        try {
+            buffer.rewind();
+            IppResult ippResult = ippResponse.getResponse(buffer);
+            for (AttributeGroup group : ippResult.getAttributeGroupList()) {
+                for (Attribute attr : group.getAttribute()) {
+                    if (name.equals(attr.getName())) {
+                        String value = attr.getValue();
+                        assertEquals(expectedValue, value);
+                        return;
+                    }
+                }
+            }
+        } catch (IOException ioe) {
+            throw new IllegalArgumentException("invalid ByteBuffer " + buffer, ioe);
+        }
+        fail("Attribute '" + name + "' not found.");
+    }
+
 
 }

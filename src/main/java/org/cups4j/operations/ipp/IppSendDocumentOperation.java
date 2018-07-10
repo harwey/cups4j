@@ -199,7 +199,7 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         assert(url != null);
         ByteBuffer ippBuf = ByteBuffer.allocateDirect(bufferSize);
         ippBuf = IppTag.getOperation(ippBuf, operationID);
-        ippBuf = IppTag.getUri(ippBuf, "printer-uri", stripPortNumber(url));
+        ippBuf = IppTag.getUri(ippBuf, "printer-uri", url.toString());
         ippBuf = IppTag.getInteger(ippBuf, "job-id", jobId);
         ippBuf = IppTag.getBoolean(ippBuf, "last-document", lastDocument);
 

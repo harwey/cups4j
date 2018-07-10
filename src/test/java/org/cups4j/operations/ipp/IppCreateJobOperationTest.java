@@ -1,6 +1,5 @@
 package org.cups4j.operations.ipp;
 
-import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
 import org.cups4j.CupsPrinter;
 import org.cups4j.CupsPrinterTest;
@@ -10,7 +9,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -42,26 +40,6 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
         checkAttribute(buffer, "printer-uri", "http://localhost:631/test-printer");
         checkAttribute(buffer, "requesting-user-name", System.getProperty("user.name"));
         
-    }
-
-    private static void checkAttribute(ByteBuffer buffer, String name, String expectedValue) {
-        IppResponse ippResponse = new IppResponse();
-        try {
-            buffer.rewind();
-            IppResult ippResult = ippResponse.getResponse(buffer);
-            for (AttributeGroup group : ippResult.getAttributeGroupList()) {
-                for (Attribute attr : group.getAttribute()) {
-                    if (name.equals(attr.getName())) {
-                        String value = attr.getValue();
-                        assertEquals(expectedValue, value);
-                        return;
-                    }
-                }
-            }
-        } catch (IOException ioe) {
-            throw new IllegalArgumentException("invalid ByteBuffer " + buffer, ioe);
-        }
-        fail("Attribute '" + name + "' not found.");
     }
 
     private static byte[] toByteArray(ByteBuffer buffer) {
