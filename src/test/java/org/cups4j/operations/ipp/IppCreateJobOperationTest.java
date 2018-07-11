@@ -14,7 +14,6 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.*;
 
 /**
@@ -38,12 +37,9 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
     public void testGetIppHeader() throws UnsupportedEncodingException {
         URL printerURL = createURL("http://localhost:631/test-printer");
         ByteBuffer buffer = operation.getIppHeader(printerURL);
-        checkAttribute(buffer, "printer-uri");
-    }
-
-    private static void checkAttribute(ByteBuffer buffer, String name) {
-        String s = new String(toByteArray(buffer));
-        assertThat(s, containsString(name));
+        checkAttribute(buffer, "printer-uri", "http://localhost:631/test-printer");
+        checkAttribute(buffer, "requesting-user-name", System.getProperty("user.name"));
+        
     }
 
     private static byte[] toByteArray(ByteBuffer buffer) {
@@ -53,7 +49,7 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
     }
     
     @Test
-    public void testRequest() throws UnsupportedEncodingException {
+    public void testRequest() {
         CupsPrinter cupsPrinter = CupsPrinterTest.getPrinter();
         IppResult ippResult = operation.request(cupsPrinter.getPrinterURL());
         assertNotNull(ippResult);

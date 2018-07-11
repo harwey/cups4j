@@ -47,6 +47,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
     public void testGetIppHeader() throws UnsupportedEncodingException {
         ByteBuffer buffer = getIppHeader(operation);
         assertEquals(6, buffer.get(3));
+        checkAttribute(buffer, "printer-uri", "http://localhost:631/printers/test-printer");
     }
 
     /**
