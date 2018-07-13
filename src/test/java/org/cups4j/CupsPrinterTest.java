@@ -60,19 +60,35 @@ public final class CupsPrinterTest {
         printer.print(job, job);
     }
 
+    @Test
+    public void testPrintListWithEmtpyJob() throws UnsupportedEncodingException {
+        File file = new File("src/test/resources/test.txt");
+        PrintJob job = createPrintJob(file);
+        PrintJob empty = createPrintJob(new byte[0], "empty");
+        printer.print(job, job);
+    }
+
     private PrintJob createPrintJob(File file) {
         String jobname = generateJobnameFor(file);
         try {
             byte[] content = FileUtils.readFileToByteArray(file);
-            String userName = System.getProperty("user.name", CupsClient.DEFAULT_USER);
-            return new PrintJob.Builder(content).jobName(jobname).userName(userName).build();
+            return createPrintJob(content, jobname);
         } catch (IOException ioe) {
             throw new IllegalArgumentException("cannot read '" + file + "'", ioe);
         }
     }
 
+    private PrintJob createPrintJob(byte[] content, String jobname) {
+        String userName = System.getProperty("user.name", CupsClient.DEFAULT_USER);
+        return new PrintJob.Builder(content).jobName(jobname).userName(userName).build();
+    }
+
     private static String generateJobnameFor(File file) {
         String basename = file.getName().split("\\.")[0];
+        return generateJobNameFor(basename);
+    }
+
+    private static String generateJobNameFor(String basename) {
         byte[] epochTime = Base64.encodeBase64(BigInteger.valueOf(System.currentTimeMillis()).toByteArray());
         return basename + new String(epochTime).substring(2);
     }

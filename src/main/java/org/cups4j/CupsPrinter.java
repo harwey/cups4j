@@ -190,7 +190,7 @@ public class CupsPrinter {
   }
   
   private IppResult sendDocument(PrintJob job, int jobId, boolean lastDocument) {
-    IppSendDocumentOperation op = new IppSendDocumentOperation(printerURL.getPort(), jobId, false);
+    IppSendDocumentOperation op = new IppSendDocumentOperation(printerURL.getPort(), jobId, lastDocument);
     return op.request(printerURL, job);
   }
 

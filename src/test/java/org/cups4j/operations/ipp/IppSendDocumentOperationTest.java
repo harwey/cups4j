@@ -23,9 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * Unit-Tests fuer {@link IppSendDocumentOperation}-Klasse.
@@ -68,6 +66,26 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
         checkIppRequestAttributes(header);
     }
 
+    /**
+     * The last Send-Document request for a given Job includes a
+     * "last-document" operation attribute set to 'true' indicating that
+     * this is the last request.
+     *
+     * @throws IOException in case of encoding or other problemss
+     */
+    @Test
+    public void testGetIppHeaderOfLastDocument() throws IOException {
+        IppSendDocumentOperation op = new IppSendDocumentOperation(6631, 4711, true);
+        Map<String, String> attributes = setUpAttributes();
+        ByteBuffer buffer = op.getIppHeader(createURL("http://localhost:6631/test-printer"), attributes);
+        byte[] header = toByteArray(buffer);
+        IppResult ippResult = new IppResponse().getResponse(ByteBuffer.wrap(header));
+        AttributeGroup group = ippResult.getAttributeGroupList().get(0);
+        Attribute attribute = group.getAttribute("last-document");
+        assertNotNull(attribute);
+        assertEquals("true", attribute.getValue());
+    }
+
     private static void checkIppRequest(byte[] header) throws IOException {
         IppResult ippResult = new IppResponse().getResponse(ByteBuffer.wrap(header));
         Set<String> groupTagNames = new HashSet<String>();
@@ -80,7 +98,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
 
     private static void checkIppRequestAttributes(byte[] header) throws IOException {
         IppResponse ippResponse = new IppResponse();
-        IppResult ippResult = ippResponse.getResponse(ByteBuffer.wrap(header));
+        IppResult ippResult = new IppResponse().getResponse(ByteBuffer.wrap(header));
         IppResult ref = ippResponse.getResponse(
                 ByteBuffer.wrap(FileUtils.readFileToByteArray(new File("src/test/resources/ipp/Send-Document.ipp"))));
         for (AttributeGroup group : ref.getAttributeGroupList()) {

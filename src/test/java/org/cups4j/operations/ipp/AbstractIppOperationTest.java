@@ -59,7 +59,6 @@ public abstract class AbstractIppOperationTest {
                 "multiple-document-handling-supported");
         attributes.put("job-attributes", "copies:integer:1#orientation-requested:enum:3#output-mode:keyword:monochrome");
         attributes.put("job-name", "testJUCW5V");
-        //attributes.put("requesting-user-name", "anonymous");
         return attributes;
     }
 
