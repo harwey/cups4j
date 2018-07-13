@@ -58,7 +58,6 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
     public void testGetIppHeaderWithJobId() throws IOException {
         URL printerURL = createURL("http://localhost:631/test-printer");
         Map<String, String> attributes = setUpAttributes();
-        attributes.put("operation-attributes", "job-id:integer:40#last-document:boolean:false");
         ByteBuffer buffer = operation.getIppHeader(printerURL, attributes);
         byte[] header = toByteArray(buffer);
         assertThat(new String(header), containsString("job-id"));
