@@ -23,7 +23,6 @@ import java.util.List;
 public class IppResult {
   private String httpStatusResponse = null;
   private String ippStatusResponse = null;
-  private String ippStatusMessage = null;
   private List<AttributeGroup> attributeGroupList = null;
   private int httpStatusCode;
 
@@ -60,22 +59,6 @@ public class IppResult {
    */
   public void setIppStatusResponse(String statusResponse) {
     ippStatusResponse = statusResponse;
-  }
-
-  /**
-   *
-   * @return
-   */
-  public String getIppStatusMessage() {
-    return ippStatusMessage;
-  }
-
-  /**
-   *
-   * @param statusResponse
-   */
-  public void setIppStatusMessage(String statusResponse) {
-    ippStatusMessage = ippStatusMessage;
   }
 
   /**

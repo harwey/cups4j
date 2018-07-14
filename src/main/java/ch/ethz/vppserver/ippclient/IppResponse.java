@@ -145,12 +145,8 @@ public class IppResponse {
     // read IPP header
     if ((!ippHeaderResponse) && (buffer.hasRemaining())) {
       _buf = buffer;
-      if (buffer.get(0) > 0x20) {
-        return parseErrorText();
-      } else {
-        result.setIppStatusResponse(getIPPHeader());
-        ippHeaderResponse = true;
-      }
+      result.setIppStatusResponse(getIPPHeader());
+      ippHeaderResponse = true;
     }
 
     _buf = buffer;
@@ -223,20 +219,6 @@ public class IppResponse {
       return sb.toString();
     }
     return null;
-  }
-
-  private IppResult parseErrorText() {
-    IppResult result = new IppResult();
-    byte[] buffer = new byte[_buf.capacity() - _buf.position()];
-    _buf.get(buffer);
-    String errorText = new String(buffer);
-    if (errorText.contains("Unauthorized")) {
-      result.setIppStatusResponse("client-error-not-authorized (0x403)");
-    } else {
-      result.setIppStatusResponse("unknown");
-    }
-    result.setIppStatusMessage(errorText);
-    return result;
   }
 
   /**

@@ -173,15 +173,10 @@ public abstract class IppOperation {
     // client.getParams().setParameter("http.protocol.expect-continue",
     // Boolean.valueOf(true));
 
-    URI uri = new URI("http://" + url.getHost() + ":" + ippPort + url.getPath());
-    return sendRequest(uri, ippBuf, documentStream);
-  }
-
-  protected IppResult sendRequest(URI uri, ByteBuffer ippBuf, InputStream documentStream) throws IOException {
-    IppResult ippResult;HttpClient client = HttpClientBuilder.create().build();
-
-    HttpPost httpPost = new HttpPost(uri);
+    HttpClient client = HttpClientBuilder.create().build();
     RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(10000).setConnectTimeout(10000).build();
+
+    HttpPost httpPost = new HttpPost(new URI("http://" + url.getHost() + ":" + ippPort) + url.getPath());
     httpPost.setConfig(requestConfig);
     httpCall = httpPost;
 
