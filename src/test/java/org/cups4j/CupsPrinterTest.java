@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -54,18 +53,9 @@ public final class CupsPrinterTest {
     }
 
     @Test
-    public void testPrintList() throws UnsupportedEncodingException {
+    public void testPrintList() {
         File file = new File("src/test/resources/test.txt");
-        PrintJob job = createPrintJob(file);
-        printer.print(job, job);
-    }
-
-    @Test
-    public void testPrintListWithEmtpyJob() throws UnsupportedEncodingException {
-        File file = new File("src/test/resources/test.txt");
-        PrintJob job = createPrintJob(file);
-        PrintJob empty = createPrintJob(new byte[0], "empty");
-        printer.print(job, job);
+        printer.print(createPrintJob(file), createPrintJob(file));
     }
 
     private PrintJob createPrintJob(File file) {
