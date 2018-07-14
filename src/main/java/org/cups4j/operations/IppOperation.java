@@ -43,7 +43,7 @@ public abstract class IppOperation {
   protected short bufferSize = 8192; // BufferSize for this operation
   protected int ippPort = CupsClient.DEFAULT_PORT;
 
-  private final static String IPP_MIME_TYPE = "application/ipp";
+  protected final static String IPP_MIME_TYPE = "application/ipp";
   private HttpPost httpCall;
 
   //

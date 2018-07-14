@@ -18,7 +18,6 @@ package org.cups4j;
 import ch.ethz.vppserver.ippclient.IppResult;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
-import org.cups4j.operations.IppOperation;
 import org.cups4j.operations.ipp.*;
 
 import java.io.InputStream;
@@ -70,11 +69,6 @@ public class CupsPrinter {
    * @throws Exception
    */
   public PrintRequestResult print(PrintJob printJob) throws Exception {
-    IppOperation command = new IppPrintJobOperation(printerURL.getPort());
-    return request(command, printJob);
-  }
-
-  private PrintRequestResult request(IppOperation command, PrintJob printJob) throws Exception {
     int ippJobID = -1;
     InputStream document = printJob.getDocument();
     String userName = printJob.getUserName();
@@ -149,6 +143,7 @@ public class CupsPrinter {
     if (printJob.isDuplex()) {
       addAttribute(attributes, "job-attributes", "sides:keyword:two-sided-long-edge");
     }
+    IppPrintJobOperation command = new IppPrintJobOperation(printerURL.getPort());
     IppResult ippResult = command.request(printerURL, attributes, document);
     PrintRequestResult result = new PrintRequestResult(ippResult);
     // IppResultPrinter.print(result);
@@ -178,64 +173,27 @@ public class CupsPrinter {
    * @author oboehm
    */
   public PrintRequestResult print(PrintJob job1, PrintJob... moreJobs) {
-      IppResult ippResult = createPrintJob();
-      AttributeGroup attrGroup = ippResult.getAttributeGroup("job-attributes-tag");
-      int jobId = Integer.parseInt(attrGroup.getAttribute("job-id").getValue());
-      List<PrintJob> printJobs = new ArrayList<PrintJob>();
-      printJobs.add(job1);
-      printJobs.addAll(Arrays.asList(moreJobs));
-      for (int i = 0; i < printJobs.size() - 1; i++) {
-          sendDocument(printJobs.get(i), jobId, false);
-      }
-      return sendDocument(printJobs.get(printJobs.size()), jobId, true);
-  }
-
-  private IppResult createPrintJob() {
-      Map<String, String> attributes = new HashMap<String, String>();
-      IppCreateJobOperation command = new IppCreateJobOperation(printerURL.getPort());
-      try {
-          IppResult result = command.request(printerURL, attributes);
-          validate(result);
-          return result;
-      } catch (Exception ex) {
-          throw new IllegalStateException("cannot create print-job", ex);
-      }
+    IppCreateJobOperation command = new IppCreateJobOperation(printerURL.getPort());
+    IppResult ippResult = command.request(printerURL);
+    AttributeGroup attrGroup = ippResult.getAttributeGroup("job-attributes-tag");
+    int jobId = Integer.parseInt(attrGroup.getAttribute("job-id").getValue());
+    List<PrintJob> printJobs = new ArrayList<PrintJob>();
+    printJobs.add(job1);
+    printJobs.addAll(Arrays.asList(moreJobs));
+    for (int i = 0; i < printJobs.size() - 1; i++) {
+      sendDocument(printJobs.get(i), jobId, false);
+    }
+    ippResult = sendDocument(printJobs.get(printJobs.size()-1), jobId, true);
+    PrintRequestResult result = new PrintRequestResult(ippResult);
+    result.setJobId(jobId);
+    return result;
   }
   
-  private PrintRequestResult sendDocument(PrintJob job, int jobId, boolean lastDocument) {
-      IppSendDocumentOperation command = new IppSendDocumentOperation(printerURL.getPort());
-      Map<String, String> attributes = job.getAttributes();
-      if (attributes == null) {
-        attributes = new HashMap<String, String>();
-      }
-      addAttribute(attributes, "operation-attributes", "job-id:integer:" + jobId);
-      addAttribute(attributes, "operation-attributes", "last-document:boolean:" + Boolean.toString(lastDocument));
-      job.setAttributes(attributes);
-      try {
-        PrintRequestResult result = request(command, job);
-        validate(result);
-        return result;
-      } catch (Exception ex) {
-          throw new IllegalStateException("cannot send-document for " + job, ex);
-      }
+  private IppResult sendDocument(PrintJob job, int jobId, boolean lastDocument) {
+    IppSendDocumentOperation op = new IppSendDocumentOperation(printerURL.getPort(), jobId, lastDocument);
+    return op.request(printerURL, job);
   }
 
-  private void validate(IppResult ippResult) {
-    if (ippResult.getHttpStatusCode() >= 300) {
-      throw new IllegalStateException(
-              "IPP request to " + this.printerURL + " was not succesfull: " + ippResult.getHttpStatusResponse());
-    }
-    validate(new PrintRequestResult(ippResult));
-  }
-
-  private void validate(PrintRequestResult result) {
-    int statusCode = Integer.decode(result.getResultCode());
-    if (statusCode >= 0x0400) {
-      throw new IllegalStateException("request to " + this.printerURL + " failed: " + result.getResultCode() + " " +
-              result.getResultDescription() + " - " + result.getResultMessage());
-    }
-  }
-  
   /**
    * 
    * @param map
