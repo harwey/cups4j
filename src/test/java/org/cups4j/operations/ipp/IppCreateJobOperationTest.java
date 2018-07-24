@@ -60,7 +60,7 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
         checkAttribute(ippResult, "job-uri");
         checkAttribute(ippResult, "job-id");
         checkAttribute(ippResult, "job-state");
-        checkAttribute(ippResult, "job-reasons");
+        checkAttribute(ippResult, "job-state-reasons");
     }
     
     private static void checkAttribute(IppResult ippResult, String name) {
