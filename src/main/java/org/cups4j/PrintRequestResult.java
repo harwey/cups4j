@@ -14,10 +14,11 @@ package org.cups4j;
  * the GNU Lesser General Public License along with this program; if not, see
  * <http://www.gnu.org/licenses/>.
  */
+import ch.ethz.vppserver.ippclient.IppResult;
+import org.cups4j.ipp.attributes.AttributeGroup;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import ch.ethz.vppserver.ippclient.IppResult;
 
 /**
  * Result of a print request
@@ -28,8 +29,10 @@ public class PrintRequestResult {
   private int jobId;
   private String resultCode = "";
   private String resultDescription = "";
+  private final IppResult ippResult;
 
   public PrintRequestResult(IppResult ippResult) {
+    this.ippResult = ippResult;
     if ((ippResult == null) || isNullOrEmpty(ippResult.getHttpStatusResponse())) {
       return;
     }
@@ -62,15 +65,28 @@ public class PrintRequestResult {
   }
 
   public boolean isSuccessfulResult() {
-    return (resultCode != null) && resultCode.startsWith("0x00");
+    return (resultCode != null) && getResultCode().startsWith("0x00");
   }
 
   public String getResultCode() {
+    if (ippResult.getHttpStatusCode() < 400) {
     return resultCode;
+    } else {
+      return "0x" + ippResult.getHttpStatusCode();
+    }
   }
 
   public String getResultDescription() {
     return resultDescription;
+  }
+
+  public String getResultMessage() {
+    if (ippResult.hasAttributeGroup("operation-attributes-tag")) {
+      AttributeGroup attributeGroup = ippResult.getAttributeGroup("operation-attributes-tag");
+      return attributeGroup.getAttribute("status-message").getValue();
+    } else {
+      return ippResult.getHttpStatusResponse();
+    }
   }
 
   public int getJobId() {
