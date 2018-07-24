@@ -57,8 +57,10 @@ public abstract class AbstractIppOperationTest {
                 "number-up-supported document-format-supported print-color-mode-supported print-color-mode-default " +
                 "multiple-operation-time-out multiple-document-jobs-supported multiple-document-handling " +
                 "multiple-document-handling-supported");
-        attributes.put("job-attributes", "copies:integer:1#orientation-requested:enum:3#output-mode:keyword:monochrome");
+        attributes.put("job-attributes", "copies:integer:1#orientation-requested:enum:3#output-mode:keyword:monochrome#" +
+                "job-state-reasons:keyword:incoming#job-id:integer:815");
         attributes.put("job-name", "testJUCW5V");
+        attributes.put("document-name", "test-document");
         return attributes;
     }
 
