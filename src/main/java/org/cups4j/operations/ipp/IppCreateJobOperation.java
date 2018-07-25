@@ -102,6 +102,10 @@ public class IppCreateJobOperation extends IppOperation {
             }
         }
 
+        if( map.get("job-name") != null) {
+            ippBuf = IppTag. getNameWithoutLanguage (ippBuf, "job-name", map.get("job-name"));
+        }
+
         ippBuf = IppTag.getEnd(ippBuf);
         ippBuf.flip();
         return ippBuf;

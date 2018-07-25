@@ -12,7 +12,9 @@ import org.slf4j.LoggerFactory;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -26,9 +28,9 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(IppCreateJobOperationTest.class);
     private final IppCreateJobOperation operation = new IppCreateJobOperation();
-
+    
     @Test
-    public void testGetIppHeaderMap() throws UnsupportedEncodingException {
+    public void testOperationId() throws UnsupportedEncodingException {
         ByteBuffer buffer = getIppHeader(operation);
         assertEquals(5, buffer.get(3));
     }
@@ -42,6 +44,14 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
         
     }
 
+    @Test
+    public void testGetIppHeaderWithJobName() throws UnsupportedEncodingException {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("job-name", "Test-Job");
+        ByteBuffer buffer = operation.getIppHeader(createURL("http://localhost:631/test-printer"), map);
+        checkAttribute(buffer, "job-name", "Test-Job");
+    }
+    
     private static byte[] toByteArray(ByteBuffer buffer) {
         byte[] array = new byte[buffer.limit()];
         buffer.get(array);
@@ -82,5 +92,5 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
         }
         return false;
     }
-
+    
 }

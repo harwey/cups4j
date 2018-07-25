@@ -173,25 +173,52 @@ public class CupsPrinter {
    * @author oboehm
    */
   public PrintRequestResult print(PrintJob job1, PrintJob... moreJobs) {
-    IppCreateJobOperation command = new IppCreateJobOperation(printerURL.getPort());
-    IppResult ippResult = command.request(printerURL);
-    AttributeGroup attrGroup = ippResult.getAttributeGroup("job-attributes-tag");
-    int jobId = Integer.parseInt(attrGroup.getAttribute("job-id").getValue());
+    int jobId = createJob(job1.getJobName());
     List<PrintJob> printJobs = new ArrayList<PrintJob>();
     printJobs.add(job1);
     printJobs.addAll(Arrays.asList(moreJobs));
     for (int i = 0; i < printJobs.size() - 1; i++) {
-      sendDocument(printJobs.get(i), jobId, false);
+      print(printJobs.get(i), jobId, false);
     }
-    ippResult = sendDocument(printJobs.get(printJobs.size()-1), jobId, true);
+    return print(printJobs.get(printJobs.size()-1), jobId, true);
+  }
+
+  /**
+   * If you want to print serveral print jobs as one job you must first tell
+   * CUPS that you want to start. This is the method to create a job. The
+   * returned job-id must be used for the following print calls.
+   * 
+   * @param jobName the name of a job
+   * @return the job-id
+   * @since 0.7.2
+   * @author oboehm
+   */
+  public int createJob(String jobName) {
+    Map<String, String> attributes = new HashMap<String, String>();
+    attributes.put("job-name", jobName);
+    IppCreateJobOperation command = new IppCreateJobOperation(printerURL.getPort());
+    IppResult ippResult = command.request(printerURL);
+    AttributeGroup attrGroup = ippResult.getAttributeGroup("job-attributes-tag");
+    return Integer.parseInt(attrGroup.getAttribute("job-id").getValue());
+  }
+
+  /**
+   * Call this method if you want to print several print jobs as one print job.
+   * Call {@link #createJob(String)} to the get the correct job-id.
+   *
+   * @param job          the job
+   * @param jobId        the job id from {@link #createJob(String)}
+   * @param lastDocument set it to true if it is the last document
+   * @return the print request result
+   * @since 0.7.2
+   * @author oboehm
+   */
+  public PrintRequestResult print(PrintJob job, int jobId, boolean lastDocument) {
+    IppSendDocumentOperation op = new IppSendDocumentOperation(printerURL.getPort(), jobId, lastDocument);
+    IppResult ippResult = op.request(printerURL, job);
     PrintRequestResult result = new PrintRequestResult(ippResult);
     result.setJobId(jobId);
     return result;
-  }
-  
-  private IppResult sendDocument(PrintJob job, int jobId, boolean lastDocument) {
-    IppSendDocumentOperation op = new IppSendDocumentOperation(printerURL.getPort(), jobId, lastDocument);
-    return op.request(printerURL, job);
   }
 
   /**
