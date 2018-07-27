@@ -197,7 +197,7 @@ public class CupsPrinter {
     Map<String, String> attributes = new HashMap<String, String>();
     attributes.put("job-name", jobName);
     IppCreateJobOperation command = new IppCreateJobOperation(printerURL.getPort());
-    IppResult ippResult = command.request(printerURL);
+    IppResult ippResult = command.request(printerURL, attributes);
     AttributeGroup attrGroup = ippResult.getAttributeGroup("job-attributes-tag");
     return Integer.parseInt(attrGroup.getAttribute("job-id").getValue());
   }
