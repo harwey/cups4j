@@ -7,11 +7,11 @@
 
 package org.cups4j.ipp.attributes;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Root(name = "attribute-group")
 public class AttributeGroup {
@@ -51,6 +51,21 @@ public class AttributeGroup {
       attribute = new ArrayList<Attribute>();
     }
     return this.attribute;
+  }
+
+    /**
+     * Gets the attribute with the given name.
+     *
+     * @param name name of the attribute
+     * @return attribute with the given name
+     */
+  public Attribute getAttribute(String name) {
+      for (Attribute attr : getAttribute()) {
+          if (name.equals(attr.getName())) {
+              return attr;
+          }
+      }
+      return new Attribute();
   }
 
   /**

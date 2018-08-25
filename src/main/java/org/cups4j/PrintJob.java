@@ -277,4 +277,9 @@ public class PrintJob {
     return resolution;
   }
 
+  @Override
+  public String toString() {
+    return this.getClass().getSimpleName() + "-" + getJobName();
+  }
+
 }

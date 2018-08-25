@@ -14,20 +14,15 @@ package org.cups4j;
  * the GNU Lesser General Public License along with this program; if not, see
  * <http://www.gnu.org/licenses/>.
  */
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.cups4j.ipp.attributes.Attribute;
-import org.cups4j.ipp.attributes.AttributeGroup;
-import org.cups4j.operations.ipp.IppGetJobAttributesOperation;
-import org.cups4j.operations.ipp.IppGetJobsOperation;
-import org.cups4j.operations.ipp.IppPrintJobOperation;
 
 import ch.ethz.vppserver.ippclient.IppResult;
+import org.cups4j.ipp.attributes.Attribute;
+import org.cups4j.ipp.attributes.AttributeGroup;
+import org.cups4j.operations.ipp.*;
+
+import java.io.InputStream;
+import java.net.URL;
+import java.util.*;
 
 /**
  * Represents a printer on your IPP server
@@ -163,6 +158,66 @@ public class CupsPrinter {
       }
     }
     result.setJobId(ippJobID);
+    return result;
+  }
+
+  /**
+   * Print method for several print jobs which should be not interrupted by
+   * another print job. The printer must support
+   * 'multiple-document-jobs-supported' which is a recommended option.
+   *
+   * @param job1 first print job
+   * @param moreJobs more print jobs
+   * @return PrintRequestResult
+   * @since 0.7.2
+   * @author oboehm
+   */
+  public PrintRequestResult print(PrintJob job1, PrintJob... moreJobs) {
+    int jobId = createJob(job1.getJobName());
+    List<PrintJob> printJobs = new ArrayList<PrintJob>();
+    printJobs.add(job1);
+    printJobs.addAll(Arrays.asList(moreJobs));
+    for (int i = 0; i < printJobs.size() - 1; i++) {
+      print(printJobs.get(i), jobId, false);
+    }
+    return print(printJobs.get(printJobs.size()-1), jobId, true);
+  }
+
+  /**
+   * If you want to print serveral print jobs as one job you must first tell
+   * CUPS that you want to start. This is the method to create a job. The
+   * returned job-id must be used for the following print calls.
+   * 
+   * @param jobName the name of a job
+   * @return the job-id
+   * @since 0.7.2
+   * @author oboehm
+   */
+  public int createJob(String jobName) {
+    Map<String, String> attributes = new HashMap<String, String>();
+    attributes.put("job-name", jobName);
+    IppCreateJobOperation command = new IppCreateJobOperation(printerURL.getPort());
+    IppResult ippResult = command.request(printerURL, attributes);
+    AttributeGroup attrGroup = ippResult.getAttributeGroup("job-attributes-tag");
+    return Integer.parseInt(attrGroup.getAttribute("job-id").getValue());
+  }
+
+  /**
+   * Call this method if you want to print several print jobs as one print job.
+   * Call {@link #createJob(String)} to the get the correct job-id.
+   *
+   * @param job          the job
+   * @param jobId        the job id from {@link #createJob(String)}
+   * @param lastDocument set it to true if it is the last document
+   * @return the print request result
+   * @since 0.7.2
+   * @author oboehm
+   */
+  public PrintRequestResult print(PrintJob job, int jobId, boolean lastDocument) {
+    IppSendDocumentOperation op = new IppSendDocumentOperation(printerURL.getPort(), jobId, lastDocument);
+    IppResult ippResult = op.request(printerURL, job);
+    PrintRequestResult result = new PrintRequestResult(ippResult);
+    result.setJobId(jobId);
     return result;
   }
 
