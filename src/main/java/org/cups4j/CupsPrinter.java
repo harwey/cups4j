@@ -187,15 +187,32 @@ public class CupsPrinter {
    * If you want to print serveral print jobs as one job you must first tell
    * CUPS that you want to start. This is the method to create a job. The
    * returned job-id must be used for the following print calls.
-   * 
+   *
    * @param jobName the name of a job
    * @return the job-id
    * @since 0.7.2
    * @author oboehm
+   * @deprecated use {@link #createJob(PrintJob)}
    */
+  @Deprecated
   public int createJob(String jobName) {
+    return createJob(new PrintJob.Builder(new byte[0]).jobName(jobName).userName(CupsClient.DEFAULT_USER).build());
+  }
+
+  /**
+   * If you want to print serveral print jobs as one job you must first tell
+   * CUPS that you want to start. This is the method to create a job. The
+   * returned job-id must be used for the following print calls.
+   *
+   * @param job the print-job with job-name and user-name
+   * @return the job-id
+   * @since 0.7.4
+   * @author oboehm
+   */
+  public int createJob(PrintJob job) {
     Map<String, String> attributes = new HashMap<String, String>();
-    attributes.put("job-name", jobName);
+    attributes.put("job-name", job.getJobName());
+    attributes.put("requesting-user-name", job.getUserName());
     IppCreateJobOperation command = new IppCreateJobOperation(printerURL.getPort());
     IppResult ippResult = command.request(printerURL, attributes);
     AttributeGroup attrGroup = ippResult.getAttributeGroup("job-attributes-tag");

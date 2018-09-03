@@ -15,18 +15,14 @@ package org.cups4j;
  * <http://www.gnu.org/licenses/>.
  */
 
-import java.net.URL;
-import java.util.List;
-
 import org.cups4j.operations.IppOperation;
 import org.cups4j.operations.cups.CupsGetDefaultOperation;
 import org.cups4j.operations.cups.CupsGetPrintersOperation;
 import org.cups4j.operations.cups.CupsMoveJobOperation;
-import org.cups4j.operations.ipp.IppCancelJobOperation;
-import org.cups4j.operations.ipp.IppGetJobAttributesOperation;
-import org.cups4j.operations.ipp.IppGetJobsOperation;
-import org.cups4j.operations.ipp.IppHoldJobOperation;
-import org.cups4j.operations.ipp.IppReleaseJobOperation;
+import org.cups4j.operations.ipp.*;
+
+import java.net.URL;
+import java.util.List;
 
 /**
  * Main Client for accessing CUPS features like
@@ -46,7 +42,7 @@ import org.cups4j.operations.ipp.IppReleaseJobOperation;
 public class CupsClient {
   public static final String DEFAULT_HOST = "localhost";
   public static final int DEFAULT_PORT = 631;
-  public static final String DEFAULT_USER = "anonymous";
+  public static final String DEFAULT_USER = System.getProperty("user.name", "anonymous");
 
   private String host = null;
   private int port = -1;
