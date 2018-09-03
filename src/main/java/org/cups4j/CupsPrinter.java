@@ -173,7 +173,7 @@ public class CupsPrinter {
    * @author oboehm
    */
   public PrintRequestResult print(PrintJob job1, PrintJob... moreJobs) {
-    int jobId = createJob(job1.getJobName());
+    int jobId = createJob(job1);
     List<PrintJob> printJobs = new ArrayList<PrintJob>();
     printJobs.add(job1);
     printJobs.addAll(Arrays.asList(moreJobs));
