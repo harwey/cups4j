@@ -165,6 +165,11 @@ public class CupsPrinter {
    * Print method for several print jobs which should be not interrupted by
    * another print job. The printer must support
    * 'multiple-document-jobs-supported' which is a recommended option.
+   * <p>
+   * ATTENTION: Don't use different users for the different print jobs. You
+   * will get probably error 401 (forbidden) from CUPS. To avoid error 401
+   * you'll get now an {@link IllegalStateException}.
+   * </p>
    *
    * @param job1 first print job
    * @param moreJobs more print jobs
@@ -173,6 +178,7 @@ public class CupsPrinter {
    * @author oboehm
    */
   public PrintRequestResult print(PrintJob job1, PrintJob... moreJobs) {
+    verifyUser(job1.getUserName(), moreJobs);
     int jobId = createJob(job1);
     List<PrintJob> printJobs = new ArrayList<PrintJob>();
     printJobs.add(job1);
@@ -181,6 +187,16 @@ public class CupsPrinter {
       print(printJobs.get(i), jobId, false);
     }
     return print(printJobs.get(printJobs.size()-1), jobId, true);
+  }
+
+  private static void verifyUser(String userName, PrintJob[] printJobs) {
+    for (PrintJob job : printJobs) {
+      String jobUserName = job.getUserName();
+      if (!userName.equals(jobUserName)) {
+        throw new IllegalStateException(
+                "different users (" + userName + ", " + jobUserName + ", ...) in print jobs are forbidden");
+      }
+    }
   }
 
   /**

@@ -49,7 +49,7 @@ public class PrintJob {
     private InputStream document;
     private int copies = 1;
     private String pageRanges = null;;
-    private String userName = null;
+    private String userName = CupsClient.DEFAULT_USER;
     private String jobName = null;
     private boolean duplex = false;
     private boolean portrait = true;

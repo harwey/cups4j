@@ -58,19 +58,30 @@ public final class CupsPrinterTest {
         printer.print(createPrintJob(file), createPrintJob(file));
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void testPrintListWithDifferentUsers() {
+        File file = new File("src/test/resources/test.txt");
+        printer.print(createPrintJob(file, "oli"), createPrintJob(file, "stan"));
+    }
+
     private PrintJob createPrintJob(File file) {
+        return createPrintJob(file, CupsClient.DEFAULT_USER);
+    }
+
+    @Test
+    public void testPrintListWithNoUser() {
+        PrintJob job = new PrintJob.Builder("secret".getBytes()).jobName("testPrintListWithNoUser").build();
+        printer.print(job, job);
+    }
+    
+    private PrintJob createPrintJob(File file, String userName) {
         String jobname = generateJobnameFor(file);
         try {
             byte[] content = FileUtils.readFileToByteArray(file);
-            return createPrintJob(content, jobname);
+            return new PrintJob.Builder(content).jobName(jobname).userName(userName).build();
         } catch (IOException ioe) {
             throw new IllegalArgumentException("cannot read '" + file + "'", ioe);
         }
-    }
-
-    private PrintJob createPrintJob(byte[] content, String jobname) {
-        String userName = System.getProperty("user.name", CupsClient.DEFAULT_USER);
-        return new PrintJob.Builder(content).jobName(jobname).userName(userName).build();
     }
 
     private static String generateJobnameFor(File file) {
