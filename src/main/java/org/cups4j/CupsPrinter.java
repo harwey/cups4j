@@ -199,23 +199,38 @@ public class CupsPrinter {
     }
   }
 
-  /**
-   * If you want to print serveral print jobs as one job you must first tell
-   * CUPS that you want to start. This is the method to create a job. The
-   * returned job-id must be used for the following print calls.
-   *
-   * @param jobName the name of a job
-   * @return the job-id
-   * @since 0.7.2
-   * @author oboehm
-   * @deprecated use {@link #createJob(PrintJob)}
-   */
-  @Deprecated
-  public int createJob(String jobName) {
-    return createJob(new PrintJob.Builder(new byte[0]).jobName(jobName).userName(CupsClient.DEFAULT_USER).build());
-  }
+    /**
+     * If you want to print serveral print jobs as one job you must first tell
+     * CUPS that you want to start. This is the method to create a job. The
+     * returned job-id must be used for the following print calls.
+     *
+     * @param jobName the name of a job
+     * @return the job-id
+     * @since 0.7.2
+     * @author oboehm
+     * @deprecated use {@link #createJob(PrintJob)} or {@link #createJob(String, String)}
+     */
+    @Deprecated
+    public int createJob(String jobName) {
+        return createJob(jobName, CupsClient.DEFAULT_USER);
+    }
 
-  /**
+    /**
+     * If you want to print serveral print jobs as one job you must first tell
+     * CUPS that you want to start. This is the method to create a job. The
+     * returned job-id must be used for the following print calls.
+     *
+     * @param jobName the name of a job
+     * @param userName the name of a user
+     * @return the job-id
+     * @since 0.7.4
+     * @author oboehm
+     */
+    public int createJob(String jobName, String userName) {
+        return createJob(new PrintJob.Builder(new byte[0]).jobName(jobName).userName(userName).build());
+    }
+
+    /**
    * If you want to print serveral print jobs as one job you must first tell
    * CUPS that you want to start. This is the method to create a job. The
    * returned job-id must be used for the following print calls.
