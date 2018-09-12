@@ -2,6 +2,7 @@ package ch.ethz.vppserver.ippclient;
 
 import org.cups4j.ipp.attributes.AttributeGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ import java.util.List;
 public class IppResult {
   private String httpStatusResponse = null;
   private String ippStatusResponse = null;
-  private List<AttributeGroup> attributeGroupList = null;
+  private List<AttributeGroup> attributeGroupList = new ArrayList<AttributeGroup>();
   private int httpStatusCode;
 
   public IppResult() {

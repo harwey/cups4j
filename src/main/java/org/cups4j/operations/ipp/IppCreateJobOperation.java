@@ -29,6 +29,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.cups4j.CupsClient;
 import org.cups4j.operations.IppOperation;
 
 import java.io.ByteArrayInputStream;
@@ -67,7 +68,13 @@ public class IppCreateJobOperation extends IppOperation {
      */
     @Override
     public ByteBuffer getIppHeader(URL url) throws UnsupportedEncodingException {
-        return getIppHeader(url, new HashMap<String, String>());
+        return getIppHeader(url, createAttributeMap());
+    }
+
+    private static Map<String, String> createAttributeMap() {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("requesting-user-name", CupsClient.DEFAULT_USER);
+        return map;
     }
 
     /**
@@ -83,8 +90,8 @@ public class IppCreateJobOperation extends IppOperation {
         ByteBuffer ippBuf = ByteBuffer.allocateDirect(bufferSize);
         ippBuf = IppTag.getOperation(ippBuf, operationID);
         ippBuf = IppTag.getUri(ippBuf, "printer-uri", url.toString());
-        ippBuf = IppTag.getNameWithoutLanguage(ippBuf, "requesting-user-name",
-                System.getProperty("user.name", "anonymous"));
+        ippBuf = IppTag.getNameWithoutLanguage(ippBuf, "requesting-user-name", 
+                map.get("requesting-user-name"));
 
         if (map.get("limit") != null) {
             int value = Integer.parseInt(map.get("limit"));
@@ -112,7 +119,7 @@ public class IppCreateJobOperation extends IppOperation {
     }
 
     public IppResult request(URL url) {
-        return request(url, new HashMap<String, String>());
+        return request(url, createAttributeMap());
     }
 
     public IppResult request(URL url, Map<String, String> map) {
