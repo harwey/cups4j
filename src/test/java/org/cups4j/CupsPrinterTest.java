@@ -124,7 +124,6 @@ public final class CupsPrinterTest {
     public static CupsPrinter getPrinter(String name) {
         try {
             List<CupsPrinter> printers = TestCups.getCupsClient().getPrinters();
-            CupsPrinter printer = null;
             for (CupsPrinter p : printers) {
                 if (name.equalsIgnoreCase(p.getName())) {
                     return p;
