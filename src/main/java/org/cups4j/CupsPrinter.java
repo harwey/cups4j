@@ -1,5 +1,21 @@
 package org.cups4j;
 
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.cups4j.ipp.attributes.Attribute;
+import org.cups4j.ipp.attributes.AttributeGroup;
+import org.cups4j.operations.ipp.IppCreateJobOperation;
+import org.cups4j.operations.ipp.IppGetJobAttributesOperation;
+import org.cups4j.operations.ipp.IppGetJobsOperation;
+import org.cups4j.operations.ipp.IppPrintJobOperation;
+import org.cups4j.operations.ipp.IppSendDocumentOperation;
+
 /**
  * Copyright (C) 2009 Harald Weyhing
  * 
@@ -16,13 +32,6 @@ package org.cups4j;
  */
 
 import ch.ethz.vppserver.ippclient.IppResult;
-import org.cups4j.ipp.attributes.Attribute;
-import org.cups4j.ipp.attributes.AttributeGroup;
-import org.cups4j.operations.ipp.*;
-
-import java.io.InputStream;
-import java.net.URL;
-import java.util.*;
 
 /**
  * Represents a printer on your IPP server
@@ -34,6 +43,7 @@ public class CupsPrinter {
   private String description = null;
   private String location = null;
   private boolean isDefault = false;
+  private boolean printerClass = false;
   private String mediaDefault = null;
   private String resolutionDefault = null;
   private String colorModeDefault = null;
@@ -59,6 +69,13 @@ public class CupsPrinter {
     this.printerURL = printerURL;
     this.name = printerName;
     this.isDefault = isDefault;
+    updateClassAttribute();
+  }
+
+  private void updateClassAttribute() {
+    if (printerURL != null && printerURL.toString().contains("class")) {
+      printerClass = true;
+    }
   }
 
   /**
@@ -166,13 +183,15 @@ public class CupsPrinter {
    * another print job. The printer must support
    * 'multiple-document-jobs-supported' which is a recommended option.
    * <p>
-   * ATTENTION: Don't use different users for the different print jobs. You
-   * will get probably error 401 (forbidden) from CUPS. To avoid error 401
-   * you'll get now an {@link IllegalStateException}.
+   * ATTENTION: Don't use different users for the different print jobs. You will
+   * get probably error 401 (forbidden) from CUPS. To avoid error 401 you'll get
+   * now an {@link IllegalStateException}.
    * </p>
    *
-   * @param job1 first print job
-   * @param moreJobs more print jobs
+   * @param job1
+   *          first print job
+   * @param moreJobs
+   *          more print jobs
    * @return PrintRequestResult
    * @since 0.7.2
    * @author oboehm
@@ -186,7 +205,7 @@ public class CupsPrinter {
     for (int i = 0; i < printJobs.size() - 1; i++) {
       print(printJobs.get(i), jobId, false);
     }
-    return print(printJobs.get(printJobs.size()-1), jobId, true);
+    return print(printJobs.get(printJobs.size() - 1), jobId, true);
   }
 
   private static void verifyUser(String userName, PrintJob[] printJobs) {
@@ -194,48 +213,53 @@ public class CupsPrinter {
       String jobUserName = job.getUserName();
       if (!userName.equals(jobUserName)) {
         throw new IllegalStateException(
-                "different users (" + userName + ", " + jobUserName + ", ...) in print jobs are forbidden");
+            "different users (" + userName + ", " + jobUserName + ", ...) in print jobs are forbidden");
       }
     }
   }
 
-    /**
-     * If you want to print serveral print jobs as one job you must first tell
-     * CUPS that you want to start. This is the method to create a job. The
-     * returned job-id must be used for the following print calls.
-     *
-     * @param jobName the name of a job
-     * @return the job-id
-     * @since 0.7.2
-     * @author oboehm
-     * @deprecated use {@link #createJob(PrintJob)} or {@link #createJob(String, String)}
-     */
-    @Deprecated
-    public int createJob(String jobName) {
-        return createJob(jobName, CupsClient.DEFAULT_USER);
-    }
-
-    /**
-     * If you want to print serveral print jobs as one job you must first tell
-     * CUPS that you want to start. This is the method to create a job. The
-     * returned job-id must be used for the following print calls.
-     *
-     * @param jobName the name of a job
-     * @param userName the name of a user
-     * @return the job-id
-     * @since 0.7.4
-     * @author oboehm
-     */
-    public int createJob(String jobName, String userName) {
-        return createJob(new PrintJob.Builder(new byte[0]).jobName(jobName).userName(userName).build());
-    }
-
-    /**
+  /**
    * If you want to print serveral print jobs as one job you must first tell
    * CUPS that you want to start. This is the method to create a job. The
    * returned job-id must be used for the following print calls.
    *
-   * @param job the print-job with job-name and user-name
+   * @param jobName
+   *          the name of a job
+   * @return the job-id
+   * @since 0.7.2
+   * @author oboehm
+   * @deprecated use {@link #createJob(PrintJob)} or
+   *             {@link #createJob(String, String)}
+   */
+  @Deprecated
+  public int createJob(String jobName) {
+    return createJob(jobName, CupsClient.DEFAULT_USER);
+  }
+
+  /**
+   * If you want to print serveral print jobs as one job you must first tell
+   * CUPS that you want to start. This is the method to create a job. The
+   * returned job-id must be used for the following print calls.
+   *
+   * @param jobName
+   *          the name of a job
+   * @param userName
+   *          the name of a user
+   * @return the job-id
+   * @since 0.7.4
+   * @author oboehm
+   */
+  public int createJob(String jobName, String userName) {
+    return createJob(new PrintJob.Builder(new byte[0]).jobName(jobName).userName(userName).build());
+  }
+
+  /**
+   * If you want to print serveral print jobs as one job you must first tell
+   * CUPS that you want to start. This is the method to create a job. The
+   * returned job-id must be used for the following print calls.
+   *
+   * @param job
+   *          the print-job with job-name and user-name
    * @return the job-id
    * @since 0.7.4
    * @author oboehm
@@ -254,9 +278,12 @@ public class CupsPrinter {
    * Call this method if you want to print several print jobs as one print job.
    * Call {@link #createJob(String)} to the get the correct job-id.
    *
-   * @param job          the job
-   * @param jobId        the job id from {@link #createJob(String)}
-   * @param lastDocument set it to true if it is the last document
+   * @param job
+   *          the job
+   * @param jobId
+   *          the job id from {@link #createJob(String)}
+   * @param lastDocument
+   *          set it to true if it is the last document
    * @return the print request result
    * @since 0.7.2
    * @author oboehm
@@ -430,6 +457,7 @@ public class CupsPrinter {
 
   public void setPrinterURL(URL printerURL) {
     this.printerURL = printerURL;
+    updateClassAttribute();
   }
 
   public void setName(String name) {
@@ -505,6 +533,14 @@ public class CupsPrinter {
 
   public void setNumberUpSupported(List<String> numberUpSupported) {
     this.numberUpSupported = numberUpSupported;
+  }
+
+  public boolean isPrinterClass() {
+    return printerClass;
+  }
+
+  public void setPrinterClass(boolean printerClass) {
+    this.printerClass = printerClass;
   }
 
 }
