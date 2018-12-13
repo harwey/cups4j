@@ -103,5 +103,10 @@ public class IppResult {
   public void setHttpStatusCode(int httpStatusCode) {
     this.httpStatusCode = httpStatusCode;
   }
-  
+
+  @Override
+  public String toString() {
+    return httpStatusCode + " (" + httpStatusResponse + ")";
+  }
+
 }

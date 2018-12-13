@@ -260,4 +260,9 @@ public abstract class IppOperation {
     return attr.getAttributeValue().get(0).getValue();
   }
 
+  @Override
+  public String toString() {
+    return this.getClass().getSimpleName() + ":" + ippPort;
+  }
+
 }
