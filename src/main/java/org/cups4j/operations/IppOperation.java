@@ -174,10 +174,9 @@ public abstract class IppOperation {
     // Boolean.valueOf(true));
 
     HttpClient client = HttpClientBuilder.create().build();
-    RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(10000).setConnectTimeout(10000).build();
 
     HttpPost httpPost = new HttpPost(new URI("http://" + url.getHost() + ":" + ippPort) + url.getPath());
-    httpPost.setConfig(requestConfig);
+    httpPost.setConfig(getRequestConfig());
     httpCall = httpPost;
 
     // httpPost.getParams().setParameter("http.socket.timeout", new
@@ -215,7 +214,7 @@ public abstract class IppOperation {
         }
       }
     };
-
+    
     byte[] result = client.execute(httpPost, handler);
 
     IppResponse ippResponse = new IppResponse();
@@ -229,6 +228,11 @@ public abstract class IppOperation {
     client.getConnectionManager().shutdown();
     httpCall = null;
     return ippResult;
+  }
+
+  protected static RequestConfig getRequestConfig() {
+    int timeout = Integer.parseInt(System.getProperty("cups4j.timeout", "10000"));
+    return RequestConfig.custom().setSocketTimeout(timeout).setConnectTimeout(timeout).build();
   }
 
   public void cancel() {
@@ -255,4 +259,10 @@ public abstract class IppOperation {
   protected String getAttributeValue(Attribute attr) {
     return attr.getAttributeValue().get(0).getValue();
   }
+
+  @Override
+  public String toString() {
+    return this.getClass().getSimpleName() + ":" + ippPort;
+  }
+
 }

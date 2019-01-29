@@ -21,7 +21,6 @@ import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
 import ch.ethz.vppserver.ippclient.IppTag;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
@@ -259,7 +258,7 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
 
     private IppResult sendRequest(URI uri, ByteBuffer ippBuf, InputStream documentStream) throws IOException {
         HttpPost httpPost = new HttpPost(uri);
-        httpPost.setConfig(RequestConfig.custom().setSocketTimeout(10000).setConnectTimeout(10000).build());
+        httpPost.setConfig(getRequestConfig());
         
         byte[] bytes = new byte[ippBuf.limit()];
         ippBuf.get(bytes);

@@ -23,7 +23,6 @@ import ch.ethz.vppserver.ippclient.IppTag;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
@@ -134,10 +133,9 @@ public class IppCreateJobOperation extends IppOperation {
 
     private static IppResult sendRequest(URI uri, ByteBuffer ippBuf) throws IOException {
         CloseableHttpClient client = HttpClients.custom().build();
-        RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(10000).setConnectTimeout(10000).build();
 
         HttpPost httpPost = new HttpPost(uri);
-        httpPost.setConfig(requestConfig);
+        httpPost.setConfig(getRequestConfig());
 
         byte[] bytes = new byte[ippBuf.limit()];
         ippBuf.get(bytes);
