@@ -1,6 +1,6 @@
-# cups4j
+# Cups4j
 
-``cups4j`` — the Java printing library for CUPS.
+``Cups4j`` — the Java printing library for CUPS.
 
 ## Table of Contents
 
