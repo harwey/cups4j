@@ -95,9 +95,6 @@ public class CupsPrinter {
     if (userName == null) {
       userName = CupsClient.DEFAULT_USER;
     }
-    if (attributes == null) {
-      attributes = new HashMap<String, String>();
-    }
 
     attributes.put("requesting-user-name", userName);
     attributes.put("job-name", jobName);

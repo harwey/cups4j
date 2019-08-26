@@ -16,6 +16,7 @@ package org.cups4j;
  */
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 public class PrintJob {
@@ -230,7 +231,7 @@ public class PrintJob {
   }
 
   public Map<String, String> getAttributes() {
-    return attributes;
+    return attributes == null ? new HashMap<String, String>() : new HashMap<String, String>(attributes);
   }
 
   public InputStream getDocument() {
