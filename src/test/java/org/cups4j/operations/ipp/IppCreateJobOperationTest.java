@@ -5,6 +5,7 @@ import org.cups4j.CupsPrinter;
 import org.cups4j.CupsPrinterTest;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,13 +60,14 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
     }
     
     @Test
+    @Ignore
     public void testRequest() {
         CupsPrinter cupsPrinter = CupsPrinterTest.getPrinter();
         if (cupsPrinter == null) {
             LOG.warn("No default printer found for testing - run test with '-Dprinter=...' to define it.");
             return;
         }
-        IppResult ippResult = operation.request(cupsPrinter.getPrinterURL());
+        IppResult ippResult = operation.request(cupsPrinter, cupsPrinter.getPrinterURL(), null);
         assertNotNull(ippResult);
         checkAttribute(ippResult, "job-uri");
         checkAttribute(ippResult, "job-id");

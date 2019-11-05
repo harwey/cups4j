@@ -7,6 +7,7 @@ import org.cups4j.CupsPrinter;
 import org.cups4j.CupsPrinterTest;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,23 +141,24 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
     }
 
     @Test
+    @Ignore
     public void testRequest() throws Exception {
         CupsPrinter printer = CupsPrinterTest.getPrinter();
         if (printer == null) {
             LOG.info("You must set system property 'printer' to activate this test!");
             LOG.info("testRequest() is SKIPPED.");
         } else {
-            checkRequest(printer.getPrinterURL());
+            checkRequest(printer, printer.getPrinterURL());
         }
     }
 
-    private void checkRequest(URL printerURL) throws Exception {
+    private void checkRequest(CupsPrinter printer, URL printerURL) throws Exception {
         Map<String, String> attributes = new HashMap<String, String>();
         attributes.put("job-attributes", "copies:integer:1#orientation-requested:enum:3#output-mode:keyword:monochrome");
         attributes.put("job-name", "testosteron");
         attributes.put("requesting-user-name", "oboehm");
         ByteArrayInputStream document = new ByteArrayInputStream("Hello World!\n".getBytes());
-        IppResult ippResult = operation.request(printerURL, attributes, document);
+        IppResult ippResult = operation.request(printer, printerURL, attributes, document, null);
         assertEquals(200, ippResult.getHttpStatusCode());
     }
 

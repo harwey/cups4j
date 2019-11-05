@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
 import org.cups4j.JobStateEnum;
@@ -100,7 +101,7 @@ public class IppGetJobsOperation extends IppOperation {
   }
 
   public List<PrintJobAttributes> getPrintJobs(CupsPrinter printer, WhichJobsEnum whichJobs, String userName,
-      boolean myJobs) throws Exception {
+      boolean myJobs, CupsAuthentication creds) throws Exception {
     List<PrintJobAttributes> jobs = new ArrayList<PrintJobAttributes>();
     PrintJobAttributes jobAttributes = null;
     Map<String, String> map = new HashMap<String, String>();
@@ -116,7 +117,7 @@ public class IppGetJobsOperation extends IppOperation {
     map.put("requested-attributes",
         "page-ranges print-quality sides job-uri job-id job-state job-printer-uri job-name job-originating-user-name");
 
-    IppResult result = request(printer.getPrinterURL(), map);
+    IppResult result = request(printer, printer.getPrinterURL(), map, creds);
 
     // IppResultPrinter.print(result);
 

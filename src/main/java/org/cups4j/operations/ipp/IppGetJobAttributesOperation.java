@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.cups4j.CupsAuthentication;
 import org.cups4j.JobStateEnum;
 import org.cups4j.PrintJobAttributes;
 import org.cups4j.ipp.attributes.Attribute;
@@ -99,8 +100,8 @@ public class IppGetJobAttributesOperation extends IppOperation {
     return ippBuf;
   }
 
-  public PrintJobAttributes getPrintJobAttributes(String hostname, String userName, int port, int jobID)
-      throws Exception {
+  public PrintJobAttributes getPrintJobAttributes(String hostname, String userName, 
+		  int port, int jobID, CupsAuthentication creds) throws Exception {
     PrintJobAttributes job = null;
 
     Map<String, String> map = new HashMap<String, String>();
@@ -109,12 +110,14 @@ public class IppGetJobAttributesOperation extends IppOperation {
 
     map.put("requested-attributes", "all");
     map.put("requesting-user-name", userName);
-    IppResult result = request(new URL("http://" + hostname + "/jobs/" + jobID), map);
+    IppResult result = request(null, new URL("http://" + hostname + "/jobs/" + jobID), map, creds);
 
     // IppResultPrinter.print(result);
     for (AttributeGroup group : result.getAttributeGroupList()) {
       if ("job-attributes-tag".equals(group.getTagName()) || "unassigned".equals(group.getTagName())) {
-        job = new PrintJobAttributes();
+        if (job == null) {
+          job = new PrintJobAttributes();
+        }
         for (Attribute attr : group.getAttribute()) {
           if (attr.getAttributeValue() != null && !attr.getAttributeValue().isEmpty()) {
             String attValue = getAttributeValue(attr);
