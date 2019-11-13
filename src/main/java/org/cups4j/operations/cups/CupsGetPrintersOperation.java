@@ -125,6 +125,7 @@ public class CupsGetPrintersOperation extends IppOperation {
         }
 
         printer = new CupsPrinter(printerUrl, printerName, false);
+        printer.setState(printerState);
         printer.setLocation(printerLocation);
         printer.setDescription(printerDescription);
         printer.setMediaDefault(mediaDefault);

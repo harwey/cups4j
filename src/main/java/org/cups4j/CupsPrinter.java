@@ -32,6 +32,7 @@ import java.util.*;
 public class CupsPrinter {
   private URL printerURL = null;
   private String name = null;
+  private PrinterStateEnum state = null;
   private String description = null;
   private String location = null;
   private boolean isDefault = false;
@@ -459,6 +460,8 @@ public class CupsPrinter {
   public void setName(String name) {
     this.name = name;
   }
+
+  public void setState(PrinterStateEnum state) { this.state = state; }
 
   public void setDescription(String description) {
     this.description = description;
