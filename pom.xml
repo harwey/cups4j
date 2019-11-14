@@ -86,7 +86,15 @@
       <artifactId>commons-io</artifactId>
       <version>2.6</version>
     </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.jgoodies/jgoodies-forms -->
+    <dependency>
+      <groupId>com.jgoodies</groupId>
+      <artifactId>jgoodies-forms</artifactId>
+      <version>1.7.1</version>
+    </dependency>
   </dependencies>
+
 
   <build>
     <plugins>
@@ -105,22 +113,19 @@
           </execution>
         </executions>
       </plugin>
-      
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.0.2</version>
         <configuration>
           <archive>
-            <!--manifest>
-              <addClasspath>true</addClasspath>
-              <classpathPrefix>lib/</classpathPrefix>
-              <mainClass>org.cups4j.client.Cups</mainClass>
-            </manifest-->
+            <!--manifest> <addClasspath>true</addClasspath> <classpathPrefix>lib/</classpathPrefix> <mainClass>org.cups4j.client.Cups</mainClass> 
+              </manifest -->
           </archive>
         </configuration>
       </plugin>
-      
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -134,7 +139,7 @@
           </execution>
         </executions>
       </plugin>
-      
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -171,22 +176,19 @@
               <autoReleaseAfterClose>true</autoReleaseAfterClose>
             </configuration>
           </plugin>
-          
+
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
             <version>3.0.2</version>
             <configuration>
               <archive>
-                <!--manifest>
-                  <addClasspath>true</addClasspath>
-                  <classpathPrefix>lib/</classpathPrefix>
-                  <mainClass>org.cups4j.client.Cups</mainClass>
-                </manifest-->
+                <!--manifest> <addClasspath>true</addClasspath> <classpathPrefix>lib/</classpathPrefix> <mainClass>org.cups4j.client.Cups</mainClass> 
+                  </manifest -->
               </archive>
             </configuration>
           </plugin>
-          
+
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
