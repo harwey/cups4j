@@ -14,15 +14,16 @@ import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsPrinter;
 
 public final class IppHttp {
-	
+
 	private static final int MAX_CONNECTION_BUFFER = 20;
-	
+
 	private static final int CUPSTIMEOUT = Integer.parseInt(System.getProperty("cups4j.timeout", "10000"));
-	
+	private static final String CUPSHOST = System.getProperty("cups4j.ourhostname", "localhost");
+
 	private static final RequestConfig requestConfig = RequestConfig.custom()
 			.setSocketTimeout(CUPSTIMEOUT).setConnectTimeout(CUPSTIMEOUT)
 			.build();
-	
+
 	private static final CloseableHttpClient client = HttpClientBuilder.create()
 			.disableCookieManagement()
 			.disableRedirectHandling()
@@ -34,28 +35,30 @@ public final class IppHttp {
 
 	private IppHttp() {
 	}
-	
+
 	public static CloseableHttpClient createHttpClient() {
 		return client;
 	}
-	
+
 	public static void setHttpHeaders(HttpPost httpPost, CupsPrinter targetPrinter,
 			CupsAuthentication creds) {
-		if (targetPrinter == null) {
-			httpPost.addHeader("target-group", "local");
-		} else {
-			httpPost.addHeader("target-group", targetPrinter.getName());
-		}
-	    httpPost.addHeader("Host", "localhost");
-	    httpPost.setConfig(requestConfig);
-	    
-	    if (creds != null && StringUtils.isNotBlank(creds.getUserid())
+		 if (targetPrinter == null) {
+			 httpPost.addHeader("target-group", "local");
+		 } else {
+		 	 httpPost.addHeader("target-group", targetPrinter.getName());
+		 }
+		 if (CUPSHOST != null && !"".equals(CUPSHOST)) {
+	     httpPost.addHeader("Host", CUPSHOST);
+	   }
+	   httpPost.setConfig(requestConfig);
+
+	   if (creds != null && StringUtils.isNotBlank(creds.getUserid())
 	    		&& StringUtils.isNotBlank(creds.getPassword())) {
 		    String auth = creds.getUserid() + ":" + creds.getPassword();
 		    byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.ISO_8859_1));
 		    String authHeader = "Basic " + new String(encodedAuth);
 		    httpPost.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
-	    }
+	   }
 	}
 
 }
