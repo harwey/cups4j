@@ -50,7 +50,7 @@ public class CupsGetPrintersOperation extends IppOperation {
     Map<String, String> map = new HashMap<String, String>();
     map.put(
         "requested-attributes",
-        "copies-supported page-ranges-supported printer-name printer-info printer-state printer-location printer-make-and-model printer-uri-supported media-supported media-default sides-supported sides-default orientation-requested-supported printer-resolution-supported printer printer-resolution-default number-up-default number-up-supported document-format-supported print-color-mode-supported print-color-mode-default");
+        "copies-supported page-ranges-supported printer-name printer-info printer-state printer-location printer-make-and-model printer-uri-supported media-supported media-default sides-supported sides-default orientation-requested-supported printer-resolution-supported printer printer-resolution-default number-up-default number-up-supported document-format-supported print-color-mode-supported print-color-mode-default device-uri");
     // map.put("requested-attributes", "all");
     this.ippPort = port;
 
@@ -77,6 +77,7 @@ public class CupsGetPrintersOperation extends IppOperation {
         List<String> sidesSupported = new ArrayList<String>();
         String numberUpDefault = null;
         List<String> numberUpSupported = new ArrayList<String>();
+        String deviceURI = null;
 
         for (Attribute attr : group.getAttribute()) {
           if (attr.getName().equals("printer-uri-supported")) {
@@ -111,6 +112,8 @@ public class CupsGetPrintersOperation extends IppOperation {
             sidesDefault = getAttributeValue(attr);
           } else if (attr.getName().equals("printer-state")) {
             printerState = PrinterStateEnum.fromStringInteger(getAttributeValue(attr));
+          }else if (attr.getName().equals("device-uri")){
+            deviceURI = getAttributeValue(attr);
           }
         }
         URL printerUrl = null;
@@ -139,6 +142,7 @@ public class CupsGetPrintersOperation extends IppOperation {
         printer.setSidesSupported(sidesSupported);
         printer.setNumberUpDefault(numberUpDefault);
         printer.setNumberUpSupported(numberUpSupported);
+        printer.setDeviceURI(deviceURI);
 
         printers.add(printer);
       }
