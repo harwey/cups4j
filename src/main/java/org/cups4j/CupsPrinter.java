@@ -41,6 +41,7 @@ public class CupsPrinter {
   private String resolutionDefault = null;
   private String colorModeDefault = null;
   private String sidesDefault = null;
+  private String deviceURI = null;
 
   private String numberUpDefault = null;
   private List<String> numberUpSupported = new ArrayList<String>();
@@ -551,4 +552,11 @@ public class CupsPrinter {
     this.printerClass = printerClass;
   }
 
+  public String getDeviceURI() {
+    return this.deviceURI;
+  }
+
+  public void setDeviceURI(String deviceURI) {
+    this.deviceURI = deviceURI;
+  }
 }
