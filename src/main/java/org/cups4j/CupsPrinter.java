@@ -40,6 +40,7 @@ import ch.ethz.vppserver.ippclient.IppResult;
 public class CupsPrinter {
   private URL printerURL = null;
   private String name = null;
+  private PrinterStateEnum state = null;
   private String description = null;
   private String location = null;
   private boolean isDefault = false;
@@ -66,7 +67,7 @@ public class CupsPrinter {
 
   /**
    * Constructor
-   * 
+   *
    * @param printerURL
    * @param printerName
    */
@@ -86,7 +87,7 @@ public class CupsPrinter {
 
   /**
    * Print method
-   * 
+   *
    * @param printJob
    * @return PrintRequestResult
    * @throws Exception
@@ -108,9 +109,6 @@ public class CupsPrinter {
 
     if (userName == null) {
       userName = CupsClient.DEFAULT_USER;
-    }
-    if (attributes == null) {
-      attributes = new HashMap<String, String>();
     }
 
     attributes.put("requesting-user-name", userName);
@@ -306,7 +304,7 @@ public class CupsPrinter {
   }
 
   /**
-   * 
+   *
    * @param map
    * @param name
    * @param value
@@ -325,7 +323,7 @@ public class CupsPrinter {
 
   /**
    * Get a list of jobs
-   * 
+   *
    * @param whichJobs
    *          completed, not completed or all
    * @param user
@@ -345,7 +343,7 @@ public class CupsPrinter {
 
   /**
    * Get current status for the print job with the given ID.
-   * 
+   *
    * @param jobID
    * @return job status
    * @throws Exception
@@ -356,7 +354,7 @@ public class CupsPrinter {
 
   /**
    * Get current status for the print job with the given ID
-   * 
+   *
    * @param userName
    * @param jobID
    * @return job status
@@ -372,7 +370,7 @@ public class CupsPrinter {
 
   /**
    * Get the URL for this printer
-   * 
+   *
    * @return printer URL
    */
   public URL getPrinterURL() {
@@ -381,7 +379,7 @@ public class CupsPrinter {
 
   /**
    * Is this the default printer
-   * 
+   *
    * @return true if this is the default printer false otherwise
    */
   public boolean isDefault() {
@@ -395,7 +393,7 @@ public class CupsPrinter {
   /**
    * Get a String representation of this printer consisting of the printer URL
    * and the name
-   * 
+   *
    * @return String
    */
   public String toString() {
@@ -408,13 +406,25 @@ public class CupsPrinter {
    * For a printer http://localhost:631/printers/printername 'printername' will
    * be returned.
    * </p>
-   * 
+   *
    * @return printer name
    */
   public String getName() {
     return name;
   }
 
+  /**
+   * Get state of this printer.
+   * <p>
+   * For a printer http://localhost:631/printers/printername 'printer-state' will
+   * be returned.
+   * </p>
+   *
+   * @return printer state
+   */
+  public PrinterStateEnum getState() {
+    return state;
+  }
   /**
    * Get location attribute for this printer
    * 
@@ -430,7 +440,7 @@ public class CupsPrinter {
 
   /**
    * Get description attribute for this printer
-   * 
+   *
    * @return description
    */
   public String getDescription() {
@@ -473,6 +483,8 @@ public class CupsPrinter {
   public void setName(String name) {
     this.name = name;
   }
+
+  public void setState(PrinterStateEnum state) { this.state = state; }
 
   public void setDescription(String description) {
     this.description = description;

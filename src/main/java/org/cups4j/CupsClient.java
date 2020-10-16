@@ -155,12 +155,27 @@ public class CupsClient {
    */
   public CupsPrinter getPrinter(URL printerURL) throws Exception {
     List<CupsPrinter> printers = getPrinters();
-    CupsPrinter printer = null;
-    for (CupsPrinter p : printers) {
-      if (p.getPrinterURL().toString().equals(printerURL.toString()))
-        printer = p;
+    for (CupsPrinter printer : printers) {
+      if (printer.getPrinterURL().toString().equals(printerURL.toString()))
+        return printer;
     }
-    return printer;
+    return null;
+  }
+
+  /**
+   * Returns the printer for the provided name
+   *
+   * @param printerName the printer name
+   * @return printer
+   * @throws Exception
+   */
+  public CupsPrinter getPrinter(String printerName) throws Exception {
+    List<CupsPrinter> printers = getPrinters();
+    for (CupsPrinter printer : printers) {
+      if (printer.getName().equals(printerName))
+        return printer;
+    }
+    return null;
   }
 
     /**
