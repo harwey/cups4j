@@ -20,7 +20,9 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
+import org.cups4j.CupsPrinter;
 import org.cups4j.PrintRequestResult;
 import org.cups4j.operations.IppOperation;
 import org.slf4j.Logger;
@@ -96,7 +98,8 @@ public class IppHoldJobOperation extends IppOperation {
    * @return true on successful cancelation otherwise false.
    * @throws Exception
    */
-  public boolean holdJob(String hostname, String userName, int jobID) throws Exception {
+  public boolean holdJob(String hostname, String userName, int jobID, 
+		  CupsPrinter printer, CupsAuthentication creds) throws Exception {
 
     Map<String, String> map = new HashMap<String, String>();
 
@@ -108,7 +111,7 @@ public class IppHoldJobOperation extends IppOperation {
     URL url = new URL("http://" + hostname + "/jobs/" + Integer.toString(jobID));
     map.put("job-uri", url.toString());
 
-    IppResult result = request(url, map);
+    IppResult result = request(printer, url, map, creds);
     // IppResultPrinter.print(result);
 
     return new PrintRequestResult(result).isSuccessfulResult();

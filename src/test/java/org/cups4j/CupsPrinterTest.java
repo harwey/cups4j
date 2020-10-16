@@ -1,12 +1,14 @@
 package org.cups4j;
 
-import cups4j.TestCups;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
-import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import cups4j.TestCups;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,21 +25,23 @@ import static org.junit.Assert.assertNotNull;
 public final class CupsPrinterTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(CupsPrinterTest.class);
-    private static CupsPrinter printer;
+    private CupsPrinter printer;
 
-    @BeforeClass
-    public static void setUpPrinter() throws Exception {
+    @Before
+    public void setUpPrinter() throws Exception {    
         printer = getPrinter();
         assertNotNull(printer);
         LOG.info("Printer {} was choosen for testing.", printer);
     }
 
     @Test
+    @Ignore
     public void testPrintPDF() {
         print(printer, new File("src/test/resources/test.pdf"));
     }
 
     @Test
+    @Ignore
     public void testPrintText() {
         print(printer, new File("src/test/resources/test.txt"));
     }
@@ -53,12 +57,14 @@ public final class CupsPrinterTest {
     }
 
     @Test
+    @Ignore
     public void testPrintList() {
         File file = new File("src/test/resources/test.txt");
         printer.print(createPrintJob(file), createPrintJob(file));
     }
 
     @Test(expected = IllegalStateException.class)
+    @Ignore
     public void testPrintListWithDifferentUsers() {
         File file = new File("src/test/resources/test.txt");
         printer.print(createPrintJob(file, "oli"), createPrintJob(file, "stan"));
@@ -69,6 +75,7 @@ public final class CupsPrinterTest {
     }
 
     @Test
+    @Ignore
     public void testPrintListWithNoUser() {
         PrintJob job = new PrintJob.Builder("secret".getBytes()).jobName("testPrintListWithNoUser").build();
         printer.print(job, job);
@@ -105,14 +112,10 @@ public final class CupsPrinterTest {
         String name = System.getProperty("printer", new CupsClient().getDefaultPrinter().getName());
         if (name == null) {
             LOG.info("To specify printer please set system property 'printer'.");
-            try {
-                return TestCups.getCupsClient().getDefaultPrinter();
-            } catch (Exception ex) {
-                throw new IllegalStateException("no printer configured by system property 'printer'", ex);
-            }
         } else {
-            return getPrinter(name);
+
         }
+        return getPrinter(name);
     }
 
     /**

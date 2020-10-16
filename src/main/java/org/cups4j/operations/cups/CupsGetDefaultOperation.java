@@ -17,6 +17,7 @@ package org.cups4j.operations.cups;
 import java.net.URL;
 import java.util.HashMap;
 
+import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsPrinter;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
@@ -35,14 +36,14 @@ public class CupsGetDefaultOperation extends IppOperation {
     this.ippPort = port;
   }
 
-  public CupsPrinter getDefaultPrinter(String hostname, int port) throws Exception {
+  public CupsPrinter getDefaultPrinter(String hostname, int port, CupsAuthentication creds) throws Exception {
     CupsPrinter defaultPrinter = null;
     CupsGetDefaultOperation command = new CupsGetDefaultOperation(port);
 
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("requested-attributes", "printer-name printer-uri-supported printer-location");
 
-    IppResult result = command.request(new URL("http://" + hostname + "/printers"), map);
+    IppResult result = command.request(null, new URL("http://" + hostname + "/printers"), map, creds);
     for (AttributeGroup group : result.getAttributeGroupList()) {
       if (group.getTagName().equals("printer-attributes-tag")) {
         String printerURL = null;
@@ -59,7 +60,8 @@ public class CupsGetDefaultOperation extends IppOperation {
             }
           }
         }
-        defaultPrinter = new CupsPrinter(new URL(printerURL), printerName, true);
+        defaultPrinter = new CupsPrinter(creds, new URL(printerURL), printerName);
+        defaultPrinter.setDefault(true);
         defaultPrinter.setLocation(location);
       }
     }

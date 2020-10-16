@@ -1,29 +1,37 @@
 package org.cups4j;
 
-import ch.ethz.vppserver.ippclient.IppResult;
-import org.cups4j.ipp.ResponseException;
-import org.cups4j.ipp.attributes.Attribute;
-import org.cups4j.ipp.attributes.AttributeGroup;
-import org.cups4j.operations.ipp.*;
-
 import java.io.InputStream;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.cups4j.ipp.attributes.Attribute;
+import org.cups4j.ipp.attributes.AttributeGroup;
+import org.cups4j.operations.ipp.IppCreateJobOperation;
+import org.cups4j.operations.ipp.IppGetJobAttributesOperation;
+import org.cups4j.operations.ipp.IppGetJobsOperation;
+import org.cups4j.operations.ipp.IppPrintJobOperation;
+import org.cups4j.operations.ipp.IppSendDocumentOperation;
 
 /**
  * Copyright (C) 2009 Harald Weyhing
- * <p>
+ * 
  * This program is free software; you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
- * <p>
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * <p>
+ * 
  * See the GNU Lesser General Public License for more details. You should have received a copy of
  * the GNU Lesser General Public License along with this program; if not, see
  * <http://www.gnu.org/licenses/>.
  */
+
+import ch.ethz.vppserver.ippclient.IppResult;
 
 /**
  * Represents a printer on your IPP server
@@ -43,6 +51,11 @@ public class CupsPrinter {
   private String sidesDefault = null;
   private String deviceURI = null;
 
+    private String deviceUri = null;
+    private String printerState = null;
+    private String printerStateMessage = null;
+    private String printerStateReasons = null;
+
   private String numberUpDefault = null;
   private List<String> numberUpSupported = new ArrayList<String>();
   private List<String> mediaSupported = new ArrayList<String>();
@@ -50,20 +63,21 @@ public class CupsPrinter {
   private List<String> colorModeSupported = new ArrayList<String>();
   private List<String> mimeTypesSupported = new ArrayList<String>();
   private List<String> sidesSupported = new ArrayList<String>();
+  
+  private final CupsAuthentication creds;
 
   /**
    * Constructor
    *
    * @param printerURL
    * @param printerName
-   * @param isDefault
-   *          true if this is the default printer on this IPP server
    */
-  public CupsPrinter(URL printerURL, String printerName, boolean isDefault) {
-    this.printerURL = printerURL;
-    this.name = printerName;
-    this.isDefault = isDefault;
-    updateClassAttribute();
+  public CupsPrinter(CupsAuthentication creds, URL printerURL, String printerName) {
+	  super();
+	  this.creds = creds;
+	  this.printerURL = printerURL;
+	  this.name = printerName;
+	  updateClassAttribute();
   }
 
   private void updateClassAttribute() {
@@ -152,7 +166,7 @@ public class CupsPrinter {
       addAttribute(attributes, "job-attributes", "sides:keyword:two-sided-long-edge");
     }
     IppPrintJobOperation command = new IppPrintJobOperation(printerURL.getPort());
-    IppResult ippResult = command.request(printerURL, attributes, document);
+    IppResult ippResult = command.request(this, printerURL, attributes, document, creds);
     PrintRequestResult result = new PrintRequestResult(ippResult);
     // IppResultPrinter.print(result);
 
@@ -260,13 +274,12 @@ public class CupsPrinter {
     attributes.put("job-name", job.getJobName());
     attributes.put("requesting-user-name", job.getUserName());
     IppCreateJobOperation command = new IppCreateJobOperation(printerURL.getPort());
-    IppResult ippResult = command.request(printerURL, attributes);
-    if (ippResult.getHttpStatusCode() == 200) {
-      AttributeGroup attrGroup = ippResult.getAttributeGroup("job-attributes-tag");
-      return Integer.parseInt(attrGroup.getAttribute("job-id").getValue());
-    } else {
-      throw new ResponseException(command, ippResult);
+    IppResult ippResult = command.request(this, printerURL, attributes, creds);
+    if (ippResult.isPrintQueueUnavailable()) {
+    	throw new IllegalStateException("The print queueu is not available: " + ippResult.getIppStatusResponse());
     }
+    AttributeGroup attrGroup = ippResult.getAttributeGroup("job-attributes-tag");
+    return Integer.parseInt(attrGroup.getAttribute("job-id").getValue());
   }
 
   /**
@@ -285,7 +298,7 @@ public class CupsPrinter {
    */
   public PrintRequestResult print(PrintJob job, int jobId, boolean lastDocument) {
     IppSendDocumentOperation op = new IppSendDocumentOperation(printerURL.getPort(), jobId, lastDocument);
-    IppResult ippResult = op.request(printerURL, job);
+    IppResult ippResult = op.request(this, printerURL, job, creds);
     PrintRequestResult result = new PrintRequestResult(ippResult);
     result.setJobId(jobId);
     return result;
@@ -326,7 +339,7 @@ public class CupsPrinter {
   public List<PrintJobAttributes> getJobs(WhichJobsEnum whichJobs, String user, boolean myJobs) throws Exception {
     IppGetJobsOperation command = new IppGetJobsOperation(printerURL.getPort());
 
-    return command.getPrintJobs(this, whichJobs, user, myJobs);
+    return command.getPrintJobs(this, whichJobs, user, myJobs, creds);
   }
 
   /**
@@ -350,7 +363,8 @@ public class CupsPrinter {
    */
   public JobStateEnum getJobStatus(String userName, int jobID) throws Exception {
     IppGetJobAttributesOperation command = new IppGetJobAttributesOperation(printerURL.getPort());
-    PrintJobAttributes job = command.getPrintJobAttributes(printerURL.getHost(), userName, printerURL.getPort(), jobID);
+    PrintJobAttributes job = command.getPrintJobAttributes(printerURL.getHost(), userName, 
+    		printerURL.getPort(), jobID, creds);
 
     return job.getJobState();
   }
@@ -373,7 +387,7 @@ public class CupsPrinter {
     return isDefault;
   }
 
-  protected void setDefault(boolean isDefault) {
+  public void setDefault(boolean isDefault) {
     this.isDefault = isDefault;
   }
 
@@ -476,6 +490,38 @@ public class CupsPrinter {
   public void setDescription(String description) {
     this.description = description;
   }
+
+    public String getDeviceUri() {
+        return deviceUri;
+    }
+
+    public void setDeviceUri(final String deviceUri) {
+        this.deviceUri = deviceUri;
+    }
+
+    public String getPrinterState() {
+        return printerState;
+    }
+
+    public void setPrinterState(final String printerState) {
+        this.printerState = printerState;
+    }
+
+    public String getPrinterStateMessage() {
+        return printerStateMessage;
+    }
+
+    public void setPrinterStateMessage(final String printerStateMessage) {
+        this.printerStateMessage = printerStateMessage;
+    }
+
+    public String getPrinterStateReasons() {
+        return printerStateReasons;
+    }
+
+    public void setPrinterStateReasons(final String printerStateReasons) {
+        this.printerStateReasons = printerStateReasons;
+    }
 
   public void setMediaDefault(String mediaDefault) {
     this.mediaDefault = mediaDefault;

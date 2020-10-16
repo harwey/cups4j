@@ -27,8 +27,10 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
+import org.cups4j.CupsPrinter;
+import org.cups4j.operations.IppHttp;
 import org.cups4j.operations.IppOperation;
 
 import java.io.ByteArrayInputStream;
@@ -117,13 +119,13 @@ public class IppCreateJobOperation extends IppOperation {
         return ippBuf;
     }
 
-    public IppResult request(URL url) {
-        return request(url, createAttributeMap());
+    public IppResult request(CupsPrinter printer, URL url, CupsAuthentication creds) {
+        return request(printer, url, createAttributeMap(), creds);
     }
 
-    public IppResult request(URL url, Map<String, String> map) {
+    public IppResult request(CupsPrinter printer, URL url, Map<String, String> map, CupsAuthentication creds) {
         try {
-            return sendRequest(url.toURI(), getIppHeader(url, map));
+            return sendRequest(printer, url.toURI(), getIppHeader(url, map), creds);
         } catch (IOException ex) {
             throw new IllegalStateException("cannot request " + url, ex);
         } catch (URISyntaxException ex) {
@@ -131,11 +133,12 @@ public class IppCreateJobOperation extends IppOperation {
         }
     }
 
-    private static IppResult sendRequest(URI uri, ByteBuffer ippBuf) throws IOException {
-        CloseableHttpClient client = HttpClients.custom().build();
+    private static IppResult sendRequest(CupsPrinter printer, URI uri, ByteBuffer ippBuf,
+    		CupsAuthentication creds) throws IOException {
+        CloseableHttpClient client = IppHttp.createHttpClient();
 
         HttpPost httpPost = new HttpPost(uri);
-        httpPost.setConfig(getRequestConfig());
+        IppHttp.setHttpHeaders(httpPost, printer, creds);
 
         byte[] bytes = new byte[ippBuf.limit()];
         ippBuf.get(bytes);
@@ -148,16 +151,25 @@ public class IppCreateJobOperation extends IppOperation {
         requestEntity.setContentType(IPP_MIME_TYPE);
         httpPost.setEntity(requestEntity);
         CloseableHttpResponse httpResponse = client.execute(httpPost);
+        
+        //System.out.println("Response body");
+        //System.out.println(Base64.getEncoder().encodeToString(IOUtils.toString(httpResponse.getEntity().getContent()).getBytes()));
         return toIppResult(httpResponse);
     }
     
     private static IppResult toIppResult(CloseableHttpResponse httpResponse) throws IOException {
-        IppResponse ippResponse = new IppResponse();
-        IppResult ippResult = ippResponse.getResponse(read(httpResponse.getEntity()));
-        StatusLine statusLine = httpResponse.getStatusLine();
-        ippResult.setHttpStatusResponse(statusLine.getReasonPhrase());
-        ippResult.setHttpStatusCode(statusLine.getStatusCode());
-        return ippResult;
+    	try {
+	        IppResponse ippResponse = new IppResponse();
+	        IppResult ippResult = ippResponse.getResponse(read(httpResponse.getEntity()));
+	        StatusLine statusLine = httpResponse.getStatusLine();
+	        ippResult.setHttpStatusResponse(statusLine.getReasonPhrase());
+	        ippResult.setHttpStatusCode(statusLine.getStatusCode());
+	        return ippResult;
+    	} finally {
+    		try {
+    			httpResponse.close();
+    		} catch (IOException e) {}
+    	}
     }
     
     private static ByteBuffer read(HttpEntity entity) throws IOException {

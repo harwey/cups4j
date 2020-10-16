@@ -15,8 +15,6 @@ package org.cups4j;
  * <http://www.gnu.org/licenses/>.
  */
 
-import org.cups4j.operations.IppOperation;
-import org.cups4j.operations.cups.CupsGetDefaultOperation;
 import org.cups4j.operations.cups.CupsGetPrintersOperation;
 import org.cups4j.operations.cups.CupsMoveJobOperation;
 import org.cups4j.operations.ipp.*;
@@ -48,7 +46,7 @@ public class CupsClient {
   private int port = -1;
   private String user = null;
 
-  private IppOperation ippOperation;
+  private CupsAuthentication creds = null;
 
   /**
    * Creates a CupsClient for localhost port 631 with user anonymous
@@ -97,25 +95,41 @@ public class CupsClient {
   }
 
   /**
+   * Creates a CupsClient for provided host, port and user
+   * 
+   * @param host
+   * @param port
+   * @param userName
+   * @throws Exception
+   */
+  public CupsClient(String host, int port, String userName, CupsAuthentication creds) throws Exception {
+    super();
+    this.creds = creds;
+    if (host != null && !"".equals(host)) {
+      this.host = host;
+    } else {
+      throw new Exception("The hostname specified: <" + host + "> is not valid");
+    }
+
+    if (port > 0) {
+      this.port = port;
+    } else {
+      throw new Exception("The specified port number: <" + port + "> is not valid");
+    }
+
+    if (userName != null && !"".equals(userName)) {
+      this.user = userName;
+    }
+  }
+
+  /**
    * Returns all available printers
    * 
    * @return List of Printers
    * @throws Exception
    */
   public List<CupsPrinter> getPrinters() throws Exception {
-    List<CupsPrinter> printers = new CupsGetPrintersOperation().getPrinters(host, port);
-    // add default printer if available
-    CupsPrinter defaultPrinter = null;
-
-    defaultPrinter = getDefaultPrinter();
-
-    for (CupsPrinter p : printers) {
-      if (defaultPrinter != null && p.getPrinterURL().toString().equals(defaultPrinter.getPrinterURL().toString())) {
-        p.setDefault(true);
-      }
-    }
-
-    return printers;
+    return new CupsGetPrintersOperation(port).getPrinters(host, port, creds);
   }
 
   /**
@@ -126,32 +140,8 @@ public class CupsClient {
    */
   public List<CupsPrinter> getPrintersWithoutDefault() throws Exception {
     CupsGetPrintersOperation cgp = new CupsGetPrintersOperation();
-    this.ippOperation = cgp;
-    List<CupsPrinter> result = cgp.getPrinters(host, port);
-    ippOperation = null;
+    List<CupsPrinter> result = cgp.getPrinters(host, port, creds);
     return result;
-  }
-
-  /**
-   * Cancel the current running job if possible.
-   * <p>
-   * This is especially necessary when using Cups4j within Android
-   * </p>
-   */
-  public void cancelOperation() {
-    if (ippOperation != null) {
-      ippOperation.cancel();
-    }
-  }
-
-  /**
-   * Returns default printer
-   * 
-   * @return default printer
-   * @throws Exception
-   */
-  public CupsPrinter getDefaultPrinter() throws Exception {
-    return new CupsGetDefaultOperation().getDefaultPrinter(host, port);
   }
 
   /**
@@ -174,7 +164,8 @@ public class CupsClient {
   /**
    * Returns the printer for the provided name
    *
-   * @param printerName the printer name
+   * @param printerName
+   *          the printer name
    * @return printer
    * @throws Exception
    */
@@ -185,6 +176,28 @@ public class CupsClient {
         return printer;
     }
     return null;
+  }
+
+  /**
+   * Returns default printer
+   * 
+   * @return default printer
+   * @throws Exception
+   */
+  public CupsPrinter getDefaultPrinter() throws Exception {
+    return new CupsGetDefaultOperation().getDefaultPrinter(host, port);
+  }
+
+  /**
+   * Returns the printer for the provided URL on the current host
+   *
+   * @param printerURL
+   *          a URL like /printers/printername
+   * @return printer
+   * @throws Exception
+   */
+  public CupsPrinter getPrinterOnCurrentHost(String printerURL) throws Exception {
+    return getPrinter(new URL("http://" + host + ":" + port + printerURL));
   }
 
   /**
@@ -228,7 +241,7 @@ public class CupsClient {
       hostname = DEFAULT_HOST;
     }
 
-    return new IppGetJobAttributesOperation().getPrintJobAttributes(hostname, userName, port, jobID);
+    return new IppGetJobAttributesOperation(port).getPrintJobAttributes(hostname, userName, port, jobID, creds);
   }
 
   /**
@@ -247,7 +260,7 @@ public class CupsClient {
    */
   public List<PrintJobAttributes> getJobs(CupsPrinter printer, WhichJobsEnum whichJobs, String userName, boolean myJobs)
       throws Exception {
-    return new IppGetJobsOperation().getPrintJobs(printer, whichJobs, userName, myJobs);
+    return new IppGetJobsOperation(port).getPrintJobs(printer, whichJobs, userName, myJobs, creds);
   }
 
   /**
@@ -257,21 +270,8 @@ public class CupsClient {
    * @return boolean success
    * @throws Exception
    */
-  public boolean cancelJob(int jobID) throws Exception {
-    return new IppCancelJobOperation().cancelJob(host, user, jobID);
-  }
-
-  /**
-   * Cancel the job with the provided jobID, hostname for provided userName
-   * 
-   * @param hostname
-   * @param userName
-   * @param jobID
-   * @return boolean success
-   * @throws Exception
-   */
-  public boolean cancelJob(String hostname, String userName, int jobID) throws Exception {
-    return new IppCancelJobOperation().cancelJob(hostname, userName, jobID);
+  public boolean cancelJob(CupsPrinter printer, int jobID) throws Exception {
+    return new IppCancelJobOperation(port).cancelJob(host, user, jobID, printer, creds);
   }
 
   /**
@@ -282,21 +282,8 @@ public class CupsClient {
    * @return boolean success
    * @throws Exception
    */
-  public boolean holdJob(int jobID) throws Exception {
-    return new IppHoldJobOperation().holdJob(host, user, jobID);
-  }
-
-  /**
-   * Hold the job with the provided jobID, hostname for provided userName
-   * 
-   * @param hostname
-   * @param userName
-   * @param jobID
-   * @return boolean success
-   * @throws Exception
-   */
-  public boolean holdJob(String hostname, String userName, int jobID) throws Exception {
-    return new IppHoldJobOperation().holdJob(hostname, userName, jobID);
+  public boolean holdJob(CupsPrinter printer, int jobID) throws Exception {
+    return new IppHoldJobOperation(port).holdJob(host, user, jobID, printer, creds);
   }
 
   /**
@@ -307,21 +294,8 @@ public class CupsClient {
    * @return boolean success
    * @throws Exception
    */
-  public boolean releaseJob(int jobID) throws Exception {
-    return new IppReleaseJobOperation().releaseJob(host, user, jobID);
-  }
-
-  /**
-   * Release the job with the provided jobID, hostname for provided userName
-   * 
-   * @param hostname
-   * @param userName
-   * @param jobID
-   * @return boolean success
-   * @throws Exception
-   */
-  public boolean releaseJob(String hostname, String userName, int jobID) throws Exception {
-    return new IppReleaseJobOperation().releaseJob(host, user, jobID);
+  public boolean releaseJob(CupsPrinter printer, int jobID) throws Exception {
+    return new IppReleaseJobOperation(port).releaseJob(host, user, jobID, printer, creds);
   }
 
   /**
@@ -338,7 +312,8 @@ public class CupsClient {
       throws Exception {
     String currentHost = currentPrinter.getPrinterURL().getHost();
 
-    return new CupsMoveJobOperation().moveJob(currentHost, userName, jobID, targetPrinter.getPrinterURL());
+    return new CupsMoveJobOperation(port).moveJob(currentPrinter, currentHost, userName, jobID,
+        targetPrinter.getPrinterURL(), creds);
   }
 
 }

@@ -76,7 +76,8 @@ public class IppResult {
         return group;
       }
     }
-    throw new IllegalArgumentException("tag '" + tagName + "' not found in " + attributeGroupList);
+    throw new IllegalArgumentException("tag '" + tagName + "' not found in " + attributeGroupList
+    		+ "; Http status response: " + httpStatusResponse + ", Ipp status response: " + ippStatusResponse);
   }
 
   public boolean hasAttributeGroup(String tagName) {
@@ -104,9 +105,8 @@ public class IppResult {
     this.httpStatusCode = httpStatusCode;
   }
 
-  @Override
-  public String toString() {
-    return httpStatusCode + " (" + httpStatusResponse + ")";
-  }
-
+	public boolean isPrintQueueUnavailable() {
+		return ippStatusResponse != null && ippStatusResponse.contains("client-error-not-possible");
+	}
+  
 }

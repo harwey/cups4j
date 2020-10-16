@@ -17,17 +17,18 @@ package org.cups4j.operations;
 import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
 import ch.ethz.vppserver.ippclient.IppTag;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
+import org.cups4j.CupsPrinter;
 import org.cups4j.ipp.attributes.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,11 +45,6 @@ public abstract class IppOperation {
   protected int ippPort = CupsClient.DEFAULT_PORT;
 
   protected final static String IPP_MIME_TYPE = "application/ipp";
-  private HttpPost httpCall;
-
-  //
-  private String httpStatusLine = null;
-  private int httpStatusCode = -1;
 
   private static final Logger LOG = LoggerFactory.getLogger(IppOperation.class);
 
@@ -63,12 +59,14 @@ public abstract class IppOperation {
     return getIppHeader(url, null);
   }
 
-  public IppResult request(URL url, Map<String, String> map) throws Exception {
-    return sendRequest(url, getIppHeader(url, map));
+  public IppResult request(CupsPrinter printer, URL url, Map<String, String> map,
+		  CupsAuthentication creds) throws Exception {
+    return sendRequest(printer, url, getIppHeader(url, map), creds);
   }
 
-  public IppResult request(URL url, Map<String, String> map, InputStream document) throws Exception {
-    return sendRequest(url, getIppHeader(url, map), document);
+  public IppResult request(CupsPrinter printer, URL url, Map<String, String> map, InputStream document,
+		  CupsAuthentication creds) throws Exception {
+    return sendRequest(printer, url, getIppHeader(url, map), document, creds);
   }
 
   /**
@@ -127,8 +125,9 @@ public abstract class IppOperation {
    * @return result
    * @throws Exception 
    */
-  private IppResult sendRequest(URL url, ByteBuffer ippBuf) throws Exception  {
-    IppResult result = sendRequest(url, ippBuf, null);
+  private IppResult sendRequest(CupsPrinter printer, URL url, ByteBuffer ippBuf,
+		  CupsAuthentication creds) throws Exception  {
+    IppResult result = sendRequest(printer, url, ippBuf, null, creds);
     if (result.getHttpStatusCode() >= 300) {
       throw new IOException("HTTP error! Status code:  " + result.getHttpStatusResponse());
     }
@@ -145,7 +144,7 @@ public abstract class IppOperation {
    * @return result
    * @throws Exception
    */
-  private IppResult sendRequest(URL url, ByteBuffer ippBuf, InputStream documentStream) throws Exception {
+  private IppResult sendRequest(CupsPrinter printer, URL url, ByteBuffer ippBuf, InputStream documentStream, CupsAuthentication creds) throws Exception {
     IppResult ippResult = null;
     if (ippBuf == null) {
       return null;
@@ -155,32 +154,10 @@ public abstract class IppOperation {
       return null;
     }
 
-    // HttpClient client = new DefaultHttpClient();
-    //
-    // // will not work with older versions of CUPS!
-    // client.getParams().setParameter("http.protocol.version",
-    // HttpVersion.HTTP_1_1);
-    // client.getParams().setParameter("http.socket.timeout", new
-    // Integer(10000));
-    // client.getParams().setParameter("http.connection.timeout", new
-    // Integer(10000));
-    // client.getParams().setParameter("http.protocol.content-charset",
-    // "UTF-8");
-    // client.getParams().setParameter("http.method.response.buffer.warnlimit",
-    // new Integer(8092));
-    //
-    // // probabaly not working with older CUPS versions
-    // client.getParams().setParameter("http.protocol.expect-continue",
-    // Boolean.valueOf(true));
-
-    HttpClient client = HttpClientBuilder.create().build();
-
+    CloseableHttpClient client = IppHttp.createHttpClient();
+	
     HttpPost httpPost = new HttpPost(new URI("http://" + url.getHost() + ":" + ippPort) + url.getPath());
-    httpPost.setConfig(getRequestConfig());
-    httpCall = httpPost;
-
-    // httpPost.getParams().setParameter("http.socket.timeout", new
-    // Integer(10000));
+    IppHttp.setHttpHeaders(httpPost, printer, creds);
 
     byte[] bytes = new byte[ippBuf.limit()];
     ippBuf.get(bytes);
@@ -199,14 +176,14 @@ public abstract class IppOperation {
     requestEntity.setContentType(IPP_MIME_TYPE);
     httpPost.setEntity(requestEntity);
 
-    httpStatusLine = null;
-    httpStatusCode = -1;
+    final IppHttpResult ippHttpResult = new IppHttpResult();
+    ippHttpResult.setStatusCode(-1);
 
     ResponseHandler<byte[]> handler = new ResponseHandler<byte[]>() {
       public byte[] handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
         HttpEntity entity = response.getEntity();
-        httpStatusLine = response.getStatusLine().toString();
-        httpStatusCode = response.getStatusLine().getStatusCode();
+        ippHttpResult.setStatusLine(response.getStatusLine().toString());
+        ippHttpResult.setStatusCode(response.getStatusLine().getStatusCode());
         if (entity != null) {
           return EntityUtils.toByteArray(entity);
         } else {
@@ -214,31 +191,16 @@ public abstract class IppOperation {
         }
       }
     };
-    
+
     byte[] result = client.execute(httpPost, handler);
 
     IppResponse ippResponse = new IppResponse();
 
     ippResult = ippResponse.getResponse(ByteBuffer.wrap(result));
-    ippResult.setHttpStatusResponse(httpStatusLine);
-    ippResult.setHttpStatusCode(httpStatusCode);
+    ippResult.setHttpStatusResponse(ippHttpResult.getStatusLine());
+    ippResult.setHttpStatusCode(ippHttpResult.getStatusCode());
 
-    // IppResultPrinter.print(ippResult);
-
-    client.getConnectionManager().shutdown();
-    httpCall = null;
     return ippResult;
-  }
-
-  protected static RequestConfig getRequestConfig() {
-    int timeout = Integer.parseInt(System.getProperty("cups4j.timeout", "10000"));
-    return RequestConfig.custom().setSocketTimeout(timeout).setConnectTimeout(timeout).build();
-  }
-
-  public void cancel() {
-    if (httpCall != null) {
-      httpCall.abort();
-    }
   }
 
   /**
@@ -259,10 +221,5 @@ public abstract class IppOperation {
   protected String getAttributeValue(Attribute attr) {
     return attr.getAttributeValue().get(0).getValue();
   }
-
-  @Override
-  public String toString() {
-    return this.getClass().getSimpleName() + ":" + ippPort;
-  }
-
+  
 }
