@@ -7,7 +7,9 @@ import java.awt.Container;
 import java.awt.ScrollPane;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.JComponent;
@@ -53,13 +55,16 @@ public class PrinterAttributes {
 
       List<CupsPrinter> printers = new CupsClient().getPrinters();
 
+      Map<String, String> map = new HashMap<String, String>();
+      map.put("requested-attributes", "all");
+
       for (CupsPrinter p : printers) {
         IppGetPrinterAttributesOperation o = new IppGetPrinterAttributesOperation();
-        IppResult result = o.request(p.getPrinterURL(), null);
+        IppResult result = o.request(p, p.getPrinterURL(), map, new CupsAuthentication("anonymous", "anonymous"));
         // IppResultPrinter.print(result);
         addPrinterPanel(p.getName(), result);
       }
-      
+
       frame.setVisible(true);
     } catch (Exception e) {
       // TODO Auto-generated catch block
@@ -108,15 +113,14 @@ public class PrinterAttributes {
       if (att.getAttributeValue().size() > 0) {
         JPanel panel = new JPanel(new BorderLayout());
 
-        AttributeValueTable table = new AttributeValueTable((getAttributeTableModel(att
-            .getAttributeValue())));
+        AttributeValueTable table = new AttributeValueTable((getAttributeTableModel(att.getAttributeValue())));
         panel.add(table.getTableHeader(), BorderLayout.NORTH);
         panel.add(table, BorderLayout.CENTER);
         valueComponent = panel;
 
       } else {
         JLabel lb = new JLabel("no value reported");
-        lb.setForeground(Color.red);  
+        lb.setForeground(Color.red);
         valueComponent = lb;
       }
       builder.appendSeparator();
@@ -163,5 +167,5 @@ public class PrinterAttributes {
       colmodel.getColumn(2).setPreferredWidth(150);
     }
   }
- 
+
 }

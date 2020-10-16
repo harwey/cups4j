@@ -1,5 +1,10 @@
 package org.cups4j;
 
+import java.net.URL;
+import java.util.List;
+
+import org.cups4j.operations.cups.CupsGetDefaultOperation;
+
 /**
  * Copyright (C) 2009 Harald Weyhing
  * 
@@ -17,10 +22,11 @@ package org.cups4j;
 
 import org.cups4j.operations.cups.CupsGetPrintersOperation;
 import org.cups4j.operations.cups.CupsMoveJobOperation;
-import org.cups4j.operations.ipp.*;
-
-import java.net.URL;
-import java.util.List;
+import org.cups4j.operations.ipp.IppCancelJobOperation;
+import org.cups4j.operations.ipp.IppGetJobAttributesOperation;
+import org.cups4j.operations.ipp.IppGetJobsOperation;
+import org.cups4j.operations.ipp.IppHoldJobOperation;
+import org.cups4j.operations.ipp.IppReleaseJobOperation;
 
 /**
  * Main Client for accessing CUPS features like
@@ -185,7 +191,7 @@ public class CupsClient {
    * @throws Exception
    */
   public CupsPrinter getDefaultPrinter() throws Exception {
-    return new CupsGetDefaultOperation().getDefaultPrinter(host, port);
+    return new CupsGetDefaultOperation().getDefaultPrinter(host, port, creds);
   }
 
   /**

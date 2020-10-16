@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsPrinter;
 import org.cups4j.PrinterStateEnum;
@@ -81,8 +82,8 @@ public class CupsGetPrintersOperation extends IppOperation {
         for (Attribute attr : group.getAttribute()) {
           if (attr.getName().equals("printer-uri-supported")) {
             printerURI = getAttributeValue(attr).replace("ipp://", "http://");
-            printerURI = org.apache.commons.lang3.StringUtils.remove(printerURI, "http://");
-            printerURI = org.apache.commons.lang3.StringUtils.substringAfter(printerURI, "/");
+            printerURI = StringUtils.remove(printerURI, "http://");
+            printerURI = StringUtils.substringAfter(printerURI, "/");
             printerURI = "http://" + hostname + ":" + port + "/" + printerURI; 
           } else if (attr.getName().equals("printer-name")) {
             printerName = getAttributeValue(attr);
@@ -91,13 +92,9 @@ public class CupsGetPrintersOperation extends IppOperation {
           } else if (attr.getName().equals("printer-info")) {
             printerDescription = getAttributeValue(attr);
           } else if (attr.getName().equals("device-uri")) {
-              deviceUri = getAttributeValue(attr);
+              deviceURI = getAttributeValue(attr);
           } else if (attr.getName().equals("printer-state")) {
-              printerState = getAttributeValue(attr);
-          } else if (attr.getName().equals("printer-state-message") && !attr.getAttributeValue().isEmpty()) {
-              printerStateMessage = getAttributeValue(attr);
-          } else if (attr.getName().equals("printer-state-reasons") && !attr.getAttributeValue().isEmpty()) {
-              printerStateReasons = getAttributeValue(attr);
+            printerState = PrinterStateEnum.fromStringInteger(getAttributeValue(attr));
           } else if (attr.getName().equals("media-default")) {
             mediaDefault = getAttributeValue(attr);
           } else if (attr.getName().equals("media-supported")) {
@@ -137,14 +134,12 @@ public class CupsGetPrintersOperation extends IppOperation {
           throw new Exception(t);
         }
 
-        printer = new CupsPrinter(printerUrl, printerName, false);
+        printer = new CupsPrinter(creds, printerUrl, printerName);
         printer.setState(printerState);
         printer.setLocation(printerLocation);
         printer.setDescription(printerDescription);
-        printer.setDeviceUri(deviceUri);
-        printer.setPrinterState(printerState);
-        printer.setPrinterStateMessage(printerStateMessage);
-        printer.setPrinterStateReasons(printerStateReasons);
+        printer.setDeviceUri(deviceURI);
+        printer.setState(printerState);
         printer.setMediaDefault(mediaDefault);
         printer.setMediaSupported(mediaSupportedList);
         printer.setResolutionDefault(printerResolutionDefault);
