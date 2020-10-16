@@ -26,7 +26,7 @@ public final class CupsPrinterTest {
     private static CupsPrinter printer;
 
     @BeforeClass
-    public static void setUpPrinter() {
+    public static void setUpPrinter() throws Exception {
         printer = getPrinter();
         assertNotNull(printer);
         LOG.info("Printer {} was choosen for testing.", printer);
@@ -99,9 +99,10 @@ public final class CupsPrinterTest {
      * system property 'printer' or the default printer.
      *
      * @return the printer
+     * @throws Exception 
      */
-    public static CupsPrinter getPrinter()  {
-        String name = System.getProperty("printer");
+    public static CupsPrinter getPrinter() throws Exception  {
+        String name = System.getProperty("printer", new CupsClient().getDefaultPrinter().getName());
         if (name == null) {
             LOG.info("To specify printer please set system property 'printer'.");
             try {

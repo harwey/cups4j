@@ -40,7 +40,7 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
         URL printerURL = createURL("http://localhost:631/test-printer");
         ByteBuffer buffer = operation.getIppHeader(printerURL);
         checkAttribute(buffer, "printer-uri", "http://localhost:631/test-printer");
-        checkAttribute(buffer, "requesting-user-name", System.getProperty("user.name"));
+        checkAttribute(buffer, "requesting-user-name", System.getProperty("user.name", "anonymous"));
         
     }
 
@@ -59,7 +59,7 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
     }
     
     @Test
-    public void testRequest() {
+    public void testRequest() throws Exception {
         CupsPrinter cupsPrinter = CupsPrinterTest.getPrinter();
         if (cupsPrinter == null) {
             LOG.warn("No default printer found for testing - run test with '-Dprinter=...' to define it.");

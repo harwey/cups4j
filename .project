@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
   <name>cups4j</name>
-  <comment>Java printing library for CUPS/IPP. NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
+  <comment>Java printing library for CUPS/IPP</comment>
   <projects/>
   <buildSpec>
     <buildCommand>
