@@ -126,8 +126,6 @@
         <version>3.0.2</version>
         <configuration>
           <archive>
-            <!--manifest> <addClasspath>true</addClasspath> <classpathPrefix>lib/</classpathPrefix> <mainClass>org.cups4j.client.Cups</mainClass> 
-              </manifest -->
           </archive>
         </configuration>
       </plugin>
