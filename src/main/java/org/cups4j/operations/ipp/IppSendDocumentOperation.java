@@ -272,7 +272,7 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         InputStreamEntity requestEntity = new InputStreamEntity(inputStream, -1);
         requestEntity.setContentType(IPP_MIME_TYPE);
         httpPost.setEntity(requestEntity);
-        IppHttp.setHttpHeaders(httpPost, printer, creds);
+        IppHttp.setHttpHeaders(httpPost, printer, creds, uri.getHost(), ippPort);
 
         CloseableHttpClient client = HttpClients.custom().build();
         try {

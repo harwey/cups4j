@@ -157,7 +157,7 @@ public abstract class IppOperation {
     CloseableHttpClient client = IppHttp.createHttpClient();
 	
     HttpPost httpPost = new HttpPost(new URI("http://" + url.getHost() + ":" + ippPort) + url.getPath());
-    IppHttp.setHttpHeaders(httpPost, printer, creds);
+    IppHttp.setHttpHeaders(httpPost, printer, creds, url.getHost(), ippPort);
 
     byte[] bytes = new byte[ippBuf.limit()];
     ippBuf.get(bytes);

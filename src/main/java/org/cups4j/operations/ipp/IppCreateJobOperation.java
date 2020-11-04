@@ -133,12 +133,12 @@ public class IppCreateJobOperation extends IppOperation {
         }
     }
 
-    private static IppResult sendRequest(CupsPrinter printer, URI uri, ByteBuffer ippBuf,
+    private IppResult sendRequest(CupsPrinter printer, URI uri, ByteBuffer ippBuf,
     		CupsAuthentication creds) throws IOException {
         CloseableHttpClient client = IppHttp.createHttpClient();
 
         HttpPost httpPost = new HttpPost(uri);
-        IppHttp.setHttpHeaders(httpPost, printer, creds);
+        IppHttp.setHttpHeaders(httpPost, printer, creds, uri.getHost(), ippPort);
 
         byte[] bytes = new byte[ippBuf.limit()];
         ippBuf.get(bytes);
