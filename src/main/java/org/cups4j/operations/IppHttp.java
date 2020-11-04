@@ -18,7 +18,6 @@ public final class IppHttp {
 	private static final int MAX_CONNECTION_BUFFER = 20;
 
 	private static final int CUPSTIMEOUT = Integer.parseInt(System.getProperty("cups4j.timeout", "10000"));
-	private static final String CUPSHOST = System.getProperty("cups4j.ourhostname", "localhost");
 
 	private static final RequestConfig requestConfig = RequestConfig.custom()
 			.setSocketTimeout(CUPSTIMEOUT).setConnectTimeout(CUPSTIMEOUT)
@@ -41,15 +40,13 @@ public final class IppHttp {
 	}
 
 	public static void setHttpHeaders(HttpPost httpPost, CupsPrinter targetPrinter,
-			CupsAuthentication creds) {
+			CupsAuthentication creds, String hostname, int port) {
 		 if (targetPrinter == null) {
 			 httpPost.addHeader("target-group", "local");
 		 } else {
 		 	 httpPost.addHeader("target-group", targetPrinter.getName());
 		 }
-		 if (CUPSHOST != null && !"".equals(CUPSHOST)) {
-	     httpPost.addHeader("Host", CUPSHOST);
-	   }
+		 httpPost.addHeader("Host", String.format("%s:%s", hostname, port));
 	   httpPost.setConfig(requestConfig);
 
 	   if (creds != null && StringUtils.isNotBlank(creds.getUserid())
