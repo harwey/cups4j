@@ -63,6 +63,8 @@ public class CupsPrinter {
   private List<String> colorModeSupported = new ArrayList<String>();
   private List<String> mimeTypesSupported = new ArrayList<String>();
   private List<String> sidesSupported = new ArrayList<String>();
+
+  private String makeAndModel = null;
   
   private final CupsAuthentication creds;
 
@@ -415,6 +417,17 @@ public class CupsPrinter {
   }
 
   /**
+   * Get make-and-model attribute for this printer
+   *
+   * @return make and model
+   */
+  public String getMakeAndModel() {
+    return makeAndModel;
+  }
+
+
+
+  /**
    * Get state of this printer.
    * <p>
    * For a printer http://localhost:631/printers/printername 'printer-state' will
@@ -483,6 +496,10 @@ public class CupsPrinter {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setMakeAndModel(String makeAndModel) {
+    this.makeAndModel = makeAndModel;
   }
 
   public void setState(PrinterStateEnum state) { this.state = state; }
