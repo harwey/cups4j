@@ -78,6 +78,7 @@ public class CupsGetPrintersOperation extends IppOperation {
         String numberUpDefault = null;
         List<String> numberUpSupported = new ArrayList<String>();
         String deviceURI = null;
+        String printerMakeAndModel = null;
 
         for (Attribute attr : group.getAttribute()) {
           if (attr.getName().equals("printer-uri-supported")) {
@@ -121,6 +122,8 @@ public class CupsGetPrintersOperation extends IppOperation {
             printerState = PrinterStateEnum.fromStringInteger(getAttributeValue(attr));
           }else if (attr.getName().equals("device-uri")){
             deviceURI = getAttributeValue(attr);
+          }else if (attr.getName().equals("printer-make-and-model")){
+            printerMakeAndModel = getAttributeValue(attr);
           }
         }
         URL printerUrl = null;
@@ -152,6 +155,7 @@ public class CupsGetPrintersOperation extends IppOperation {
         printer.setNumberUpDefault(numberUpDefault);
         printer.setNumberUpSupported(numberUpSupported);
         printer.setDeviceURI(deviceURI);
+        printer.setMakeAndModel(printerMakeAndModel);
 
         printers.add(printer);
       }

@@ -37,4 +37,16 @@ public class CupsClientTest {
     assertFalse(printers.isEmpty());
   }
 
+
+
+  @Test
+  public void testMakeAndModel() throws Exception {
+    List<CupsPrinter> printers = client.getPrinters();
+
+    for (CupsPrinter printer : printers) {
+      LOG.info("printer: " + printer.getName() + "[makeAndModel=" + printer.getMakeAndModel() + "]");
+    }
+  }
+
+
 }
