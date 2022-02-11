@@ -53,12 +53,6 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
     checkAttribute(buffer, "job-name", "Test-Job");
   }
 
-  private static byte[] toByteArray(ByteBuffer buffer) {
-    byte[] array = new byte[buffer.limit()];
-    buffer.get(array);
-    return array;
-  }
-
   @Ignore
   public void testRequest() throws Exception {
     CupsPrinter cupsPrinter = CupsPrinterTest.getPrinter();
