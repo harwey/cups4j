@@ -2,12 +2,14 @@ package cups4j;
 
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 public class TestCups {
   @Test
+  @Tag("LiveServerTest")
   public void testCupsClient() throws Exception {
     CupsClient client = getCupsClient();
     List<CupsPrinter> printers = client.getPrinters();

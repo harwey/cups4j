@@ -5,7 +5,7 @@ import org.cups4j.CupsPrinter;
 import org.cups4j.CupsPrinterTest;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +53,8 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
     checkAttribute(buffer, "job-name", "Test-Job");
   }
 
-  @Disabled
+  @Test
+  @Tag("LiveServerTest")
   public void testRequest() throws Exception {
     CupsPrinter cupsPrinter = CupsPrinterTest.getPrinter();
     if (cupsPrinter == null) {

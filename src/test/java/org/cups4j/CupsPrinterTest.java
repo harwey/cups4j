@@ -3,7 +3,7 @@ package org.cups4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,17 +35,41 @@ public final class CupsPrinterTest {
     }
 
     @Test
-    @Disabled
+    @Tag("LiveServerTest")
     public void testPrintPDF() {
         print(printer, new File("src/test/resources/test.pdf"));
     }
 
     @Test
-    @Disabled
+    @Tag("LiveServerTest")
     public void testPrintText() {
         print(printer, new File("src/test/resources/test.txt"));
     }
 
+    @Test
+    @Tag("LiveServerTest")
+    public void testPrintList() {
+        File file = new File("src/test/resources/test.txt");
+        printer.print(createPrintJob(file), createPrintJob(file));
+    }
+
+    @Test
+    @Tag("LiveServerTest")
+    public void testPrintListWithDifferentUsers() {
+        File file = new File("src/test/resources/test.txt");
+        assertThrows(
+                IllegalStateException.class,
+                () -> printer.print(createPrintJob(file, "oli"), createPrintJob(file, "stan"))
+                );
+    }
+
+    @Test
+    @Tag("LiveServerTest")
+    public void testPrintListWithNoUser() {
+        PrintJob job = new PrintJob.Builder("secret".getBytes()).jobName("testPrintListWithNoUser").build();
+        printer.print(job, job);
+    }
+    
     private PrintRequestResult print(CupsPrinter printer, File file) {
         PrintJob job = createPrintJob(file);
         LOG.info("Print job '{}' will be sent to {}.", job, printer);
@@ -56,34 +80,6 @@ public final class CupsPrinterTest {
         }
     }
 
-    @Test
-    @Disabled
-    public void testPrintList() {
-        File file = new File("src/test/resources/test.txt");
-        printer.print(createPrintJob(file), createPrintJob(file));
-    }
-
-    @Test
-    @Disabled
-    public void testPrintListWithDifferentUsers() {
-        File file = new File("src/test/resources/test.txt");
-        assertThrows(
-                IllegalStateException.class,
-                () -> printer.print(createPrintJob(file, "oli"), createPrintJob(file, "stan"))
-                );
-    }
-
-    private PrintJob createPrintJob(File file) {
-        return createPrintJob(file, CupsClient.DEFAULT_USER);
-    }
-
-    @Test
-    @Disabled
-    public void testPrintListWithNoUser() {
-        PrintJob job = new PrintJob.Builder("secret".getBytes()).jobName("testPrintListWithNoUser").build();
-        printer.print(job, job);
-    }
-    
     private PrintJob createPrintJob(File file, String userName) {
         String jobname = generateJobnameFor(file);
         try {
@@ -128,7 +124,7 @@ public final class CupsPrinterTest {
      * @param name name of the printer
      * @return printer
      */
-    public static CupsPrinter getPrinter(String name) {
+    private static CupsPrinter getPrinter(String name) {
         try {
             List<CupsPrinter> printers = TestCups.getCupsClient().getPrinters();
             for (CupsPrinter p : printers) {
@@ -142,4 +138,7 @@ public final class CupsPrinterTest {
         }
     }
 
+    private PrintJob createPrintJob(File file) {
+        return createPrintJob(file, CupsClient.DEFAULT_USER);
+    }
 }

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ public class CupsClientTest {
   }
 
   @Test
+  @Tag("LiveServerTest")
   public void getPrinters() throws Exception {
     List<CupsPrinter> printers = client.getPrinters();
 
@@ -37,9 +39,8 @@ public class CupsClientTest {
     assertFalse(printers.isEmpty());
   }
 
-
-
   @Test
+  @Tag("LiveServerTest")
   public void testMakeAndModel() throws Exception {
     List<CupsPrinter> printers = client.getPrinters();
 
@@ -47,6 +48,5 @@ public class CupsClientTest {
       LOG.info("printer: " + printer.getName() + "[makeAndModel=" + printer.getMakeAndModel() + "]");
     }
   }
-
 
 }
