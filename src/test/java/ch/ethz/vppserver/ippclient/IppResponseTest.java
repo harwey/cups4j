@@ -3,15 +3,13 @@ package ch.ethz.vppserver.ippclient;
 import org.apache.commons.io.FileUtils;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests for class {@link IppResponse}.
@@ -25,8 +23,8 @@ public class IppResponseTest {
     @Test
     public void testGetResponse() throws IOException {
         IppResult ippResult = readIppResponse("IppResponse400.bin");
-        String statusResponse = ippResult.getIppStatusResponse();
-        assertThat(statusResponse, containsString("client-error-bad-request"));
+        assertTrue(ippResult.getIppStatusResponse().contains("client-error-bad-request"), "No client-error-bad-request returned.");
+
         AttributeGroup attributeGroup =
                 ippResult.getAttributeGroup("operation-attributes-tag");
         Attribute attr = attributeGroup.getAttribute("status-message");
@@ -44,7 +42,7 @@ public class IppResponseTest {
     @Test
     public void testGetResponseUnauthorized() throws IOException {
         IppResult ippResult = readIppResponse("error401.html");
-        assertThat(ippResult.getIppStatusResponse(), containsString("client-error-"));
+        assertTrue(ippResult.getIppStatusResponse().contains("client-error-"), "No client-error- returned.");
     }
 
     private IppResult readIppResponse(String filename) throws IOException {

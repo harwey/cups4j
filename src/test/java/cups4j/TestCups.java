@@ -2,7 +2,7 @@ package cups4j;
 
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 

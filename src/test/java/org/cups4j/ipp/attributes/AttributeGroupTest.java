@@ -1,10 +1,12 @@
 package org.cups4j.ipp.attributes;
 
-import org.junit.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+
 
 public final class AttributeGroupTest {
 
