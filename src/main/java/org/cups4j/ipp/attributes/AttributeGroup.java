@@ -7,21 +7,21 @@
 
 package org.cups4j.ipp.attributes;
 
-import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Root;
-
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 
-@Root(name = "attribute-group")
+@XmlType(name = "attribute-group")
 public class AttributeGroup {
-  @ElementList(entry = "attribute", inline = true)
+  @XmlElement(name ="attribute")
   protected List<Attribute> attribute;
-  @org.simpleframework.xml.Attribute(required = true)
+  @XmlAttribute(required = true)
   protected String tag;
-  @org.simpleframework.xml.Attribute(name = "tag-name", required = true)
+  @XmlAttribute(name = "tag-name", required = true)
   protected String tagName;
-  @org.simpleframework.xml.Attribute(required = false)
+  @XmlAttribute
   protected String description;
 
   /**
@@ -48,7 +48,7 @@ public class AttributeGroup {
    */
   public List<Attribute> getAttribute() {
     if (attribute == null) {
-      attribute = new ArrayList<Attribute>();
+      attribute = new ArrayList<>();
     }
     return this.attribute;
   }

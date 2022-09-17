@@ -7,17 +7,20 @@
 
 package org.cups4j.ipp.attributes;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Root;
-
-@Root(name = "set-of-keyword")
+@XmlType(name = "set-of-keyword")
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class SetOfKeyword {
-  @ElementList(entry = "keyword", inline = true)
+  
   protected List<Keyword> keyword;
-  @org.simpleframework.xml.Attribute(required = false)
+
   protected String description;
 
   /**
@@ -42,9 +45,10 @@ public class SetOfKeyword {
    * 
    * 
    */
+  @XmlElement(name ="keyword")
   public List<Keyword> getKeyword() {
     if (keyword == null) {
-      keyword = new ArrayList<Keyword>();
+      keyword = new ArrayList<>();
     }
     return this.keyword;
   }
@@ -55,6 +59,7 @@ public class SetOfKeyword {
    * @return possible object is {@link String }
    * 
    */
+  @XmlAttribute
   public String getDescription() {
     return description;
   }
