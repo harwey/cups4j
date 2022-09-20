@@ -2,48 +2,51 @@ package org.cups4j;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
+import org.cups4j.operations.AbstractIppOperationTest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cups4j.TestCups;
-
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link CupsPrinter} class.
  *
  * @author oboehm
  */
-public final class CupsPrinterTest {
+public final class CupsPrinterTest extends AbstractIppOperationTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(CupsPrinterTest.class);
     private CupsPrinter printer;
 
     @Before
-    public void setUpPrinter() throws Exception {    
-        printer = getPrinter();
-        assertNotNull(printer);
-        LOG.info("Printer {} was choosen for testing.", printer);
+    public void setUpPrinter() {
+        printer = this.getPrinter();
+        LOG.info("Use printer '{}' for testing", printer.getName());
     }
 
     @Test
-    @Ignore
     public void testPrintPDF() {
-        print(printer, new File("src/test/resources/test.pdf"));
+        File pdfFile = new File("src/test/resources/test.pdf");
+        PrintRequestResult result = this.print(printer, pdfFile);
+        assertNotNull(result);
+        assertTrue(result.isSuccessfulResult());
+        assertTrue(result.getJobId() > 0);
     }
-
+    
     @Test
-    @Ignore
     public void testPrintText() {
-        print(printer, new File("src/test/resources/test.txt"));
+        File textFile = new File("src/test/resources/test.txt");
+        PrintRequestResult result = this.print(printer, textFile);
+        assertNotNull(result);
+        assertTrue(result.isSuccessfulResult());
+        assertTrue(result.getJobId() > 0);
     }
 
     private PrintRequestResult print(CupsPrinter printer, File file) {
@@ -57,14 +60,14 @@ public final class CupsPrinterTest {
     }
 
     @Test
-    @Ignore
     public void testPrintList() {
         File file = new File("src/test/resources/test.txt");
-        printer.print(createPrintJob(file), createPrintJob(file));
+        PrintJob job1 = createPrintJob(file);
+        PrintJob job2 = createPrintJob(file);
+        printer.print(job1, job2);
     }
 
     @Test(expected = IllegalStateException.class)
-    @Ignore
     public void testPrintListWithDifferentUsers() {
         File file = new File("src/test/resources/test.txt");
         printer.print(createPrintJob(file, "oli"), createPrintJob(file, "stan"));
@@ -75,7 +78,6 @@ public final class CupsPrinterTest {
     }
 
     @Test
-    @Ignore
     public void testPrintListWithNoUser() {
         PrintJob job = new PrintJob.Builder("secret".getBytes()).jobName("testPrintListWithNoUser").build();
         printer.print(job, job);
@@ -99,44 +101,6 @@ public final class CupsPrinterTest {
     private static String generateJobNameFor(String basename) {
         byte[] epochTime = Base64.encodeBase64(BigInteger.valueOf(System.currentTimeMillis()).toByteArray());
         return basename + new String(epochTime).substring(2);
-    }
-
-    /**
-     * Gets a printer for testing. This is either the printer defined by the
-     * system property 'printer' or the default printer.
-     *
-     * @return the printer
-     * @throws Exception 
-     */
-    public static CupsPrinter getPrinter() throws Exception  {
-        String name = System.getProperty("printer", new CupsClient().getDefaultPrinter().getName());
-        if (name == null) {
-            LOG.info("To specify printer please set system property 'printer'.");
-        } else {
-
-        }
-        return getPrinter(name);
-    }
-
-    /**
-     * Returns the printer with the given name. The search of the name is
-     * not case sensitiv.
-     *
-     * @param name name of the printer
-     * @return printer
-     */
-    public static CupsPrinter getPrinter(String name) {
-        try {
-            List<CupsPrinter> printers = TestCups.getCupsClient().getPrinters();
-            for (CupsPrinter p : printers) {
-                if (name.equalsIgnoreCase(p.getName())) {
-                    return p;
-                }
-            }
-            throw new IllegalArgumentException("not a valid printer name: " + name);
-        } catch (Exception ex) {
-            throw new IllegalStateException("cannot get printers", ex);
-        }
     }
 
 }
