@@ -7,18 +7,18 @@
 
 package org.cups4j.ipp.attributes;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Root;
-
-@Root(name = "set-of-enum")
+@XmlType(name = "set-of-enum")
 public class SetOfEnum {
 
-  @ElementList(entry = "enum", inline = true)
+  @XmlElement(name ="enum")
   protected List<Enum> _enum;
-  @org.simpleframework.xml.Attribute(required = false)
+  @XmlAttribute
   protected String description;
 
   /**
@@ -45,7 +45,7 @@ public class SetOfEnum {
    */
   public List<Enum> getEnum() {
     if (_enum == null) {
-      _enum = new ArrayList<Enum>();
+      _enum = new ArrayList<>();
     }
     return this._enum;
   }
