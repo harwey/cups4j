@@ -577,6 +577,10 @@ public class IppResponse {
     if ((length != 0) && (_buf.remaining() >= length)) {
       setAttributeName(length);
     }
+    
+    // skip 2 Bytes (short value) of attribute value length (0x0000) in buffer 
+    if (_buf.remaining() >= 2)
+    	_buf.position(_buf.position() + 2);
   }
 
   /**
