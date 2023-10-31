@@ -6,3 +6,6 @@ cups4j.iml
 /deploy.txt
 .idea
 /doc/
+.classpath
+.project
+.vscode

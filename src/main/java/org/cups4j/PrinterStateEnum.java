@@ -19,6 +19,7 @@ public enum PrinterStateEnum {
     public Integer getValue() {
         return value;
     }
+
     public String getStateName() {
         return stateName;
     }

@@ -1,11 +1,12 @@
 package org.cups4j;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.List;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,12 +22,13 @@ public class CupsClientTest {
   private static CupsClient client;
   private static final Logger LOG = LoggerFactory.getLogger(CupsClientTest.class);
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpClient() throws Exception {
     client = TestCups.getCupsClient();
   }
 
   @Test
+  @Tag("LiveServerTest")
   public void getPrinters() throws Exception {
     List<CupsPrinter> printers = client.getPrinters();
 
@@ -37,9 +39,8 @@ public class CupsClientTest {
     assertFalse(printers.isEmpty());
   }
 
-
-
   @Test
+  @Tag("LiveServerTest")
   public void testMakeAndModel() throws Exception {
     List<CupsPrinter> printers = client.getPrinters();
 
@@ -47,6 +48,5 @@ public class CupsClientTest {
       LOG.info("printer: " + printer.getName() + "[makeAndModel=" + printer.getMakeAndModel() + "]");
     }
   }
-
 
 }

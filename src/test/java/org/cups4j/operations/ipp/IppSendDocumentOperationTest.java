@@ -7,10 +7,12 @@ import org.cups4j.CupsPrinter;
 import org.cups4j.CupsPrinterTest;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -23,8 +25,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
 
 /**
  * Unit-Tests fuer {@link IppSendDocumentOperation}-Klasse.
@@ -61,7 +61,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
         Map<String, String> attributes = setUpAttributes();
         ByteBuffer buffer = operation.getIppHeader(printerURL, attributes);
         byte[] header = toByteArray(buffer);
-        assertThat(new String(header), containsString("job-id"));
+        assertTrue(new String(header).contains("job-id"), "No job-id found in IPP header.");
         checkIppRequest(header);
         checkIppRequestAttributes(header);
     }
@@ -91,7 +91,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
         Set<String> groupTagNames = new HashSet<String>();
         for (AttributeGroup group : ippResult.getAttributeGroupList()) {
             String tagName = group.getTagName();
-            assertThat("duplicate tag name", groupTagNames, not(hasItem(tagName)));
+            assertFalse(groupTagNames.contains(tagName), "AttributeGroupList has duplicate entry");
             groupTagNames.add(tagName);
         }
     }
@@ -131,7 +131,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
         ByteBuffer buffer = operation.getIppHeader(printerURL, attributes);
         byte[] header = toByteArray(buffer);
         String user = System.getProperty("user.name", "anonymous");
-        assertThat(new String(header), containsString(user));
+        assertTrue(new String(header).contains(user), "User not found in IPP header.");
     }
 
     private static byte[] toByteArray(ByteBuffer buffer) {
@@ -141,7 +141,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
     }
 
     @Test
-    @Ignore
+    @Tag("LiveServerTest")
     public void testRequest() throws Exception {
         CupsPrinter printer = CupsPrinterTest.getPrinter();
         if (printer == null) {

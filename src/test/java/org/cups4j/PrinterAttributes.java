@@ -98,7 +98,7 @@ public class PrinterAttributes {
 
     FormLayout layout = new FormLayout("12dlu, pref, 6dlu, 30dlu:grow, 3dlu");
     DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-    builder.setLeadingColumnOffset(1);
+    builder.leadingColumnOffset(1);
 
     Collections.sort(group.getAttribute(), new Comparator<Attribute>() {
 

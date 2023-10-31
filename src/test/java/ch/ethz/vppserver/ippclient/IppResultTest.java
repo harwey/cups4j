@@ -1,11 +1,12 @@
 package ch.ethz.vppserver.ippclient;
 
 import org.cups4j.ipp.attributes.AttributeGroup;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
 
 public class IppResultTest {
 
