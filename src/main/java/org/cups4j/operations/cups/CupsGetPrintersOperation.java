@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsPrinter;
 import org.cups4j.PrinterStateEnum;
