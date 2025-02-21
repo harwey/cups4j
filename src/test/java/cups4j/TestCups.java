@@ -4,8 +4,12 @@ import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.net.Socket;
 import java.net.URI;
 import java.util.List;
+
+import static org.junit.Assume.assumeTrue;
 
 public class TestCups {
   @Test
@@ -47,7 +51,17 @@ public class TestCups {
    */
   public static CupsClient getCupsClient() {
     URI cupsURI = URI.create(System.getProperty("cups.url", "http://localhost:631"));
+    assumeTrue(isOnline(cupsURI.getHost(), cupsURI.getPort()));
     return new CupsClient(cupsURI);
+  }
+
+  private static boolean isOnline(String host, int port) {
+    try (Socket socket = new Socket(host, port)) {
+      return socket.isConnected();
+    } catch (IOException ex) {
+      System.err.println("Failed to connect to " + host + ":" + port + " - " + ex.getMessage());
+      return false;
+    }
   }
 
 }
