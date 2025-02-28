@@ -1,15 +1,16 @@
 package org.cups4j;
 
-import static org.junit.Assert.assertFalse;
-
-import java.util.List;
-
+import cups4j.TestCups;
+import org.hamcrest.MatcherAssert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cups4j.TestCups;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Unit tests for {@link CupsClient} class.
@@ -37,7 +38,14 @@ public class CupsClientTest {
     assertFalse(printers.isEmpty());
   }
 
-
+  @Test
+  public void getDefaultPrinter() throws Exception {
+    CupsPrinter defaultPrinter = client.getDefaultPrinter();
+    if (defaultPrinter != null) {
+      List<CupsPrinter> printers = client.getPrinters();
+      MatcherAssert.assertThat(printers, hasItem(defaultPrinter));
+    }
+  }
 
   @Test
   public void testMakeAndModel() throws Exception {

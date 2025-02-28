@@ -54,9 +54,9 @@ public class CupsClient {
   /**
    * Creates a CupsClient for provided host, port and user
    * 
-   * @param host
-   * @param port
-   * @param userName
+   * @param host     host
+   * @param port     port
+   * @param userName user name
    */
   public CupsClient(String host, int port, String userName) {
     this(host, port, userName, null);
@@ -64,10 +64,10 @@ public class CupsClient {
 
   /**
    * Creates a CupsClient for provided host, port and user
-   * 
-   * @param host
-   * @param port
-   * @param userName
+   *
+   * @param host     host
+   * @param port     port
+   * @param userName user name
    */
   public CupsClient(String host, int port, String userName, CupsAuthentication creds) {
     this(toURI(host, port), userName, creds);
@@ -164,7 +164,7 @@ public class CupsClient {
    * @throws Exception
    */
   public CupsPrinter getDefaultPrinter() throws Exception {
-    return new CupsGetDefaultOperation().getDefaultPrinter(getHost(), getPort(), creds);
+    return new CupsGetDefaultOperation().getDefaultPrinter(cupsURL, creds);
   }
 
   /**

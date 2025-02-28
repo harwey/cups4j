@@ -14,16 +14,17 @@ package org.cups4j.operations.cups;
  * the GNU Lesser General Public License along with this program; if not, see
  * <http://www.gnu.org/licenses/>.
  */
-import java.net.URL;
-import java.util.HashMap;
 
+import ch.ethz.vppserver.ippclient.IppResult;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsPrinter;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
 import org.cups4j.operations.IppOperation;
 
-import ch.ethz.vppserver.ippclient.IppResult;
+import java.net.URI;
+import java.net.URL;
+import java.util.HashMap;
 
 public class CupsGetDefaultOperation extends IppOperation {
   public CupsGetDefaultOperation() {
@@ -37,13 +38,17 @@ public class CupsGetDefaultOperation extends IppOperation {
   }
 
   public CupsPrinter getDefaultPrinter(String hostname, int port, CupsAuthentication creds) throws Exception {
+    return getDefaultPrinter(URI.create("http://" + hostname + ":" + port), creds);
+  }
+
+  public CupsPrinter getDefaultPrinter(URI uri, CupsAuthentication creds) throws Exception {
     CupsPrinter defaultPrinter = null;
-    CupsGetDefaultOperation command = new CupsGetDefaultOperation(port);
+    CupsGetDefaultOperation command = new CupsGetDefaultOperation(uri.getPort());
 
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("requested-attributes", "printer-name printer-uri-supported printer-location");
 
-    IppResult result = command.request(null, new URL("http://" + hostname + "/printers"), map, creds);
+    IppResult result = command.request(null, new URL(uri + "/printers"), map, creds);
     for (AttributeGroup group : result.getAttributeGroupList()) {
       if (group.getTagName().equals("printer-attributes-tag")) {
         String printerURL = null;
@@ -68,4 +73,5 @@ public class CupsGetDefaultOperation extends IppOperation {
 
     return defaultPrinter;
   }
+
 }
