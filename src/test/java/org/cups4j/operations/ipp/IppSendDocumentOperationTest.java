@@ -4,9 +4,10 @@ import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
 import org.apache.commons.io.FileUtils;
 import org.cups4j.CupsPrinter;
-import org.cups4j.CupsPrinterTest;
+import org.cups4j.CupsPrinterIT;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
+import org.hamcrest.MatcherAssert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -62,7 +63,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
         Map<String, String> attributes = setUpAttributes();
         ByteBuffer buffer = operation.getIppHeader(printerURL, attributes);
         byte[] header = toByteArray(buffer);
-        assertThat(new String(header), containsString("job-id"));
+        MatcherAssert.assertThat(new String(header), containsString("job-id"));
         checkIppRequest(header);
         checkIppRequestAttributes(header);
     }
@@ -92,7 +93,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
         Set<String> groupTagNames = new HashSet<String>();
         for (AttributeGroup group : ippResult.getAttributeGroupList()) {
             String tagName = group.getTagName();
-            assertThat("duplicate tag name", groupTagNames, not(hasItem(tagName)));
+            MatcherAssert.assertThat("duplicate tag name", groupTagNames, not(hasItem(tagName)));
             groupTagNames.add(tagName);
         }
     }
@@ -132,7 +133,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
         ByteBuffer buffer = operation.getIppHeader(printerURL, attributes);
         byte[] header = toByteArray(buffer);
         String user = System.getProperty("user.name", "anonymous");
-        assertThat(new String(header), containsString(user));
+        MatcherAssert.assertThat(new String(header), containsString(user));
     }
 
     private static byte[] toByteArray(ByteBuffer buffer) {
@@ -144,7 +145,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
     @Test
     @Ignore
     public void testRequest() throws Exception {
-        CupsPrinter printer = CupsPrinterTest.getPrinter();
+        CupsPrinter printer = CupsPrinterIT.getPrinter();
         if (printer == null) {
             LOG.info("You must set system property 'printer' to activate this test!");
             LOG.info("testRequest() is SKIPPED.");
