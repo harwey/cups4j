@@ -1,44 +1,22 @@
 package org.cups4j;
 
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import ch.ethz.vppserver.ippclient.IppResult;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
-import org.cups4j.operations.ipp.IppCreateJobOperation;
-import org.cups4j.operations.ipp.IppGetJobAttributesOperation;
-import org.cups4j.operations.ipp.IppGetJobsOperation;
-import org.cups4j.operations.ipp.IppPrintJobOperation;
-import org.cups4j.operations.ipp.IppSendDocumentOperation;
+import org.cups4j.operations.ipp.*;
 
-/**
- * Copyright (C) 2009 Harald Weyhing
- * 
- * This program is free software; you can redistribute it and/or modify it under the terms of the
- * GNU Lesser General Public License as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
- * See the GNU Lesser General Public License for more details. You should have received a copy of
- * the GNU Lesser General Public License along with this program; if not, see
- * <http://www.gnu.org/licenses/>.
- */
-
-import ch.ethz.vppserver.ippclient.IppResult;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.util.*;
 
 /**
  * Represents a printer on your IPP server
  */
 
 public class CupsPrinter {
-  private URL printerURL = null;
+  private URI printerURL = null;
   private String name = null;
   private PrinterStateEnum state = null;
   private String description = null;
@@ -71,15 +49,28 @@ public class CupsPrinter {
   /**
    * Constructor
    *
-   * @param printerURL
-   * @param printerName
+   * @param creds       credentials
+   * @param printerURL  e.g. ipp://localhost/printers/NECP6
+   * @param printerName e.g. "NECP6"
    */
   public CupsPrinter(CupsAuthentication creds, URL printerURL, String printerName) {
-	  super();
-	  this.creds = creds;
-	  this.printerURL = printerURL;
-	  this.name = printerName;
-	  updateClassAttribute();
+    this(creds, URI.create(printerURL.toString()), printerName);
+  }
+
+  /**
+   * This constructor is needed for HTTPS or IPPS support.
+   *
+   * @param creds       credentials
+   * @param printerURL  e.g. ipps://localhost/printers/NECP6
+   * @param printerName e.g. "NECP6"
+   * @since 0.8
+   */
+  public CupsPrinter(CupsAuthentication creds, URI printerURL, String printerName) {
+    super();
+    this.creds = creds;
+    this.printerURL = printerURL;
+    this.name = printerName;
+    updateClassAttribute();
   }
 
   private void updateClassAttribute() {
@@ -375,8 +366,24 @@ public class CupsPrinter {
    * Get the URL for this printer
    *
    * @return printer URL
+   * @deprecated since 0.8, use {@link #getPrinterURI()}
    */
+  @Deprecated
   public URL getPrinterURL() {
+      try {
+          return printerURL.toURL();
+      } catch (MalformedURLException ex) {
+          throw new IllegalStateException(printerURL + " is not a valid URL", ex);
+      }
+  }
+
+  /**
+   * Get the URI for this printer
+   *
+   * @return printer URI
+   * @since 0.8
+   */
+  public URI getPrinterURI() {
     return printerURL;
   }
 
@@ -490,6 +497,16 @@ public class CupsPrinter {
   }
 
   public void setPrinterURL(URL printerURL) {
+    setPrinterURL(URI.create(printerURL.toString()));
+  }
+
+  /**
+   * Sets the printer URI.
+   *
+   * @param printerURL new printer URI
+   * @since 0.8
+   */
+  public void setPrinterURL(URI printerURL) {
     this.printerURL = printerURL;
     updateClassAttribute();
   }
@@ -622,4 +639,18 @@ public class CupsPrinter {
   public void setDeviceURI(String deviceURI) {
     this.deviceURI = deviceURI;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof CupsPrinter)) return false;
+    CupsPrinter that = (CupsPrinter) o;
+    return Objects.equals(printerURL, that.printerURL) && Objects.equals(name, that.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(printerURL);
+  }
+
 }

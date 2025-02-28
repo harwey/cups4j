@@ -66,7 +66,7 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
       LOG.warn("No default printer found for testing - run test with '-Dprinter=...' to define it.");
       return;
     }
-    IppResult ippResult = operation.request(cupsPrinter, cupsPrinter.getPrinterURL(), null);
+    IppResult ippResult = operation.request(cupsPrinter, cupsPrinter.getPrinterURI(), null);
     assertNotNull(ippResult);
     checkAttribute(ippResult, "job-uri");
     checkAttribute(ippResult, "job-id");

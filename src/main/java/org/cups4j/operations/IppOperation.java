@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Map;
@@ -59,13 +60,46 @@ public abstract class IppOperation {
   }
 
   public IppResult request(CupsPrinter printer, URL url, Map<String, String> map,
-		  CupsAuthentication creds) throws Exception {
+                           CupsAuthentication creds) throws IOException {
+    return sendRequest(printer, url, getIppHeader(url, map), creds);
+  }
+
+  /**
+   * Requests the given printer.
+   *
+   * @param printer printer
+   * @param url     printer URL
+   * @param map     printer attributes
+   * @param creds   credentials
+   * @return IPP result
+   * @throws IOException in case of I/O problems
+   * sinde 0.8
+   */
+  public IppResult request(CupsPrinter printer, URI url, Map<String, String> map,
+                           CupsAuthentication creds) throws IOException {
     return sendRequest(printer, url, getIppHeader(url, map), creds);
   }
 
   public IppResult request(CupsPrinter printer, URL url, Map<String, String> map, InputStream document,
-		  CupsAuthentication creds) throws Exception {
+		  CupsAuthentication creds) throws IOException {
     return sendRequest(printer, url, getIppHeader(url, map), document, creds);
+  }
+
+  /**
+   * Requests the given printer.
+   *
+   * @param printer  printer
+   * @param uri      printer URL
+   * @param map      printer attributes
+   * @param document document stream
+   * @param creds    credentials
+   * @return IPP result
+   * @throws IOException in case of I/O problems
+   * sinde 0.8
+   */
+  public IppResult request(CupsPrinter printer, URI uri, Map<String, String> map, InputStream document,
+                           CupsAuthentication creds) throws IOException {
+    return sendRequest(printer, uri, getIppHeader(uri, map), document, creds);
   }
 
   /**
@@ -77,6 +111,19 @@ public abstract class IppOperation {
    * @throws UnsupportedEncodingException
    */
   public ByteBuffer getIppHeader(URL url, Map<String, String> map) throws UnsupportedEncodingException {
+    return getIppHeader(URI.create(url.toString()), map);
+  }
+
+  /**
+   * Gets the IPP (or IPPS) header.
+   *
+   * @param url URI beginning with "ipp://..." or "ipps://..."
+   * @param map attribute map
+   * @return IPP header
+   * @throws UnsupportedEncodingException
+   * @since 0.8
+   */
+  public ByteBuffer getIppHeader(URI url, Map<String, String> map) throws UnsupportedEncodingException {
     if (url == null) {
       LOG.error("IppGetJObsOperation.getIppHeader(): uri is null");
       return null;
@@ -115,17 +162,31 @@ public abstract class IppOperation {
     return ippBuf;
   }
 
+
   /**
-   * Sends a request to the provided URL
-   * 
-   * @param url
-   * @param ippBuf
-   * 
+   * Sends a request to the provided URL.
+   *
+   * @param url    printer URL
+   * @param ippBuf IPP buffer
    * @return result
-   * @throws Exception 
+   * @throws IOException in case of I/O problems
    */
   private IppResult sendRequest(CupsPrinter printer, URL url, ByteBuffer ippBuf,
-		  CupsAuthentication creds) throws Exception  {
+                                CupsAuthentication creds) throws IOException  {
+    return sendRequest(printer, URI.create(url.toString()), ippBuf, creds);
+  }
+
+  /**
+   * Sends a request to the provided URL.
+   *
+   * @param url    printer URI
+   * @param ippBuf IPP buffer
+   * @return result
+   * @throws IOException in case of I/O problems
+   * @since 0.8
+   */
+  private IppResult sendRequest(CupsPrinter printer, URI url, ByteBuffer ippBuf,
+                                CupsAuthentication creds) throws IOException  {
     IppResult result = sendRequest(printer, url, ippBuf, null, creds);
     if (result.getHttpStatusCode() >= 300) {
       throw new IOException("HTTP error! Status code:  " + result.getHttpStatusResponse());
@@ -134,16 +195,30 @@ public abstract class IppOperation {
   }
 
   /**
-   * Sends a request to the provided url
-   * 
-   * @param url
-   * @param ippBuf
-   * 
-   * @param documentStream
-   * @return result
-   * @throws Exception
+   * Sends a request to the provided url.
+   *
+   * @param url            an URI beginning with "ipp://..."
+   * @param ippBuf         IPP buffer
+   * @param documentStream document stream
+   * @return result        IPP result
+   * @throws IOException in case of error
    */
-  private IppResult sendRequest(CupsPrinter printer, URL url, ByteBuffer ippBuf, InputStream documentStream, CupsAuthentication creds) throws Exception {
+  private IppResult sendRequest(CupsPrinter printer, URL url, ByteBuffer ippBuf, InputStream documentStream, CupsAuthentication creds) throws IOException {
+    return sendRequest(printer, URI.create(url.toString()), ippBuf, documentStream, creds);
+  }
+
+  /**
+   * Sends a request to the provided URI.
+   *
+   * @param url            an URI beginning with "ipp://..." or "ipps://..."
+   * @param ippBuf         IPP buffer
+   * @param documentStream document stream
+   * @return result        IPP result
+   * @throws IOException in case of error
+   * @since 0.8
+   */
+  private IppResult sendRequest(CupsPrinter printer, URI url, ByteBuffer ippBuf, InputStream documentStream, CupsAuthentication creds)
+          throws IOException {
     IppResult ippResult = null;
     if (ippBuf == null) {
       return null;
@@ -154,7 +229,7 @@ public abstract class IppOperation {
     }
 
     CloseableHttpClient client = IppHttp.createHttpClient();
-	
+
     HttpPost httpPost = new HttpPost(url.toString());
     IppHttp.setHttpHeaders(httpPost, printer, creds);
 
@@ -204,16 +279,28 @@ public abstract class IppOperation {
 
   /**
    * Removes the port number in the submitted URL
-   * 
+   *
    * @param url
    * @return url without port number
    */
   protected String stripPortNumber(URL url) {
-    String protocol = url.getProtocol();
+    return stripPortNumber(URI.create(url.toString()));
+  }
+
+  /**
+   * Removes the port number in the submitted URI
+   *
+   * @param url an URI beginning with "ipp(s)://..." or "http(s)://..."
+   * @return URL without port number
+   * @since 0.8
+   */
+  protected String stripPortNumber(URI url) {
+    String protocol = url.getScheme();
     if ("ipp".equals(protocol)) {
       protocol = "http";
+    } else if ("ipps".equals(protocol)) {
+      protocol = "https";
     }
-
     return protocol + "://" + url.getHost() + url.getPath();
   }
 

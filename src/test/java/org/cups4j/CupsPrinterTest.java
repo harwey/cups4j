@@ -1,5 +1,6 @@
 package org.cups4j;
 
+import cups4j.TestCups;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -8,13 +9,13 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cups4j.TestCups;
-
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URI;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -30,8 +31,21 @@ public final class CupsPrinterTest {
     @Before
     public void setUpPrinter() throws Exception {    
         printer = getPrinter();
-        assertNotNull(printer);
         LOG.info("Printer {} was choosen for testing.", printer);
+    }
+
+    @Test
+    public void testPrinter() {
+        assertNotNull(printer);
+    }
+
+    @Test
+    public void testEquals() {
+        URI printerURI = URI.create("ipp://pippi.fax");
+        CupsPrinter a = new CupsPrinter(null, printerURI, "langstrumpf");
+        CupsPrinter b = new CupsPrinter(null, printerURI, "langstrumpf");
+        assertEquals(a, b);
+        assertEquals(a.hashCode(), b.hashCode());
     }
 
     @Test
@@ -106,16 +120,16 @@ public final class CupsPrinterTest {
      * system property 'printer' or the default printer.
      *
      * @return the printer
-     * @throws Exception 
+     * @throws Exception in case of error
      */
     public static CupsPrinter getPrinter() throws Exception  {
-        String name = System.getProperty("printer", new CupsClient().getDefaultPrinter().getName());
+        String name = System.getProperty("printer");
         if (name == null) {
             LOG.info("To specify printer please set system property 'printer'.");
+            return TestCups.getCupsClient().getDefaultPrinter();
         } else {
-
+            return getPrinter(name);
         }
-        return getPrinter(name);
     }
 
     /**

@@ -16,6 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -148,11 +149,11 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
             LOG.info("You must set system property 'printer' to activate this test!");
             LOG.info("testRequest() is SKIPPED.");
         } else {
-            checkRequest(printer, printer.getPrinterURL());
+            checkRequest(printer, printer.getPrinterURI());
         }
     }
 
-    private void checkRequest(CupsPrinter printer, URL printerURL) throws Exception {
+    private void checkRequest(CupsPrinter printer, URI printerURL) throws Exception {
         Map<String, String> attributes = new HashMap<String, String>();
         attributes.put("job-attributes", "copies:integer:1#orientation-requested:enum:3#output-mode:keyword:monochrome");
         attributes.put("job-name", "testosteron");
