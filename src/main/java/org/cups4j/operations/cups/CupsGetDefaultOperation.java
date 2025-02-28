@@ -17,13 +17,13 @@ package org.cups4j.operations.cups;
 
 import ch.ethz.vppserver.ippclient.IppResult;
 import org.cups4j.CupsAuthentication;
+import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
 import org.cups4j.operations.IppOperation;
 
 import java.net.URI;
-import java.net.URL;
 import java.util.HashMap;
 
 public class CupsGetDefaultOperation extends IppOperation {
@@ -48,26 +48,17 @@ public class CupsGetDefaultOperation extends IppOperation {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("requested-attributes", "printer-name printer-uri-supported printer-location");
 
-    IppResult result = command.request(null, new URL(uri + "/printers"), map, creds);
+    IppResult result = command.request(null, URI.create(uri + "/printers"), map, creds);
     for (AttributeGroup group : result.getAttributeGroupList()) {
       if (group.getTagName().equals("printer-attributes-tag")) {
-        String printerURL = null;
         String printerName = null;
-        String location = null;
         for (Attribute attr : group.getAttribute()) {
-          if (attr.getName().equals("printer-uri-supported")) {
-            printerURL = attr.getAttributeValue().get(0).getValue().replace("ipp://", "http://");
-          } else if (attr.getName().equals("printer-name")) {
+          if (attr.getName().equals("printer-name")) {
             printerName = attr.getAttributeValue().get(0).getValue();
-          } else if (attr.getName().equals("printer-location")) {
-            if (attr.getAttributeValue() != null && attr.getAttributeValue().size() > 0) {
-              location = attr.getAttributeValue().get(0).getValue();
-            }
           }
         }
-        defaultPrinter = new CupsPrinter(creds, new URL(printerURL), printerName);
+        defaultPrinter = new CupsClient(uri).getPrinter(printerName);
         defaultPrinter.setDefault(true);
-        defaultPrinter.setLocation(location);
       }
     }
 

@@ -37,7 +37,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -123,13 +122,38 @@ public class IppCreateJobOperation extends IppOperation {
         return request(printer, url, createAttributeMap(), creds);
     }
 
+    /**
+     * Requests the given printer.
+     *
+     * @param printer printer
+     * @param url     printer URI
+     * @param creds   credentials
+     * @return IPP result
+     * @since 0.8
+     */
+    public IppResult request(CupsPrinter printer, URI url, CupsAuthentication creds) {
+        return request(printer, url, createAttributeMap(), creds);
+    }
+
     public IppResult request(CupsPrinter printer, URL url, Map<String, String> map, CupsAuthentication creds) {
+        return request(printer, URI.create(url.toString()), map, creds);
+    }
+
+    /**
+     * Requests the given printer.
+     *
+     * @param printer printer
+     * @param url     printer URI
+     * @param map     printer attributes
+     * @param creds   credential
+     * @return IPP result
+     * @sinde 0.8
+     */
+    public IppResult request(CupsPrinter printer, URI url, Map<String, String> map, CupsAuthentication creds) {
         try {
-            return sendRequest(printer, url.toURI(), getIppHeader(url, map), creds);
+            return sendRequest(printer, url, getIppHeader(url, map), creds);
         } catch (IOException ex) {
             throw new IllegalStateException("cannot request " + url, ex);
-        } catch (URISyntaxException ex) {
-            throw new IllegalArgumentException("not a valid URI: " + url, ex);
         }
     }
 

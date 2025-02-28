@@ -69,8 +69,23 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         this.lastDocument = lastDocument;
     }
 
-    public IppResult request(CupsPrinter printer, URL printerURL, 
-    		PrintJob printJob, CupsAuthentication creds) {
+    public IppResult request(CupsPrinter printer, URL printerURL,
+                             PrintJob printJob, CupsAuthentication creds) {
+        return request(printer, URI.create(printerURL.toString()), printJob, creds);
+    }
+
+    /**
+     * Requests the given printer.
+     *
+     * @param printer    printer
+     * @param printerURL printer URI
+     * @param printJob   print job
+     * @param creds      credentials
+     * @return IPP result
+     * @since 0.8
+     */
+    public IppResult request(CupsPrinter printer, URI printerURL,
+                             PrintJob printJob, CupsAuthentication creds) {
         InputStream document = printJob.getDocument();
         String userName = printJob.getUserName();
         String jobName = printJob.getJobName();
