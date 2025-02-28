@@ -10,6 +10,8 @@ node('java17-buildah') {
 
 	    stageTest()
 
+	    stageIntegrationTest()
+
     }
 
 }
@@ -30,5 +32,12 @@ void stageTest() {
     stage('test') {
         sh "mvn -U -B -Dmaven.test.failure.ignore=true -Dmaven.javadoc.skip=true test"
         junit '**/target/surefire-reports/**/TEST-*.xml'
+    }
+}
+
+void stageIntegrationTest() {
+    stage('integration test') {
+        sh "mvn -U -B -Dmaven.test.failure.ignore=true -Dcups.url=http://cups.int.ad.drgueldener.de:12197 -Dprinter=OPTDN075 failsafe:integration-test failsafe:verify"
+        junit '**/target/failsafe-reports/**/TEST-*.xml'
     }
 }
