@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertFalse;
 
 /**
@@ -30,12 +31,11 @@ public class CupsClientTest {
   @Test
   public void getPrinters() throws Exception {
     List<CupsPrinter> printers = client.getPrinters();
-
+    assertFalse(printers.isEmpty());
     for (CupsPrinter printer : printers) {
       LOG.info("printer: " + printer.getName() + "[isClass=" + printer.isPrinterClass() + "]");
+      MatcherAssert.assertThat(printer.getPrinterURI().getPath(), startsWith("/printer"));
     }
-
-    assertFalse(printers.isEmpty());
   }
 
   @Test
