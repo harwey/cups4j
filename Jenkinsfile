@@ -59,7 +59,7 @@ void stageRelease() {
         """
     } else {
         stage("release") {
-            release()
+            buildRelease()
         }
     }
 }
