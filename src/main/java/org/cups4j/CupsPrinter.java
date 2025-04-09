@@ -269,7 +269,7 @@ public class CupsPrinter {
     IppCreateJobOperation command = new IppCreateJobOperation(printerURL.getPort());
     IppResult ippResult = command.request(this, printerURL, attributes, creds);
     if (ippResult.isPrintQueueUnavailable()) {
-    	throw new IllegalStateException("The print queueu is not available: " + ippResult.getIppStatusResponse());
+    	throw new IllegalStateException("The print queue is not available: " + ippResult.getIppStatusResponse());
     }
     AttributeGroup attrGroup = ippResult.getAttributeGroup("job-attributes-tag");
     return Integer.parseInt(attrGroup.getAttribute("job-id").getValue());

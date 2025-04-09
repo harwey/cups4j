@@ -41,7 +41,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -158,7 +157,7 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         }
         try {
             IppResult ippResult = request(printer, printerURL, attributes, document, creds);
-            if (ippResult.getHttpStatusCode() >= 300) {
+            if (ippResult.getStatusCode() >= 300) {
                 String msg = "";
                 List<AttributeGroup> attributeGroupList = ippResult.getAttributeGroupList();
                 if (!attributeGroupList.isEmpty()) {
