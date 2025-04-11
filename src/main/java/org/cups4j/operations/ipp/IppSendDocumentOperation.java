@@ -37,8 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -188,23 +188,30 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
     @Override
     public IppResult request(CupsPrinter printer, URI url, Map<String, String> map,
                              InputStream document, CupsAuthentication creds) throws IOException {
-        return request(printer, url.toURL(), map, document, creds);
+        ByteBuffer ippHeader = getIppHeader(url, map);
+        IppResult ippResult = sendRequest(printer, url, ippHeader, document, creds);
+        if ((ippResult.getHttpStatusCode() == 426) && "http".equalsIgnoreCase(url.getScheme())) {
+            URI https = URI.create(url.toString().replace("http", "https"));
+            LOG.warn("Access with {} failed - will try now {} as printerURL.", url, https);
+            ippResult = sendRequest(printer, https, getIppHeader(url, map), document, creds);
+        }
+        return ippResult;
     }
 
+    /**
+     * Creates the IPP header with the IPP tags.
+     *
+     * @param url printer-uri
+     * @param map attributes map
+     * @return IPP header
+     * @throws UnsupportedEncodingException in case of unsupported encoding
+     */
     @Override
-    public IppResult request(CupsPrinter printer, URL url, Map<String, String> map,
-                             InputStream document, CupsAuthentication creds) throws IOException {
-        ByteBuffer ippHeader = getIppHeader(url, map);
+    public ByteBuffer getIppHeader(URI url, Map<String, String> map) throws UnsupportedEncodingException {
         try {
-            IppResult ippResult = sendRequest(printer, url.toURI(), ippHeader, document, creds);
-            if ((ippResult.getHttpStatusCode() == 426) && "http".equalsIgnoreCase(url.getProtocol())) {
-                URI https = URI.create(url.toURI().toString().replace("http", "https"));
-                LOG.warn("Access with {} failed - will try now {} as printerURL.", url, https);
-                ippResult = sendRequest(printer, https, getIppHeader(url, map), document, creds);
-            }
-            return ippResult;
-        } catch (URISyntaxException ex) {
-            throw new IllegalArgumentException("cannot handle " + url + " as URI", ex);
+            return getIppHeader(url.toURL(), map);
+        } catch (MalformedURLException ex) {
+            throw new IllegalArgumentException("cannot handle " + url + " as URL", ex);
         }
     }
 
