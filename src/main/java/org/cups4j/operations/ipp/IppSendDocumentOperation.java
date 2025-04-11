@@ -186,8 +186,14 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
     }
 
     @Override
-    public IppResult request(CupsPrinter printer, URL url, Map<String, String> map, 
-    		InputStream document, CupsAuthentication creds) throws IOException {
+    public IppResult request(CupsPrinter printer, URI url, Map<String, String> map,
+                             InputStream document, CupsAuthentication creds) throws IOException {
+        return request(printer, url.toURL(), map, document, creds);
+    }
+
+    @Override
+    public IppResult request(CupsPrinter printer, URL url, Map<String, String> map,
+                             InputStream document, CupsAuthentication creds) throws IOException {
         ByteBuffer ippHeader = getIppHeader(url, map);
         try {
             IppResult ippResult = sendRequest(printer, url.toURI(), ippHeader, document, creds);
