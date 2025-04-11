@@ -39,7 +39,7 @@ void stageTest() {
 
 void stageIntegrationTest() {
     stage('integration test') {
-        sh "mvn -U -B -Dmaven.test.failure.ignore=true -Dcups.url=https://cups.int.ad.drgueldener.de:12197 -Dprinter=OPTDN075 failsafe:integration-test failsafe:verify"
+        sh "mvn -U -B -Dmaven.test.failure.ignore=true -Dcups.url=https://cups.int.ad.drgueldener.de:9443 -Dprinter=OPTDN075 failsafe:integration-test failsafe:verify"
         junit '**/target/failsafe-reports/**/TEST-*.xml'
     }
 }
