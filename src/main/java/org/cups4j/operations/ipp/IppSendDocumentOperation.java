@@ -37,7 +37,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -207,12 +206,8 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
      * @throws UnsupportedEncodingException in case of unsupported encoding
      */
     @Override
-    public ByteBuffer getIppHeader(URI url, Map<String, String> map) throws UnsupportedEncodingException {
-        try {
-            return getIppHeader(url.toURL(), map);
-        } catch (MalformedURLException ex) {
-            throw new IllegalArgumentException("cannot handle " + url + " as URL", ex);
-        }
+    public ByteBuffer getIppHeader(URL url, Map<String, String> map) throws UnsupportedEncodingException {
+        return getIppHeader(URI.create(url.toString()), map);
     }
 
     /**
@@ -224,7 +219,7 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
      * @throws UnsupportedEncodingException in case of unsupported encoding
      */
     @Override
-    public ByteBuffer getIppHeader(URL url, Map<String, String> map) throws UnsupportedEncodingException {
+    public ByteBuffer getIppHeader(URI url, Map<String, String> map) throws UnsupportedEncodingException {
         assert(url != null);
         ByteBuffer ippBuf = ByteBuffer.allocateDirect(bufferSize);
         ippBuf = IppTag.getOperation(ippBuf, operationID);
@@ -286,7 +281,7 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         return ippBuf;
     }
 
-    private IppResult sendRequest(CupsPrinter printer, URI uri, ByteBuffer ippBuf, 
+    private IppResult sendRequest(CupsPrinter printer, URI uri, ByteBuffer ippBuf,
     		InputStream documentStream, CupsAuthentication creds) throws IOException {
         HttpPost httpPost = new HttpPost(uri);
         httpPost.setConfig(RequestConfig.custom().setSocketTimeout(10000).setConnectTimeout(10000).build());
