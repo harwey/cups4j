@@ -51,7 +51,7 @@ public class TestCups {
    */
   public static CupsClient getCupsClient() {
     URI cupsURI = URI.create(System.getProperty("cups.url", "http://localhost:631"));
-    assumeTrue(isOnline(cupsURI.getHost(), cupsURI.getPort()));
+    assumeTrue(cupsURI + " not available", isOnline(cupsURI.getHost(), cupsURI.getPort()));
     return new CupsClient(cupsURI);
   }
 

@@ -105,6 +105,29 @@ public final class CupsPrinterIT {
     }
 
     /**
+     * There was reported an error as COM-3000 that the following code works
+     * with v0.7.8 but not with v0.7.9. This test was called with the following
+     * system properties:
+     * <ol>
+     *     <li>-Dcups.url=http://drgsse04.ad.drgueldener.de:12197 -Dprinter=OPTDN075</li>
+     * </ol>
+     *
+     * @throws Exception in case of error
+     * @since 11-Mar-2025 (oboehm)
+     */
+    @Test
+    public void testOnePrintJob() throws Exception {
+        PrintJob printJob = new PrintJob.Builder("Test-Druck".getBytes())
+                .jobName("OlisJob")
+                .userName("mmustermann")
+                .copies(1)
+                .build();
+        CupsPrinter printer = getPrinter();
+        int jobId = printer.createJob(printJob.getJobName(), printJob.getUserName());
+        printer.print(printJob, jobId, true);
+    }
+
+    /**
      * Gets a printer for testing. This is either the printer defined by the
      * system property 'printer' or the default printer.
      *

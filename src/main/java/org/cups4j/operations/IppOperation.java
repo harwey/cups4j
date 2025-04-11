@@ -59,6 +59,18 @@ public abstract class IppOperation {
     return getIppHeader(url, null);
   }
 
+  /**
+   * Requests the given printer.
+   *
+   * @param printer printer
+   * @param url     printer URL
+   * @param map     printer attributes
+   * @param creds   credentials
+   * @return IPP result
+   * @throws IOException in case of I/O problems
+   * @deprecated use {@link #request(CupsPrinter, URI, Map, CupsAuthentication)}
+   */
+  @Deprecated
   public IppResult request(CupsPrinter printer, URL url, Map<String, String> map,
                            CupsAuthentication creds) throws IOException {
     return sendRequest(printer, url, getIppHeader(url, map), creds);
@@ -73,7 +85,7 @@ public abstract class IppOperation {
    * @param creds   credentials
    * @return IPP result
    * @throws IOException in case of I/O problems
-   * sinde 0.8
+   * since 0.8 (oboehm)
    */
   public IppResult request(CupsPrinter printer, URI url, Map<String, String> map,
                            CupsAuthentication creds) throws IOException {
