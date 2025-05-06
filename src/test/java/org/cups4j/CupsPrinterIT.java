@@ -127,6 +127,19 @@ public final class CupsPrinterIT {
         printer.print(printJob, jobId, true);
     }
 
+    @Test
+    public void testGetJobStatus() throws Exception {
+        PrintJob printJob = new PrintJob.Builder("Test-Druck".getBytes())
+                .jobName("OlisJob")
+                .userName("mmustermann")
+                .copies(1)
+                .build();
+        CupsPrinter printer = getPrinter();
+        int jobId = printer.createJob(printJob.getJobName(), printJob.getUserName());
+        JobStateEnum jobStatus = printer.getJobStatus("mmustermann", jobId);
+        assertNotNull(jobStatus);
+    }
+
     /**
      * Gets a printer for testing. This is either the printer defined by the
      * system property 'printer' or the default printer.

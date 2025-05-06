@@ -5,6 +5,7 @@ import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
 import org.cups4j.operations.ipp.*;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -349,15 +350,14 @@ public class CupsPrinter {
   /**
    * Get current status for the print job with the given ID
    *
-   * @param userName
-   * @param jobID
+   * @param userName user name
+   * @param jobID    job id
    * @return job status
-   * @throws Exception
+   * @throws IOException in case of I/O problems
    */
-  public JobStateEnum getJobStatus(String userName, int jobID) throws Exception {
-    IppGetJobAttributesOperation command = new IppGetJobAttributesOperation(printerURL.getPort());
-    PrintJobAttributes job = command.getPrintJobAttributes(printerURL.getHost(), userName, 
-    		printerURL.getPort(), jobID, creds);
+  public JobStateEnum getJobStatus(String userName, int jobID) throws IOException {
+    IppGetJobAttributesOperation command = new IppGetJobAttributesOperation();
+    PrintJobAttributes job = command.getPrintJobAttributes(printerURL, userName, jobID, creds);
 
     return job.getJobState();
   }
