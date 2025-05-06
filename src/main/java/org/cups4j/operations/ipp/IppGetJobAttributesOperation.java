@@ -57,8 +57,23 @@ public class IppGetJobAttributesOperation extends IppOperation {
    *          attributes i.e. job-id,requesting-user-name,requested-attributes
    * @return ByteBuffer IPP header
    * @throws UnsupportedEncodingException
+   * @deprecated use {@link #getIppHeader(URI, Map)}
    */
+  @Deprecated
   public ByteBuffer getIppHeader(URL uri, Map<String, String> map) throws UnsupportedEncodingException {
+    return getIppHeader(URI.create(uri.toString()), map);
+  }
+
+  /**
+   * Builds the IPP header.
+   *
+   * @param uri printer or job URI beginning with "ipp://..." or "ipps://..."
+   * @param map attributes i.e. job-id,requesting-user-name,requested-attributes
+   * @return IPP header
+   * @throws UnsupportedEncodingException for unknown encodings
+   * @since 8.0 (oboehm)
+   */
+  public ByteBuffer getIppHeader(URI uri, Map<String, String> map) throws UnsupportedEncodingException {
     ByteBuffer ippBuf = ByteBuffer.allocateDirect(bufferSize);
     ippBuf = IppTag.getOperation(ippBuf, operationID);
 
@@ -143,7 +158,7 @@ public class IppGetJobAttributesOperation extends IppOperation {
     // "page-ranges print-quality sides job-uri job-id job-state job-printer-uri job-name job-originating-user-name job-k-octets time-at-creation time-at-processing time-at-completed job-media-sheets-completed");
     map.put("requested-attributes", "all");
     map.put("requesting-user-name", userName);
-    IppResult result = request(null, jobURI.toURL(), map, creds);
+    IppResult result = request(null, jobURI, map, creds);
     log.debug("{} was requested with user '{}' and returns {}.", jobURI, userName, result);
     // IppResultPrinter.print(result);
     PrintJobAttributes job = new PrintJobAttributes();
