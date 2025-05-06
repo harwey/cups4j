@@ -73,7 +73,7 @@ public abstract class IppOperation {
   @Deprecated
   public IppResult request(CupsPrinter printer, URL url, Map<String, String> map,
                            CupsAuthentication creds) throws IOException {
-    return sendRequest(printer, url, getIppHeader(url, map), creds);
+    return request(printer, URI.create(url.toString()), map, creds);
   }
 
   /**
@@ -92,9 +92,22 @@ public abstract class IppOperation {
     return sendRequest(printer, url, getIppHeader(url, map), creds);
   }
 
+  /**
+   * Requests the given printer.
+   *
+   * @param printer  printer
+   * @param url      printer URL
+   * @param map      printer attributes
+   * @param document document stream
+   * @param creds    credentials
+   * @return IPP result
+   * @throws IOException in case of I/O problems
+   * @deprecated use {@link #request(CupsPrinter, URI, Map, InputStream, CupsAuthentication)}
+   */
+  @Deprecated
   public IppResult request(CupsPrinter printer, URL url, Map<String, String> map, InputStream document,
 		  CupsAuthentication creds) throws IOException {
-    return sendRequest(printer, url, getIppHeader(url, map), document, creds);
+    return request(printer, URI.create(url.toString()), map, document, creds);
   }
 
   /**
@@ -174,20 +187,6 @@ public abstract class IppOperation {
     return ippBuf;
   }
 
-
-  /**
-   * Sends a request to the provided URL.
-   *
-   * @param url    printer URL
-   * @param ippBuf IPP buffer
-   * @return result
-   * @throws IOException in case of I/O problems
-   */
-  private IppResult sendRequest(CupsPrinter printer, URL url, ByteBuffer ippBuf,
-                                CupsAuthentication creds) throws IOException  {
-    return sendRequest(printer, URI.create(url.toString()), ippBuf, creds);
-  }
-
   /**
    * Sends a request to the provided URL.
    *
@@ -204,19 +203,6 @@ public abstract class IppOperation {
       throw new IOException("HTTP error! Status code:  " + result.getHttpStatusResponse());
     }
     return result;
-  }
-
-  /**
-   * Sends a request to the provided url.
-   *
-   * @param url            an URI beginning with "ipp://..."
-   * @param ippBuf         IPP buffer
-   * @param documentStream document stream
-   * @return result        IPP result
-   * @throws IOException in case of error
-   */
-  private IppResult sendRequest(CupsPrinter printer, URL url, ByteBuffer ippBuf, InputStream documentStream, CupsAuthentication creds) throws IOException {
-    return sendRequest(printer, URI.create(url.toString()), ippBuf, documentStream, creds);
   }
 
   /**

@@ -128,6 +128,30 @@ public final class CupsPrinterIT {
     }
 
     /**
+     * If you use HTTPS {@link CupsPrinter#getJobStatus(String, int)} does not
+     * work (COM-3003). This was tested with the following system properties:
+     * <ol>
+     *     <li>-Dcups.url=http://drgsse04.ad.drgueldener.de:12197 -Dprinter=OPTDN075</li>
+     *     <li>-Dcups.url=https://cups.int.ad.drgueldener.de:9443 -Dprinter=OPTDN075</li>
+     * </ol>
+     *
+     * @throws Exception in case of error
+     * @since 06-May-2025 (oboehm)
+     */
+    @Test
+    public void testGetJobStatus() throws Exception {
+        PrintJob printJob = new PrintJob.Builder("Test-Druck".getBytes())
+                .jobName("OlisJob")
+                .userName("mmustermann")
+                .copies(1)
+                .build();
+        CupsPrinter printer = getPrinter();
+        int jobId = printer.createJob(printJob.getJobName(), printJob.getUserName());
+        JobStateEnum jobStatus = printer.getJobStatus("mmustermann", jobId);
+        assertNotNull(jobStatus);
+    }
+
+    /**
      * Gets a printer for testing. This is either the printer defined by the
      * system property 'printer' or the default printer.
      *
