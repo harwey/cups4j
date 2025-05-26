@@ -220,7 +220,7 @@ public class CupsClient {
       hostname = DEFAULT_HOST;
     }
 
-    return new IppGetJobAttributesOperation(getPort()).getPrintJobAttributes(hostname, userName, getPort(), jobID, creds);
+    return new IppGetJobAttributesOperation(getPort()).getPrintJobAttributes(cupsURL, userName, jobID, creds);
   }
 
   /**

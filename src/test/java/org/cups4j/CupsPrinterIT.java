@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * Integration tests for {@link CupsPrinter} class.
@@ -149,6 +149,7 @@ public final class CupsPrinterIT {
         int jobId = printer.createJob(printJob.getJobName(), printJob.getUserName());
         JobStateEnum jobStatus = printer.getJobStatus("mmustermann", jobId);
         assertNotNull(jobStatus);
+        assertEquals("OlisJob", TestCups.getCupsClient().getJobAttributes(jobId).getJobName());
     }
 
     /**
