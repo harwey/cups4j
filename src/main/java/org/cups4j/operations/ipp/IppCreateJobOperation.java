@@ -32,6 +32,8 @@ import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
 import org.cups4j.operations.IppHttp;
 import org.cups4j.operations.IppOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -49,6 +51,8 @@ import java.util.Map;
  * @since 0.7.2 (23.03.2018)
  */
 public class IppCreateJobOperation extends IppOperation {
+
+    private static final Logger LOG = LoggerFactory.getLogger(IppCreateJobOperation.class);
 
     public IppCreateJobOperation() {
         operationID = 0x0005;
@@ -84,13 +88,28 @@ public class IppCreateJobOperation extends IppOperation {
      * @param map attributes
      * @return IPP header
      * @throws UnsupportedEncodingException if encoding is not supported.
+     * @deprecated use {@link #getIppHeader(URI, Map)}
+     */
+    @Deprecated
+    public ByteBuffer getIppHeader(URL url, Map<String, String> map) throws UnsupportedEncodingException {
+        return getIppHeader(URI.create(url.toString()), map);
+    }
+
+    /**
+     * Gets the IPP header with requesting-user-name and job-name.
+     *
+     * @param url where to send the request
+     * @param map attributes
+     * @return IPP header
+     * @throws UnsupportedEncodingException if encoding is not supported.
+     * @since 0.8 (oboehm)
      */
     @Override
-    public ByteBuffer getIppHeader(URL url, Map<String, String> map) throws UnsupportedEncodingException {
+    public ByteBuffer getIppHeader(URI url, Map<String, String> map) throws UnsupportedEncodingException {
         ByteBuffer ippBuf = ByteBuffer.allocateDirect(bufferSize);
         ippBuf = IppTag.getOperation(ippBuf, operationID);
         ippBuf = IppTag.getUri(ippBuf, "printer-uri", url.toString());
-        ippBuf = IppTag.getNameWithoutLanguage(ippBuf, "requesting-user-name", 
+        ippBuf = IppTag.getNameWithoutLanguage(ippBuf, "requesting-user-name",
                 map.get("requesting-user-name"));
 
         if (map.get("limit") != null) {
@@ -192,7 +211,9 @@ public class IppCreateJobOperation extends IppOperation {
     	} finally {
     		try {
     			httpResponse.close();
-    		} catch (IOException e) {}
+    		} catch (IOException e) {
+                LOG.warn("Failed to close {}:", httpResponse, e);
+            }
     	}
     }
     
