@@ -7,23 +7,24 @@
 
 package org.cups4j.ipp.attributes;
 
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
-@Root(name = "attribute-value")
+@XmlType(name = "attribute-value")
 public class AttributeValue {
 
-  @Element(name = "set-of-keyword", required = false)
+  @XmlElement(name = "set-of-keyword")
   protected SetOfKeyword setOfKeyword;
-  @Element(name = "set-of-enum", required = false)
+  @XmlElement(name = "set-of-enum")
   protected SetOfEnum setOfEnum;
-  @org.simpleframework.xml.Attribute(required = true)
+  @XmlAttribute(required = true)
   protected String tag;
-  @org.simpleframework.xml.Attribute(name = "tag-name", required = true)
+  @XmlAttribute(name = "tag-name", required = true)
   protected String tagName;
-  @org.simpleframework.xml.Attribute(required = false)
+  @XmlAttribute
   protected String value;
-  @org.simpleframework.xml.Attribute(required = false)
+  @XmlAttribute
   protected String description;
 
   /**

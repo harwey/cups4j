@@ -1,8 +1,12 @@
+# Eclipse m2e generated files
+# Eclipse Core
+.project
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
+
+# Intellij
+.idea
+
+# Output directory for .jars and api docs
 /target/
 /.settings/
-/pom.xml.versionsBackup
-/pom-2018-01-24.xml
-cups4j.iml
-/deploy.txt
-.idea
-/doc/

@@ -7,16 +7,17 @@
 
 package org.cups4j.ipp.attributes;
 
-import org.simpleframework.xml.Root;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
 
-@Root(name = "enum")
+@XmlType(name = "enum")
 public class Enum {
 
-  @org.simpleframework.xml.Attribute(required = true)
+  @XmlAttribute(required = true)
   protected String name;
-  @org.simpleframework.xml.Attribute(required = true)
+  @XmlAttribute(required = true)
   protected String value;
-  @org.simpleframework.xml.Attribute(required = false)
+  @XmlAttribute
   protected String description;
 
   /**

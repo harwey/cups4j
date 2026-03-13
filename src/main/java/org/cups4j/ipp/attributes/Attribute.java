@@ -7,20 +7,20 @@
 
 package org.cups4j.ipp.attributes;
 
-import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Root;
-
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 
-@Root(name = "attribute")
+@XmlType(name = "attribute")
 public class Attribute {
 
-  @ElementList(entry = "attribute-value", inline = true)
+  @XmlElement(name ="attribute-value")
   protected List<AttributeValue> attributeValue;
-  @org.simpleframework.xml.Attribute(required = true)
+  @XmlAttribute(required = true)
   protected String name;
-  @org.simpleframework.xml.Attribute(required = false)
+  @XmlAttribute
   protected String description;
 
   /**
@@ -48,7 +48,7 @@ public class Attribute {
    */
   public List<AttributeValue> getAttributeValue() {
     if (attributeValue == null) {
-      attributeValue = new ArrayList<AttributeValue>();
+      attributeValue = new ArrayList<>();
     }
     return this.attributeValue;
   }
