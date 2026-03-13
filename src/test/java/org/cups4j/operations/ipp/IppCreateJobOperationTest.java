@@ -1,6 +1,16 @@
 package org.cups4j.operations.ipp;
 
-import ch.ethz.vppserver.ippclient.IppResult;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.cups4j.CupsPrinter;
 import org.cups4j.CupsPrinterIT;
 import org.cups4j.ipp.attributes.Attribute;
@@ -10,14 +20,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.*;
+import ch.ethz.vppserver.ippclient.IppResult;
 
 /**
  * Unit-tests for {@link IppCreateJobOperation} class.

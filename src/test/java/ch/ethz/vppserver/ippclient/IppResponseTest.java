@@ -1,17 +1,17 @@
 package ch.ethz.vppserver.ippclient;
 
-import org.apache.commons.io.FileUtils;
-import org.cups4j.ipp.attributes.Attribute;
-import org.cups4j.ipp.attributes.AttributeGroup;
-import org.junit.Test;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import org.apache.commons.io.FileUtils;
+import org.cups4j.ipp.attributes.Attribute;
+import org.cups4j.ipp.attributes.AttributeGroup;
+import org.junit.Test;
 
 /**
  * Unit tests for class {@link IppResponse}.

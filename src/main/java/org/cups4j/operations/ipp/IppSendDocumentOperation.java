@@ -1,32 +1,46 @@
 /*
  * Copyright (c) 2018 by Oliver Boehm
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  *
  * (c)reated 23.03.2018 by oboehm (ob@oasd.de)
  */
 package org.cups4j.operations.ipp;
 
-import ch.ethz.vppserver.ippclient.IppResponse;
-import ch.ethz.vppserver.ippclient.IppResult;
-import ch.ethz.vppserver.ippclient.IppTag;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.SequenceInputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpException;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.io.entity.InputStreamEntity;
+import org.apache.hc.core5.http.message.StatusLine;
+import org.apache.hc.core5.util.Timeout;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
@@ -44,15 +58,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The class IppSendDocumentOperation represents the operation for sending
- * a document.
+ * The class IppSendDocumentOperation represents the operation for sending a
+ * document.
  *
  * @author oboehm
+ * 
  * @since 0.7.2 (23.03.2018)
  */
 public class IppSendDocumentOperation extends IppPrintJobOperation {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IppSendDocumentOperation.class);
+    private static final Logger LOG =
+            LoggerFactory.getLogger(IppSendDocumentOperation.class);
     private int jobId;
     private boolean lastDocument;
 
@@ -68,22 +84,7 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
     }
 
     public IppResult request(CupsPrinter printer, URL printerURL,
-                             PrintJob printJob, CupsAuthentication creds) {
-        return request(printer, URI.create(printerURL.toString()), printJob, creds);
-    }
-
-    /**
-     * Requests the given printer.
-     *
-     * @param printer    printer
-     * @param printerURL printer URI
-     * @param printJob   print job
-     * @param creds      credentials
-     * @return IPP result
-     * @since 0.8
-     */
-    public IppResult request(CupsPrinter printer, URI printerURL,
-                             PrintJob printJob, CupsAuthentication creds) {
+            PrintJob printJob, CupsAuthentication creds) {
         InputStream document = printJob.getDocument();
         String userName = printJob.getUserName();
         String jobName = printJob.getJobName();
@@ -111,26 +112,33 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
             addAttribute(attributes, "job-attributes", copiesString);
         }
         if (portrait) {
-            addAttribute(attributes, "job-attributes", "orientation-requested:enum:3");
+            addAttribute(attributes, "job-attributes",
+                    "orientation-requested:enum:3");
         } else {
-            addAttribute(attributes, "job-attributes", "orientation-requested:enum:4");
+            addAttribute(attributes, "job-attributes",
+                    "orientation-requested:enum:4");
         }
 
         if (color) {
-            addAttribute(attributes, "job-attributes", "output-mode:keyword:color");
+            addAttribute(attributes, "job-attributes",
+                    "output-mode:keyword:color");
         } else {
-            addAttribute(attributes, "job-attributes", "output-mode:keyword:monochrome");
+            addAttribute(attributes, "job-attributes",
+                    "output-mode:keyword:monochrome");
         }
 
         if (pageFormat != null && !"".equals(pageFormat)) {
-            addAttribute(attributes, "job-attributes", "media:keyword:" + pageFormat);
+            addAttribute(attributes, "job-attributes",
+                    "media:keyword:" + pageFormat);
         }
 
         if (resolution != null && !"".equals(resolution)) {
-            addAttribute(attributes, "job-attributes", "printer-resolution:resolution:" + resolution);
+            addAttribute(attributes, "job-attributes",
+                    "printer-resolution:resolution:" + resolution);
         }
 
-        if (pageRanges != null && !"".equals(pageRanges.trim()) && !"1-".equals(pageRanges.trim())) {
+        if (pageRanges != null && !"".equals(pageRanges.trim())
+                && !"1-".equals(pageRanges.trim())) {
             String[] ranges = pageRanges.split(",");
 
             String delimeter = "";
@@ -152,27 +160,35 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         }
 
         if (printJob.isDuplex()) {
-            addAttribute(attributes, "job-attributes", "sides:keyword:two-sided-long-edge");
+            addAttribute(attributes, "job-attributes",
+                    "sides:keyword:two-sided-long-edge");
         }
         try {
             IppResult ippResult = request(printer, printerURL, attributes, document, creds);
             if (ippResult.getStatusCode() >= 300) {
                 String msg = "";
-                List<AttributeGroup> attributeGroupList = ippResult.getAttributeGroupList();
+                List<AttributeGroup> attributeGroupList =
+                        ippResult.getAttributeGroupList();
                 if (!attributeGroupList.isEmpty()) {
-                    msg = " (" + attributeGroupList.get(0).getAttribute("status-message").getValue() + ")";
+                    msg = " ("
+                            + attributeGroupList.get(0)
+                                    .getAttribute("status-message").getValue()
+                            + ")";
                 }
                 throw new IllegalStateException(
-                        "IPP request to " + printerURL + " was not successful: " + ippResult.getHttpStatusResponse() +
+                        "IPP request to " + printerURL + " was not successful: "
+                                + ippResult.getHttpStatusResponse() +
                                 msg);
             }
             return ippResult;
         } catch (IOException ex) {
-            throw new IllegalStateException("request to " + printerURL + " failed", ex);
+            throw new IllegalStateException(
+                    "request to " + printerURL + " failed", ex);
         }
     }
 
-    private void addAttribute(Map<String, String> map, String name, String value) {
+    private void addAttribute(Map<String, String> map, String name,
+            String value) {
         if (value != null && name != null) {
             String attribute = map.get(name);
             if (attribute == null) {
@@ -202,7 +218,9 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
      *
      * @param url printer-uri
      * @param map attributes map
+     * 
      * @return IPP header
+     * 
      * @throws UnsupportedEncodingException in case of unsupported encoding
      */
     @Override
@@ -231,8 +249,10 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         if (userName == null) {
             userName = System.getProperty("user.name", CupsClient.DEFAULT_USER);
         }
-        ippBuf = IppTag.getNameWithoutLanguage(ippBuf, "requesting-user-name", userName);
-        ippBuf = IppTag.getNameWithoutLanguage(ippBuf, "job-name", map.get("job-name"));
+        ippBuf = IppTag.getNameWithoutLanguage(ippBuf, "requesting-user-name",
+                userName);
+        ippBuf = IppTag.getNameWithoutLanguage(ippBuf, "job-name",
+                map.get("job-name"));
 
         if (map.get("ipp-attribute-fidelity") != null) {
             boolean value = false;
@@ -243,19 +263,24 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         }
 
         if (map.get("document-name") != null) {
-            ippBuf = IppTag.getNameWithoutLanguage(ippBuf, "document-name", map.get("document-name"));
+            ippBuf = IppTag.getNameWithoutLanguage(ippBuf, "document-name",
+                    map.get("document-name"));
         }
 
         if (map.get("compression") != null) {
-            ippBuf = IppTag.getKeyword(ippBuf, "compression", map.get("compression"));
+            ippBuf = IppTag.getKeyword(ippBuf, "compression",
+                    map.get("compression"));
         }
 
         if (map.get("document-format") != null) {
-            ippBuf = IppTag.getMimeMediaType(ippBuf, "document-format", map.get("document-format"));
+            ippBuf = IppTag.getMimeMediaType(ippBuf, "document-format",
+                    map.get("document-format"));
         }
 
         if (map.get("document-natural-language") != null) {
-            ippBuf = IppTag.getNaturalLanguage(ippBuf, "document-natural-language", map.get("document-natural-language"));
+            ippBuf = IppTag.getNaturalLanguage(ippBuf,
+                    "document-natural-language",
+                    map.get("document-natural-language"));
         }
 
         if (map.get("job-k-octets") != null) {
@@ -284,40 +309,57 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
     private IppResult sendRequest(CupsPrinter printer, URI uri, ByteBuffer ippBuf,
     		InputStream documentStream, CupsAuthentication creds) throws IOException {
         HttpPost httpPost = new HttpPost(uri);
-        httpPost.setConfig(RequestConfig.custom().setSocketTimeout(10000).setConnectTimeout(10000).build());
-        
+        // httpPost.conn
+
+        ConnectionConfig.custom().setConnectTimeout(Timeout.ofSeconds(10))
+                .setSocketTimeout(Timeout.ofSeconds(10)).build();
+
         byte[] bytes = new byte[ippBuf.limit()];
         ippBuf.get(bytes);
         ByteArrayInputStream headerStream = new ByteArrayInputStream(bytes);
 
-        InputStream inputStream = new SequenceInputStream(headerStream, documentStream);
-        InputStreamEntity requestEntity = new InputStreamEntity(inputStream, -1);
-        requestEntity.setContentType(IPP_MIME_TYPE);
+        InputStream inputStream =
+                new SequenceInputStream(headerStream, documentStream);
+        InputStreamEntity requestEntity = new InputStreamEntity(inputStream, -1,
+                ContentType.create(IPP_MIME_TYPE));
         httpPost.setEntity(requestEntity);
         IppHttp.setHttpHeaders(httpPost, printer, creds);
 
         CloseableHttpClient client = HttpClients.custom().build();
         try {
-            CloseableHttpResponse httpResponse = client.execute(httpPost);
-            LOG.debug("Received from {}: {}", uri, httpResponse);
-            return getIppResult(httpResponse);
+            HttpClientResponseHandler<IppResult> handler =
+                    new HttpClientResponseHandler<IppResult>() {
+                        @Override
+                        public IppResult handleResponse(
+                                ClassicHttpResponse response)
+                                throws HttpException, IOException {
+                            LOG.debug("Received from {}: {}", uri, response);
+                            return getIppResult(response);
+                        }
+
+                    };
+            return client.execute(httpPost, handler);
         } finally {
             client.close();
         }
     }
 
-    private static IppResult getIppResult(CloseableHttpResponse httpResponse) throws IOException {
+    private static IppResult getIppResult(ClassicHttpResponse httpResponse)
+            throws IOException {
         InputStream istream = httpResponse.getEntity().getContent();
         try {
             byte[] result = IOUtils.toByteArray(istream);
             IppResponse ippResponse = new IppResponse();
-            IppResult ippResult = ippResponse.getResponse(ByteBuffer.wrap(result));
-            ippResult.setHttpStatusCode(httpResponse.getStatusLine().getStatusCode());
+            IppResult ippResult =
+                    ippResponse.getResponse(ByteBuffer.wrap(result));
+            ippResult.setHttpStatusCode(httpResponse.getCode());
             if (ippResult.getHttpStatusCode() == 426) {
                 ippResult.setHttpStatusResponse(new String(result));
                 LOG.warn("Received {} after send-document.", ippResult);
             } else {
-                ippResult.setHttpStatusResponse(httpResponse.getStatusLine().toString());
+                ippResult.setHttpStatusResponse(
+                        new StatusLine(httpResponse).toString());
+
             }
             return ippResult;
         } finally {
