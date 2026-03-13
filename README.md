@@ -39,7 +39,7 @@ PrintRequestResult printRequestResult = cupsPrinter.print(printJob);
 
 ### Connect to custom host
 ```java
-CupsClient cupsClient = new CupsClient("127.0.0.1", 631);
+CupsClient cupsClient = new CupsClient(URI.create("http://127.0.0.1:631"));
 ```
 
 ### Get specific printer by URL

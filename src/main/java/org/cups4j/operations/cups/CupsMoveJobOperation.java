@@ -14,12 +14,9 @@ package org.cups4j.operations.cups;
  * the GNU Lesser General Public License along with this program; if not, see
  * <http://www.gnu.org/licenses/>.
  */
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
 
+import ch.ethz.vppserver.ippclient.IppResult;
+import ch.ethz.vppserver.ippclient.IppTag;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
@@ -28,8 +25,13 @@ import org.cups4j.operations.IppOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.ethz.vppserver.ippclient.IppResult;
-import ch.ethz.vppserver.ippclient.IppTag;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URL;
+import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CupsMoveJobOperation extends IppOperation {
 
@@ -92,15 +94,33 @@ public class CupsMoveJobOperation extends IppOperation {
   /**
    * Cancels a print job on the IPP server running on the given host.
    * 
-   * @param hostname
-   * @param userName
-   * @param jobID
-   * @param message
+   * @param hostname         host name
+   * @param userName         user name
+   * @param jobID            job ID
+   * @param targetPrinterURL printer URL
+   * @param creds            credential
    * @return true on successful cancelation otherwise false.
-   * @throws Exception
+   * @throws IOException in case of I/O problems
    */
   public boolean moveJob(CupsPrinter printer, String hostname, String userName, int jobID, 
-		  URL targetPrinterURL, CupsAuthentication creds) throws Exception {
+		  URL targetPrinterURL, CupsAuthentication creds) throws IOException {
+    return moveJob(printer, hostname, userName, jobID, URI.create(targetPrinterURL.toString()), creds);
+  }
+
+  /**
+   * Cancels a print job on the IPP server running on the given host.
+   *
+   * @param hostname         host name
+   * @param userName         user name
+   * @param jobID            job ID
+   * @param targetPrinterURL printer URL
+   * @param creds            credential
+   * @return true on successful cancelation otherwise false.
+   * @throws IOException in case of I/O problems
+   * @since 0.8
+   */
+  public boolean moveJob(CupsPrinter printer, String hostname, String userName, int jobID,
+                         URI targetPrinterURL, CupsAuthentication creds) throws IOException {
     Map<String, String> map = new HashMap<String, String>();
 
     if (userName == null) {
