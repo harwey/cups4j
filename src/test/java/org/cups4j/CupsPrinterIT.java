@@ -14,7 +14,9 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assume.assumeNotNull;
 
 /**
  * Integration tests for {@link CupsPrinter} class.
@@ -163,7 +165,9 @@ public final class CupsPrinterIT {
         String name = System.getProperty("printer");
         if (name == null) {
             LOG.info("To specify printer please set system property 'printer'.");
-            return TestCups.getCupsClient().getDefaultPrinter();
+            CupsPrinter printer = TestCups.getCupsClient().getDefaultPrinter();
+            assumeNotNull(printer);
+            return printer;
         } else {
             return getPrinter(name);
         }
