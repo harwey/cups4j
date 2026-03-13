@@ -12,6 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -67,7 +68,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
         Map<String, String> attributes = setUpAttributes();
         ByteBuffer buffer = operation.getIppHeader(printerURL, attributes);
         byte[] header = toByteArray(buffer);
-        assertThat(new String(header), containsString("job-id"));
+        MatcherAssert.assertThat(new String(header), containsString("job-id"));
         checkIppRequest(header);
         checkIppRequestAttributes(header);
     }
@@ -97,7 +98,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
         Set<String> groupTagNames = new HashSet<String>();
         for (AttributeGroup group : ippResult.getAttributeGroupList()) {
             String tagName = group.getTagName();
-            assertThat("duplicate tag name", groupTagNames, not(hasItem(tagName)));
+            MatcherAssert.assertThat("duplicate tag name", groupTagNames, not(hasItem(tagName)));
             groupTagNames.add(tagName);
         }
     }
@@ -137,7 +138,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
         ByteBuffer buffer = operation.getIppHeader(printerURL, attributes);
         byte[] header = toByteArray(buffer);
         String user = System.getProperty("user.name", "anonymous");
-        assertThat(new String(header), containsString(user));
+        MatcherAssert.assertThat(new String(header), containsString(user));
     }
 
     private static byte[] toByteArray(ByteBuffer buffer) {
@@ -149,16 +150,16 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
     @Test
     @Ignore
     public void testRequest() throws Exception {
-        CupsPrinter printer = CupsPrinterTest.getPrinter();
+        CupsPrinter printer = CupsPrinterIT.getPrinter();
         if (printer == null) {
             LOG.info("You must set system property 'printer' to activate this test!");
             LOG.info("testRequest() is SKIPPED.");
         } else {
-            checkRequest(printer, printer.getPrinterURL());
+            checkRequest(printer, printer.getPrinterURI());
         }
     }
 
-    private void checkRequest(CupsPrinter printer, URL printerURL) throws Exception {
+    private void checkRequest(CupsPrinter printer, URI printerURL) throws Exception {
         Map<String, String> attributes = new HashMap<String, String>();
         attributes.put("job-attributes", "copies:integer:1#orientation-requested:enum:3#output-mode:keyword:monochrome");
         attributes.put("job-name", "testosteron");

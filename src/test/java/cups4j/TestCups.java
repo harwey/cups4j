@@ -4,7 +4,12 @@ import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.net.Socket;
+import java.net.URI;
 import java.util.List;
+
+import static org.junit.Assume.assumeTrue;
 
 public class TestCups {
   @Test
@@ -30,18 +35,32 @@ public class TestCups {
 
   /**
    * If you have no CUPS running on your local machine you must set the
-   * envrionment variables 'host' and 'port' to your CUPS server in the
-   * network. Otherwise the test fails.
-   * 
+   * envrionment variable 'cups.url' to your CUPS server in the network.
+   * Otherwise the test fails.
+   * <p>
+   * Default for testing is <a href="http://localhost:631/printers/"
+   * >localhost:631</a>. If you wan't to use it check if it's available.
+   * On a Mac you man need to call
+   * <pre>
+   *     cupsctl WebInterface=yes
+   * </pre>
+   * to activate it.
+   * </p>
+   *
    * @return your CupsClient for testing
    */
   public static CupsClient getCupsClient() {
-    String host = System.getProperty("host", "localhost");
-    int port = Integer.parseInt(System.getProperty("port", "631"));
-    try {
-      return new CupsClient(host, port);
-    } catch (Exception ex) {
-      throw new IllegalStateException("cannot get CUPS client for " + host + ":" + port);
+    URI cupsURI = URI.create(System.getProperty("cups.url", "http://localhost:631"));
+    assumeTrue(cupsURI + " not available", isOnline(cupsURI.getHost(), cupsURI.getPort()));
+    return new CupsClient(cupsURI);
+  }
+
+  private static boolean isOnline(String host, int port) {
+    try (Socket socket = new Socket(host, port)) {
+      return socket.isConnected();
+    } catch (IOException ex) {
+      System.err.println("Failed to connect to " + host + ":" + port + " - " + ex.getMessage());
+      return false;
     }
   }
 

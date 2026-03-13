@@ -17,4 +17,14 @@ public class IppResultTest {
         assertTrue(attributeGroupList.isEmpty());
     }
 
+    @Test
+    public void testGetStatusCode() {
+        IppResult ippResult = new IppResult();
+        ippResult.setHttpStatusCode(200);
+        ippResult.setIppStatusResponse("Major Version:0x01 Minor Version:0x01 Request Id:4\n" +
+                "Status Code:0x0400(client-error-bad-request)");
+        assertEquals(400, ippResult.getIppStatusCode());
+        assertEquals(400, ippResult.getStatusCode());
+    }
+
 }

@@ -1,17 +1,18 @@
 package org.cups4j.ipp.attributes;
 
-import org.simpleframework.xml.Root;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
 
-@Root(name = "tag")
+@XmlType(name = "tag")
 public class Tag {
 
-  @org.simpleframework.xml.Attribute(required = true)
+  @XmlAttribute(required = true)
   protected String value;
-  @org.simpleframework.xml.Attribute(required = true)
+  @XmlAttribute(required = true)
   protected String name;
-  @org.simpleframework.xml.Attribute(required = false)
+  @XmlAttribute
   protected String description;
-  @org.simpleframework.xml.Attribute(required = false)
+  @XmlAttribute
   protected Short max;
 
   /**
@@ -97,5 +98,5 @@ public class Tag {
   public void setMax(Short value) {
     this.max = value;
   }
-
+  
 }
