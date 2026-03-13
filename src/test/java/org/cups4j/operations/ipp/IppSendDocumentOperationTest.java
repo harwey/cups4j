@@ -1,12 +1,17 @@
 package org.cups4j.operations.ipp;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import ch.ethz.vppserver.ippclient.IppResponse;
+import ch.ethz.vppserver.ippclient.IppResult;
+import org.apache.commons.io.FileUtils;
+import org.cups4j.CupsPrinter;
+import org.cups4j.CupsPrinterIT;
+import org.cups4j.ipp.attributes.Attribute;
+import org.cups4j.ipp.attributes.AttributeGroup;
+import org.hamcrest.MatcherAssert;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -20,18 +25,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
-import org.cups4j.CupsPrinter;
-import org.cups4j.CupsPrinterTest;
-import org.cups4j.ipp.attributes.Attribute;
-import org.cups4j.ipp.attributes.AttributeGroup;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ch.ethz.vppserver.ippclient.IppResponse;
-import ch.ethz.vppserver.ippclient.IppResult;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 /**
  * Unit-Tests fuer {@link IppSendDocumentOperation}-Klasse.

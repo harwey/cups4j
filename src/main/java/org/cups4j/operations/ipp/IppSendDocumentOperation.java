@@ -17,18 +17,9 @@
  */
 package org.cups4j.operations.ipp;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.SequenceInputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.util.List;
-import java.util.Map;
-
+import ch.ethz.vppserver.ippclient.IppResponse;
+import ch.ethz.vppserver.ippclient.IppResult;
+import ch.ethz.vppserver.ippclient.IppTag;
 import org.apache.commons.io.IOUtils;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.config.ConnectionConfig;
@@ -84,7 +75,22 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
     }
 
     public IppResult request(CupsPrinter printer, URL printerURL,
-            PrintJob printJob, CupsAuthentication creds) {
+                             PrintJob printJob, CupsAuthentication creds) {
+        return request(printer, URI.create(printerURL.toString()), printJob, creds);
+    }
+
+    /**
+     * Requests the given printer.
+     *
+     * @param printer    printer
+     * @param printerURL printer URI
+     * @param printJob   print job
+     * @param creds      credentials
+     * @return IPP result
+     * @since 0.8
+     */
+    public IppResult request(CupsPrinter printer, URI printerURL,
+                             PrintJob printJob, CupsAuthentication creds) {
         InputStream document = printJob.getDocument();
         String userName = printJob.getUserName();
         String jobName = printJob.getJobName();
