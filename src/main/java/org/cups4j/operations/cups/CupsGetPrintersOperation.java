@@ -1,6 +1,6 @@
 package org.cups4j.operations.cups;
 
-/**
+/*
  * Copyright (C) 2009 Harald Weyhing
  * 
  * This program is free software; you can redistribute it and/or modify it under the terms of the
@@ -18,14 +18,13 @@ package org.cups4j.operations.cups;
 import ch.ethz.vppserver.ippclient.IppResult;
 import org.apache.commons.lang.StringUtils;
 import org.cups4j.CupsAuthentication;
+import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
 import org.cups4j.PrinterStateEnum;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
 import org.cups4j.ipp.attributes.AttributeValue;
 import org.cups4j.operations.IppOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -34,8 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CupsGetPrintersOperation extends IppOperation {
-  private static final Logger LOG = LoggerFactory.getLogger(CupsGetPrintersOperation.class);
-  
+
   public CupsGetPrintersOperation() {
     operationID = 0x4002;
     bufferSize = 8192;
@@ -47,21 +45,25 @@ public class CupsGetPrintersOperation extends IppOperation {
   }
 
   public List<CupsPrinter> getPrinters(String hostname, int port, CupsAuthentication creds) throws Exception {
-    List<CupsPrinter> printers = new ArrayList<CupsPrinter>();
+    return getPrinters(CupsClient.toURI(hostname, port), creds);
+  }
 
-    Map<String, String> map = new HashMap<String, String>();
+  public List<CupsPrinter> getPrinters(URI cupsURL, CupsAuthentication creds) throws Exception {
+    List<CupsPrinter> printers = new ArrayList<>();
+
+    Map<String, String> map = new HashMap<>();
     map.put(
-        "requested-attributes",
-        "copies-supported page-ranges-supported printer-name printer-info printer-state printer-location printer-make-and-model printer-uri-supported media-supported media-default sides-supported sides-default orientation-requested-supported printer-resolution-supported printer printer-resolution-default number-up-default number-up-supported document-format-supported print-color-mode-supported print-color-mode-default device-uri");
+            "requested-attributes",
+            "copies-supported page-ranges-supported printer-name printer-info printer-state printer-location printer-make-and-model printer-uri-supported media-supported media-default sides-supported sides-default orientation-requested-supported printer-resolution-supported printer printer-resolution-default number-up-default number-up-supported document-format-supported print-color-mode-supported print-color-mode-default device-uri");
     // map.put("requested-attributes", "all");
-    this.ippPort = port;
+    this.ippPort = cupsURL.getPort();
 
-    IppResult result = request(null, new URL("http://" + hostname + ":" + port + "/printers"), map, creds);
+    IppResult result = request(null, new URL(cupsURL + "/printers"), map, creds);
 
     for (AttributeGroup group : result.getAttributeGroupList()) {
       CupsPrinter printer = null;
       if (group.getTagName().equals("printer-attributes-tag")) {
-        String printerURI = null;
+        URI printerURI = null;
         String printerName = null;
         String printerLocation = null;
         String printerDescription = null;
@@ -82,10 +84,7 @@ public class CupsGetPrintersOperation extends IppOperation {
 
         for (Attribute attr : group.getAttribute()) {
           if (attr.getName().equals("printer-uri-supported")) {
-            printerURI = getAttributeValue(attr).replace("ipp://", "http://");
-            printerURI = StringUtils.remove(printerURI, "http://");
-            printerURI = StringUtils.substringAfter(printerURI, "/");
-            printerURI = "http://" + hostname + ":" + port + "/" + printerURI; 
+            printerURI = URI.create(cupsURL + URI.create(getAttributeValue(attr)).getPath());
           } else if (attr.getName().equals("printer-name")) {
             printerName = getAttributeValue(attr);
           } else if (attr.getName().equals("printer-location")) {
@@ -93,7 +92,7 @@ public class CupsGetPrintersOperation extends IppOperation {
           } else if (attr.getName().equals("printer-info")) {
             printerDescription = getAttributeValue(attr);
           } else if (attr.getName().equals("device-uri")) {
-              deviceURI = getAttributeValue(attr);
+            deviceURI = getAttributeValue(attr);
           } else if (attr.getName().equals("printer-state")) {
             String stateName = getAttributeValue(attr);
             printerState = PrinterStateEnum.fromStateName(stateName);
@@ -123,18 +122,8 @@ public class CupsGetPrintersOperation extends IppOperation {
             printerMakeAndModel = getAttributeValue(attr);
           }
         }
-        URL printerUrl = null;
-        try {
-          printerUrl = new URL(printerURI);
-        } catch (Throwable t) {
-          t.printStackTrace();
-          LOG.error("Error encountered building URL from printer uri of printer " + printerName
-              + ", uri returned was [" + printerURI + "].  Attribute group tag/description: [" + group.getTagName()
-              + "/" + group.getDescription());
-          throw new Exception(t);
-        }
 
-        printer = new CupsPrinter(creds, printerUrl, printerName);
+        printer = new CupsPrinter(creds, printerURI, printerName);
         printer.setState(printerState);
         if (printerState != null) {
           printer.setPrinterState(printerState.getStateName());

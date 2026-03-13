@@ -38,10 +38,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,8 +67,23 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         this.lastDocument = lastDocument;
     }
 
-    public IppResult request(CupsPrinter printer, URL printerURL, 
-    		PrintJob printJob, CupsAuthentication creds) {
+    public IppResult request(CupsPrinter printer, URL printerURL,
+                             PrintJob printJob, CupsAuthentication creds) {
+        return request(printer, URI.create(printerURL.toString()), printJob, creds);
+    }
+
+    /**
+     * Requests the given printer.
+     *
+     * @param printer    printer
+     * @param printerURL printer URI
+     * @param printJob   print job
+     * @param creds      credentials
+     * @return IPP result
+     * @since 0.8
+     */
+    public IppResult request(CupsPrinter printer, URI printerURL,
+                             PrintJob printJob, CupsAuthentication creds) {
         InputStream document = printJob.getDocument();
         String userName = printJob.getUserName();
         String jobName = printJob.getJobName();
@@ -143,7 +156,7 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         }
         try {
             IppResult ippResult = request(printer, printerURL, attributes, document, creds);
-            if (ippResult.getHttpStatusCode() >= 300) {
+            if (ippResult.getStatusCode() >= 300) {
                 String msg = "";
                 List<AttributeGroup> attributeGroupList = ippResult.getAttributeGroupList();
                 if (!attributeGroupList.isEmpty()) {
@@ -172,20 +185,16 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
     }
 
     @Override
-    public IppResult request(CupsPrinter printer, URL url, Map<String, String> map, 
-    		InputStream document, CupsAuthentication creds) throws IOException {
+    public IppResult request(CupsPrinter printer, URI url, Map<String, String> map,
+                             InputStream document, CupsAuthentication creds) throws IOException {
         ByteBuffer ippHeader = getIppHeader(url, map);
-        try {
-            IppResult ippResult = sendRequest(printer, url.toURI(), ippHeader, document, creds);
-            if ((ippResult.getHttpStatusCode() == 426) && "http".equalsIgnoreCase(url.getProtocol())) {
-                URI https = URI.create(url.toURI().toString().replace("http", "https"));
-                LOG.warn("Access with {} failed - will try now {} as printerURL.", url, https);
-                ippResult = sendRequest(printer, https, getIppHeader(url, map), document, creds);
-            }
-            return ippResult;
-        } catch (URISyntaxException ex) {
-            throw new IllegalArgumentException("cannot handle " + url + " as URI", ex);
+        IppResult ippResult = sendRequest(printer, url, ippHeader, document, creds);
+        if ((ippResult.getHttpStatusCode() == 426) && "http".equalsIgnoreCase(url.getScheme())) {
+            URI https = URI.create(url.toString().replace("http", "https"));
+            LOG.warn("Access with {} failed - will try now {} as printerURL.", url, https);
+            ippResult = sendRequest(printer, https, getIppHeader(url, map), document, creds);
         }
+        return ippResult;
     }
 
     /**
@@ -198,6 +207,19 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
      */
     @Override
     public ByteBuffer getIppHeader(URL url, Map<String, String> map) throws UnsupportedEncodingException {
+        return getIppHeader(URI.create(url.toString()), map);
+    }
+
+    /**
+     * Creates the IPP header with the IPP tags.
+     *
+     * @param url printer-uri
+     * @param map attributes map
+     * @return IPP header
+     * @throws UnsupportedEncodingException in case of unsupported encoding
+     */
+    @Override
+    public ByteBuffer getIppHeader(URI url, Map<String, String> map) throws UnsupportedEncodingException {
         assert(url != null);
         ByteBuffer ippBuf = ByteBuffer.allocateDirect(bufferSize);
         ippBuf = IppTag.getOperation(ippBuf, operationID);
@@ -259,7 +281,7 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         return ippBuf;
     }
 
-    private IppResult sendRequest(CupsPrinter printer, URI uri, ByteBuffer ippBuf, 
+    private IppResult sendRequest(CupsPrinter printer, URI uri, ByteBuffer ippBuf,
     		InputStream documentStream, CupsAuthentication creds) throws IOException {
         HttpPost httpPost = new HttpPost(uri);
         httpPost.setConfig(RequestConfig.custom().setSocketTimeout(10000).setConnectTimeout(10000).build());
