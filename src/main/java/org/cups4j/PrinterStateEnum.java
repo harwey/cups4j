@@ -37,7 +37,7 @@ public enum PrinterStateEnum {
     public static PrinterStateEnum fromStringInteger(String value) {
         if (value != null) {
             for (PrinterStateEnum printerState : PrinterStateEnum.values()) {
-                if (value.equalsIgnoreCase(printerState.getValue().toString())) {
+                if (value.equalsIgnoreCase(printerState.getStateName())) {
                     return printerState;
                 }
             }
