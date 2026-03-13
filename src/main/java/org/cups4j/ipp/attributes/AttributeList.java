@@ -7,24 +7,33 @@
 
 package org.cups4j.ipp.attributes;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Root;
-
-@Root(name = "attribute-list")
+@XmlRootElement(name = "attribute-list")
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class AttributeList {
-  @Attribute
+  
   protected String schemaLocation;
-
-  @ElementList(entry = "attribute-group", inline = true, required = true)
+  
   protected List<AttributeGroup> attributeGroup;
-
-  @org.simpleframework.xml.Attribute(required = false)
+  
   protected String description;
-
+  
+  @XmlAttribute
+  public String getSchemaLocation() {
+    return schemaLocation;
+  }
+  
+  public void setSchemaLocation(String schemaLocation) {
+    this.schemaLocation = schemaLocation;
+  }
+  
   /**
    * Gets the value of the attributeGroup property.
    * 
@@ -48,19 +57,25 @@ public class AttributeList {
    * 
    * 
    */
+  @XmlElement(name = "attribute-group")
   public List<AttributeGroup> getAttributeGroup() {
     if (attributeGroup == null) {
-      attributeGroup = new ArrayList<AttributeGroup>();
+      attributeGroup = new ArrayList<>();
     }
     return this.attributeGroup;
   }
-
+  
+  public void setAttributeGroup(List<AttributeGroup> attributeGroup) {
+    this.attributeGroup = attributeGroup;
+  }
+  
   /**
    * Gets the value of the description property.
    * 
    * @return possible object is {@link String }
    * 
    */
+  @XmlAttribute
   public String getDescription() {
     return description;
   }
