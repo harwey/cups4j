@@ -1,14 +1,8 @@
 package org.cups4j.operations.ipp;
 
-import ch.ethz.vppserver.ippclient.IppResult;
-import org.cups4j.CupsPrinter;
-import org.cups4j.CupsPrinterTest;
-import org.cups4j.ipp.attributes.Attribute;
-import org.cups4j.ipp.attributes.AttributeGroup;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -17,7 +11,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import org.cups4j.CupsPrinter;
+import org.cups4j.CupsPrinterIT;
+import org.cups4j.ipp.attributes.Attribute;
+import org.cups4j.ipp.attributes.AttributeGroup;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ch.ethz.vppserver.ippclient.IppResult;
 
 /**
  * Unit-tests for {@link IppCreateJobOperation} class.
@@ -61,12 +64,12 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
 
   @Ignore
   public void testRequest() throws Exception {
-    CupsPrinter cupsPrinter = CupsPrinterTest.getPrinter();
+    CupsPrinter cupsPrinter = CupsPrinterIT.getPrinter();
     if (cupsPrinter == null) {
       LOG.warn("No default printer found for testing - run test with '-Dprinter=...' to define it.");
       return;
     }
-    IppResult ippResult = operation.request(cupsPrinter, cupsPrinter.getPrinterURL(), null);
+    IppResult ippResult = operation.request(cupsPrinter, cupsPrinter.getPrinterURI(), null);
     assertNotNull(ippResult);
     checkAttribute(ippResult, "job-uri");
     checkAttribute(ippResult, "job-id");

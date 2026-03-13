@@ -60,7 +60,7 @@ public class PrinterAttributes {
 
       for (CupsPrinter p : printers) {
         IppGetPrinterAttributesOperation o = new IppGetPrinterAttributesOperation();
-        IppResult result = o.request(p, p.getPrinterURL(), map, new CupsAuthentication("anonymous", "anonymous"));
+        IppResult result = o.request(p, p.getPrinterURI(), map, new CupsAuthentication("anonymous", "anonymous"));
         // IppResultPrinter.print(result);
         addPrinterPanel(p.getName(), result);
       }
@@ -98,7 +98,7 @@ public class PrinterAttributes {
 
     FormLayout layout = new FormLayout("12dlu, pref, 6dlu, 30dlu:grow, 3dlu");
     DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-    builder.setLeadingColumnOffset(1);
+    builder.leadingColumnOffset(1);
 
     Collections.sort(group.getAttribute(), new Comparator<Attribute>() {
 
@@ -113,7 +113,8 @@ public class PrinterAttributes {
       if (att.getAttributeValue().size() > 0) {
         JPanel panel = new JPanel(new BorderLayout());
 
-        AttributeValueTable table = new AttributeValueTable((getAttributeTableModel(att.getAttributeValue())));
+        AttributeValueTable table = new AttributeValueTable(
+            (getAttributeTableModel(att.getAttributeValue())));
         panel.add(table.getTableHeader(), BorderLayout.NORTH);
         panel.add(table, BorderLayout.CENTER);
         valueComponent = panel;

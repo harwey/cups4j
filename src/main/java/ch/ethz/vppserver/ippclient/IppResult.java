@@ -1,6 +1,9 @@
 package ch.ethz.vppserver.ippclient;
 
+import org.apache.commons.lang.StringUtils;
 import org.cups4j.ipp.attributes.AttributeGroup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +25,7 @@ import java.util.List;
  * program; if not, see <http://www.gnu.org/licenses/>.
  */
 public class IppResult {
+  private static final Logger log = LoggerFactory.getLogger(IppResult.class);
   private String httpStatusResponse = null;
   private String ippStatusResponse = null;
   private List<AttributeGroup> attributeGroupList = new ArrayList<AttributeGroup>();
@@ -105,8 +109,43 @@ public class IppResult {
     this.httpStatusCode = httpStatusCode;
   }
 
+  /**
+   * Extracts the IPP status code from the response.
+   *
+   * @return a number like {@link #getHttpStatusCode()}
+   * @since 0.8 (09-Apr-2025, Oli B.)
+   */
+  public int getIppStatusCode() {
+        String code = StringUtils.substringAfter(ippStatusResponse, "Status Code:");
+        if (StringUtils.isBlank(code)) {
+            log.debug("No status code found in ipp response '{}'.", ippStatusResponse);
+            return 0;
+        }
+        code = StringUtils.substringBefore(code, "(").trim();
+        if (code.startsWith("0x")) {
+            code = code.substring(2);
+        }
+        return Integer.parseInt(code);
+    }
+
+    /**
+     * Combines the HTTP and IPP status code. The resulting status code is
+     * the max value of both.
+     *
+     * @return a number like {@link #getHttpStatusCode()}
+     * @since 0.8 (09-Apr-2025, Oli B.)
+     */
+    public int getStatusCode() {
+        return Math.max(httpStatusCode, getIppStatusCode());
+    }
+
 	public boolean isPrintQueueUnavailable() {
 		return ippStatusResponse != null && ippStatusResponse.contains("client-error-not-possible");
 	}
-  
+
+  @Override
+  public String toString() {
+    return httpStatusCode + " (" + httpStatusResponse + ")";
+  }
+
 }

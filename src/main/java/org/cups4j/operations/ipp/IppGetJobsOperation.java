@@ -117,7 +117,7 @@ public class IppGetJobsOperation extends IppOperation {
     map.put("requested-attributes",
         "page-ranges print-quality sides job-uri job-id job-state job-printer-uri job-name job-originating-user-name");
 
-    IppResult result = request(printer, printer.getPrinterURL(), map, creds);
+    IppResult result = request(printer, printer.getPrinterURI(), map, creds);
 
     // IppResultPrinter.print(result);
 

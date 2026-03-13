@@ -14,58 +14,63 @@ package ch.ethz.vppserver.ippclient;
  * the GNU Lesser General Public License along with this program; if not, see
  * <http://www.gnu.org/licenses/>.
  */
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.cups4j.ipp.attributes.AttributeGroup;
 import org.cups4j.ipp.attributes.AttributeList;
 import org.cups4j.ipp.attributes.Tag;
 import org.cups4j.ipp.attributes.TagList;
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.core.Persister;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class IppAttributeProvider implements IIppAttributeProvider {
-
-  private static IppAttributeProvider INSTANCE = new IppAttributeProvider();
-  private List<Tag> tagList = new ArrayList<Tag>();
-  private List<AttributeGroup> attributeGroupList = new ArrayList<AttributeGroup>();
-
+  private static final IppAttributeProvider INSTANCE = new IppAttributeProvider();
+  private final List<Tag> tagList = new ArrayList<>();
+  private final List<AttributeGroup> attributeGroupList = new ArrayList<>();
+  
   public static IppAttributeProvider getInstance() {
     return INSTANCE;
   }
 
   private IppAttributeProvider() {
+    ClassLoader classLoader = IppAttributeProvider.class.getClassLoader();
     try {
-      InputStream tagListStream = IIppAttributeProvider.class.getClassLoader().getResourceAsStream(TAG_LIST_FILENAME);
-      InputStream attListStream = IIppAttributeProvider.class.getClassLoader().getResourceAsStream(
-          ATTRIBUTE_LIST_FILENAME);
-
-      Serializer serializer = new Persister();
-      TagList tList = serializer.read(TagList.class, tagListStream);
-      tagList = tList.getTag();
-
-      AttributeList aList = serializer.read(AttributeList.class, attListStream);
-      attributeGroupList = aList.getAttributeGroup();
+      JAXBContext tagListContext  = JAXBContext.newInstance(TagList.class);
+      Unmarshaller tagListUnmarshaller = tagListContext.createUnmarshaller();
+    
+      InputStream tagListStream = classLoader.getResourceAsStream(TAG_LIST_FILENAME);
+      TagList tList = (TagList) tagListUnmarshaller.unmarshal(tagListStream);
+      this.tagList.addAll(tList.getTag());
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Error unmarshalling tag list", e);
+    }
+    
+    try {
+      JAXBContext attListContext = JAXBContext.newInstance(AttributeList.class);
+      Unmarshaller attListUnmarshaller = attListContext.createUnmarshaller();
+      InputStream attListStream = classLoader.getResourceAsStream(ATTRIBUTE_LIST_FILENAME);
+      AttributeList aList = (AttributeList) attListUnmarshaller.unmarshal(attListStream);
+      List<AttributeGroup> attributeGroups = aList.getAttributeGroup();
+      this.attributeGroupList.addAll(attributeGroups);
+    } catch (Exception e) {
+      throw new RuntimeException("Error unmarshalling attribute groups", e);
     }
   }
-
+  
   /**
-   * 
-   * @return
+   * @return tag list
    */
   public List<Tag> getTagList() {
     return tagList;
   }
 
   /**
-   * 
-   * @return
+   * @return attribute groups
    */
   public List<AttributeGroup> getAttributeGroupList() {
     return attributeGroupList;
   }
-
 }
