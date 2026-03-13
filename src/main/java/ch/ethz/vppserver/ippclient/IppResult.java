@@ -143,4 +143,9 @@ public class IppResult {
 		return ippStatusResponse != null && ippStatusResponse.contains("client-error-not-possible");
 	}
 
+  @Override
+  public String toString() {
+    return httpStatusCode + " (" + httpStatusResponse + ")";
+  }
+
 }

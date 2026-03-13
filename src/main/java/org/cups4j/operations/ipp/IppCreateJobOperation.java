@@ -21,12 +21,14 @@ import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
 import ch.ethz.vppserver.ippclient.IppTag;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpException;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.io.entity.InputStreamEntity;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
@@ -43,25 +45,6 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.core5.http.ClassicHttpResponse;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.HttpException;
-import org.apache.hc.core5.http.io.HttpClientResponseHandler;
-import org.apache.hc.core5.http.io.entity.InputStreamEntity;
-import org.cups4j.CupsAuthentication;
-import org.cups4j.CupsClient;
-import org.cups4j.CupsPrinter;
-import org.cups4j.operations.IppHttp;
-import org.cups4j.operations.IppOperation;
-
-import ch.ethz.vppserver.ippclient.IppResponse;
-import ch.ethz.vppserver.ippclient.IppResult;
-import ch.ethz.vppserver.ippclient.IppTag;
 
 /**
  * The class IppCreateJobOperation represents the create-job operation.
