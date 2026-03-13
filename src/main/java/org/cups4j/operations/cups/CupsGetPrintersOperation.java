@@ -16,7 +16,7 @@ package org.cups4j.operations.cups;
  */
 
 import ch.ethz.vppserver.ippclient.IppResult;
-import org.apache.commons.lang.StringUtils;
+import java.net.URI;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
