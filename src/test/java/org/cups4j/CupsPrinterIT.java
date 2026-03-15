@@ -47,6 +47,26 @@ public final class CupsPrinterIT {
 
     @Test
     @Ignore
+    public void testPrintTwoPages() {
+        print(printer, new File("src/test/resources/twopages.pdf"));
+    }
+
+    @Test
+    @Ignore
+    public void testPrintTwoPagesSimplex() throws Exception {
+        File file = new File("src/test/resources/twopages.pdf");
+        String jobname = generateJobnameFor(file);
+        byte[] content = FileUtils.readFileToByteArray(file);
+        PrintJob job = new PrintJob.Builder(content)
+                .jobName(jobname)
+                .duplex(false)
+                .build();
+        PrintRequestResult result = printer.print(job);
+        assertNotNull(result);
+    }
+
+    @Test
+    @Ignore
     public void testPrintText() {
         print(printer, new File("src/test/resources/test.txt"));
     }
@@ -90,7 +110,10 @@ public final class CupsPrinterIT {
         String jobname = generateJobnameFor(file);
         try {
             byte[] content = FileUtils.readFileToByteArray(file);
-            return new PrintJob.Builder(content).jobName(jobname).userName(userName).build();
+            return new PrintJob.Builder(content)
+                    .jobName(jobname)
+                    .userName(userName)
+                    .build();
         } catch (IOException ioe) {
             throw new IllegalArgumentException("cannot read '" + file + "'", ioe);
         }
@@ -111,7 +134,7 @@ public final class CupsPrinterIT {
      * with v0.7.8 but not with v0.7.9. This test was called with the following
      * system properties:
      * <ol>
-     *     <li>-Dcups.url=http://drgsse04.ad.drgueldener.de:12197 -Dprinter=OPTDN075</li>
+     *     <li>-Dcups.url=https://cups.int.ad.drgueldener.de:9443 -Dprinter=ps-opt-mfp075</li>
      * </ol>
      *
      * @throws Exception in case of error
