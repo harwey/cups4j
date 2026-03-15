@@ -158,6 +158,8 @@ public class CupsPrinter {
 
     if (printJob.isDuplex()) {
       addAttribute(attributes, "job-attributes", "sides:keyword:two-sided-long-edge");
+    } else {
+      addAttribute(attributes, "job-attributes", "sides:keyword:one-sided");
     }
     IppPrintJobOperation command = new IppPrintJobOperation(printerURL.getPort());
     IppResult ippResult = command.request(this, printerURL, attributes, document, creds);
