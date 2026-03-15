@@ -40,7 +40,7 @@ public class IppPrintJobOperation extends IppOperation {
   }
 
   /**
-   * Sends a request to the provided URI.
+   * Creates the header bytes for this operation.
    *
    * @param url
    *          printer-uri

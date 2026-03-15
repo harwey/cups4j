@@ -1,6 +1,6 @@
 package org.cups4j.operations.ipp;
 
-/**
+/*
  * Copyright (C) 2011 Harald Weyhing
  * 
  * This program is free software; you can redistribute it and/or modify it under the terms of the
@@ -14,12 +14,9 @@ package org.cups4j.operations.ipp;
  * the GNU Lesser General Public License along with this program; if not, see
  * <http://www.gnu.org/licenses/>.
  */
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
 
+import ch.ethz.vppserver.ippclient.IppResult;
+import ch.ethz.vppserver.ippclient.IppTag;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
@@ -28,8 +25,12 @@ import org.cups4j.operations.IppOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.ethz.vppserver.ippclient.IppResult;
-import ch.ethz.vppserver.ippclient.IppTag;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URL;
+import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 public class IppReleaseJobOperation extends IppOperation {
   private static final Logger LOG = LoggerFactory.getLogger(IppReleaseJobOperation.class);
@@ -45,8 +46,9 @@ public class IppReleaseJobOperation extends IppOperation {
   }
 
   /**
-   * 
-   * @param url
+   * Creates the header bytes for this operation.
+   *
+   * @param uri
    *          printer-uri
    * @param map
    *          attributes
@@ -54,10 +56,9 @@ public class IppReleaseJobOperation extends IppOperation {
    *          document -format,document-natural-language,job-impressions
    *          ,job-media-sheets, job-template-attributes
    * @return IPP header
-   * @throws UnsupportedEncodingException
+   * @throws UnsupportedEncodingException in case of encoding problems
    */
-
-  public ByteBuffer getIppHeader(URL uri, Map<String, String> map) throws UnsupportedEncodingException {
+  public ByteBuffer getIppHeader(URI uri, Map<String, String> map) throws UnsupportedEncodingException {
     if (uri == null) {
       LOG.error("IppReleaseJobOperation.getIppHeader(): uri is null");
       return null;

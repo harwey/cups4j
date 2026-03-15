@@ -1,6 +1,6 @@
 package org.cups4j.operations.cups;
 
-/**
+/*
  * Copyright (C) 2011 Harald Weyhing
  * 
  * This program is free software; you can redistribute it and/or modify it under the terms of the
@@ -47,8 +47,9 @@ public class CupsMoveJobOperation extends IppOperation {
   }
 
   /**
-   * 
-   * @param url
+   * Creates the header bytes for this operation.
+   *
+   * @param uri
    *          printer-uri
    * @param map
    *          attributes
@@ -56,10 +57,9 @@ public class CupsMoveJobOperation extends IppOperation {
    *          document -format,document-natural-language,job-impressions
    *          ,job-media-sheets, job-template-attributes
    * @return IPP header
-   * @throws UnsupportedEncodingException
+   * @throws UnsupportedEncodingException in case of encoding problems
    */
-
-  public ByteBuffer getIppHeader(URL uri, Map<String, String> map) throws UnsupportedEncodingException {
+  public ByteBuffer getIppHeader(URI uri, Map<String, String> map) throws UnsupportedEncodingException {
     if (uri == null) {
       LOG.error("CupsMoveJobOperation.getIppHeader(): uri is null");
       return null;
