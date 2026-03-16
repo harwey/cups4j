@@ -60,8 +60,8 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
 
     private static final Logger LOG =
             LoggerFactory.getLogger(IppSendDocumentOperation.class);
-    private int jobId;
-    private boolean lastDocument;
+    private final int jobId;
+    private final boolean lastDocument;
 
     public IppSendDocumentOperation(int jobId) {
         this(CupsClient.DEFAULT_PORT, jobId, true);
@@ -217,21 +217,6 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
             ippResult = sendRequest(printer, https, getIppHeader(url, map), document, creds);
         }
         return ippResult;
-    }
-
-    /**
-     * Creates the IPP header with the IPP tags.
-     *
-     * @param url printer-uri
-     * @param map attributes map
-     * 
-     * @return IPP header
-     * 
-     * @throws UnsupportedEncodingException in case of unsupported encoding
-     */
-    @Override
-    public ByteBuffer getIppHeader(URL url, Map<String, String> map) throws UnsupportedEncodingException {
-        return getIppHeader(URI.create(url.toString()), map);
     }
 
     /**

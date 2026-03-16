@@ -1,15 +1,8 @@
 package org.cups4j.operations;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.SequenceInputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.util.Map;
-
+import ch.ethz.vppserver.ippclient.IppResponse;
+import ch.ethz.vppserver.ippclient.IppResult;
+import ch.ethz.vppserver.ippclient.IppTag;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.core5.http.ClassicHttpResponse;
@@ -27,26 +20,11 @@ import org.cups4j.ipp.attributes.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Copyright (C) 2009 Harald Weyhing
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 3 of the License, or (at your option) any
- * later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.
- * 
- * See the GNU Lesser General Public License for more details. You should have
- * received a copy of the GNU Lesser General Public License along with this
- * program; if not, see <http://www.gnu.org/licenses/>.
- */
-
-import ch.ethz.vppserver.ippclient.IppResponse;
-import ch.ethz.vppserver.ippclient.IppResult;
-import ch.ethz.vppserver.ippclient.IppTag;
+import java.io.*;
+import java.net.URI;
+import java.net.URL;
+import java.nio.ByteBuffer;
+import java.util.Map;
 
 public abstract class IppOperation {
   protected short operationID = -1; // IPP operation ID
@@ -145,15 +123,17 @@ public abstract class IppOperation {
    * @param map
    * 
    * @return IPP header
-   * 
-   * @throws UnsupportedEncodingException
+   *
+   * @throws UnsupportedEncodingException if encoding is not supported.
+   * @deprecated use {@link #getIppHeader(URI, Map)}
    */
+  @Deprecated
   public ByteBuffer getIppHeader(URL url, Map<String, String> map) throws UnsupportedEncodingException {
     return getIppHeader(URI.create(url.toString()), map);
   }
 
   /**
-   * Gets the IPP (or IPPS) header.
+   * Creates the IPP header with the IPP tags.
    *
    * @param url URI beginning with "ipp://..." or "ipps://..."
    * @param map attribute map

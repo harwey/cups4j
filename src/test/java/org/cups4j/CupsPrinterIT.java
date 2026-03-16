@@ -47,19 +47,23 @@ public final class CupsPrinterIT {
 
     @Test
     @Ignore
-    public void testPrintTwoPages() {
-        print(printer, new File("src/test/resources/twopages.pdf"));
+    public void testPrintTwoPagesDuplex() throws Exception {
+        printTwoPages(true);
     }
 
     @Test
     @Ignore
     public void testPrintTwoPagesSimplex() throws Exception {
+        printTwoPages(false);
+    }
+
+    private void printTwoPages(boolean duplex) throws Exception {
         File file = new File("src/test/resources/twopages.pdf");
         String jobname = generateJobnameFor(file);
         byte[] content = FileUtils.readFileToByteArray(file);
         PrintJob job = new PrintJob.Builder(content)
                 .jobName(jobname)
-                .duplex(false)
+                .duplex(duplex)
                 .build();
         PrintRequestResult result = printer.print(job);
         assertNotNull(result);

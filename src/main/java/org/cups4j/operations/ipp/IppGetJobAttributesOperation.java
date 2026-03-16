@@ -50,21 +50,6 @@ public class IppGetJobAttributesOperation extends IppOperation {
   }
 
   /**
-   * 
-   * @param uri
-   *          printer-uri or job-uri
-   * @param map
-   *          attributes i.e. job-id,requesting-user-name,requested-attributes
-   * @return ByteBuffer IPP header
-   * @throws UnsupportedEncodingException
-   * @deprecated use {@link #getIppHeader(URI, Map)}
-   */
-  @Deprecated
-  public ByteBuffer getIppHeader(URL uri, Map<String, String> map) throws UnsupportedEncodingException {
-    return getIppHeader(URI.create(uri.toString()), map);
-  }
-
-  /**
    * Builds the IPP header.
    *
    * @param uri printer or job URI beginning with "ipp://..." or "ipps://..."
