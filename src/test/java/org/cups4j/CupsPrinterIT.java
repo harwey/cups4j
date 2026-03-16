@@ -14,7 +14,9 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assume.assumeNotNull;
 
 /**
  * Integration tests for {@link CupsPrinter} class.
@@ -41,6 +43,30 @@ public final class CupsPrinterIT {
     @Ignore
     public void testPrintPDF() {
         print(printer, new File("src/test/resources/test.pdf"));
+    }
+
+    @Test
+    @Ignore
+    public void testPrintTwoPagesDuplex() throws Exception {
+        printTwoPages(true);
+    }
+
+    @Test
+    @Ignore
+    public void testPrintTwoPagesSimplex() throws Exception {
+        printTwoPages(false);
+    }
+
+    private void printTwoPages(boolean duplex) throws Exception {
+        File file = new File("src/test/resources/twopages.pdf");
+        String jobname = generateJobnameFor(file);
+        byte[] content = FileUtils.readFileToByteArray(file);
+        PrintJob job = new PrintJob.Builder(content)
+                .jobName(jobname)
+                .duplex(duplex)
+                .build();
+        PrintRequestResult result = printer.print(job);
+        assertNotNull(result);
     }
 
     @Test
@@ -88,7 +114,10 @@ public final class CupsPrinterIT {
         String jobname = generateJobnameFor(file);
         try {
             byte[] content = FileUtils.readFileToByteArray(file);
-            return new PrintJob.Builder(content).jobName(jobname).userName(userName).build();
+            return new PrintJob.Builder(content)
+                    .jobName(jobname)
+                    .userName(userName)
+                    .build();
         } catch (IOException ioe) {
             throw new IllegalArgumentException("cannot read '" + file + "'", ioe);
         }
@@ -109,7 +138,7 @@ public final class CupsPrinterIT {
      * with v0.7.8 but not with v0.7.9. This test was called with the following
      * system properties:
      * <ol>
-     *     <li>-Dcups.url=http://drgsse04.ad.drgueldener.de:12197 -Dprinter=OPTDN075</li>
+     *     <li>-Dcups.url=https://cups.int.ad.drgueldener.de:9443 -Dprinter=ps-opt-mfp075</li>
      * </ol>
      *
      * @throws Exception in case of error
@@ -163,7 +192,9 @@ public final class CupsPrinterIT {
         String name = System.getProperty("printer");
         if (name == null) {
             LOG.info("To specify printer please set system property 'printer'.");
-            return TestCups.getCupsClient().getDefaultPrinter();
+            CupsPrinter printer = TestCups.getCupsClient().getDefaultPrinter();
+            assumeNotNull(printer);
+            return printer;
         } else {
             return getPrinter(name);
         }

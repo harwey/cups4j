@@ -1,6 +1,6 @@
 package org.cups4j.operations.ipp;
 
-/**
+/*
  * Copyright (C) 2009 Harald Weyhing
  * 
  * This program is free software; you can redistribute it and/or modify it under the terms of the
@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
@@ -40,7 +40,8 @@ public class IppPrintJobOperation extends IppOperation {
   }
 
   /**
-   * 
+   * Creates the header bytes for this operation.
+   *
    * @param url
    *          printer-uri
    * @param map
@@ -49,10 +50,9 @@ public class IppPrintJobOperation extends IppOperation {
    *          document -format,document-natural-language,job-impressions
    *          ,job-media-sheets, job-template-attributes
    * @return IPP header
-   * @throws UnsupportedEncodingException
+   * @throws UnsupportedEncodingException in case of encoding problems
    */
-
-  public ByteBuffer getIppHeader(URL url, Map<String, String> map) throws UnsupportedEncodingException {
+  public ByteBuffer getIppHeader(URI url, Map<String, String> map) throws UnsupportedEncodingException {
     if (url == null) {
       LOG.error("IppPrintJobOperation.getIppHeader(): uri is null");
       return null;

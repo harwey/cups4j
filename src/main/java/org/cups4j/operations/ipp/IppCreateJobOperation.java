@@ -1,17 +1,17 @@
 /*
  * Copyright (c) 2018 by Oliver Boehm
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  *
  * (c)reated 23.03.2018 by oboehm (ob@oasd.de)
  */
@@ -21,12 +21,14 @@ import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
 import ch.ethz.vppserver.ippclient.IppTag;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpException;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.io.entity.InputStreamEntity;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
@@ -48,6 +50,7 @@ import java.util.Map;
  * The class IppCreateJobOperation represents the create-job operation.
  *
  * @author oboehm
+ * 
  * @since 0.7.2 (23.03.2018)
  */
 public class IppCreateJobOperation extends IppOperation {
@@ -67,11 +70,14 @@ public class IppCreateJobOperation extends IppOperation {
      * Gets the IPP header with requesting-user-name.
      *
      * @param url where to send the request
+     * 
      * @return IPP header
+     * 
      * @throws UnsupportedEncodingException if encoding is not supported.
      */
     @Override
-    public ByteBuffer getIppHeader(URL url) throws UnsupportedEncodingException {
+    public ByteBuffer getIppHeader(URL url)
+            throws UnsupportedEncodingException {
         return getIppHeader(url, createAttributeMap());
     }
 
@@ -79,20 +85,6 @@ public class IppCreateJobOperation extends IppOperation {
         Map<String, String> map = new HashMap<String, String>();
         map.put("requesting-user-name", CupsClient.DEFAULT_USER);
         return map;
-    }
-
-    /**
-     * Gets the IPP header with requesting-user-name.
-     *
-     * @param url where to send the request
-     * @param map attributes
-     * @return IPP header
-     * @throws UnsupportedEncodingException if encoding is not supported.
-     * @deprecated use {@link #getIppHeader(URI, Map)}
-     */
-    @Deprecated
-    public ByteBuffer getIppHeader(URL url, Map<String, String> map) throws UnsupportedEncodingException {
-        return getIppHeader(URI.create(url.toString()), map);
     }
 
     /**
@@ -120,7 +112,8 @@ public class IppCreateJobOperation extends IppOperation {
         if (map.get("requested-attributes") != null) {
             String[] sta = map.get("requested-attributes").split(" ");
             if (sta != null) {
-                ippBuf = IppTag.getKeyword(ippBuf, "requested-attributes", sta[0]);
+                ippBuf = IppTag.getKeyword(ippBuf, "requested-attributes",
+                        sta[0]);
                 int l = sta.length;
                 for (int i = 1; i < l; i++) {
                     ippBuf = IppTag.getKeyword(ippBuf, null, sta[i]);
@@ -128,8 +121,9 @@ public class IppCreateJobOperation extends IppOperation {
             }
         }
 
-        if( map.get("job-name") != null) {
-            ippBuf = IppTag. getNameWithoutLanguage (ippBuf, "job-name", map.get("job-name"));
+        if (map.get("job-name") != null) {
+            ippBuf = IppTag.getNameWithoutLanguage(ippBuf, "job-name",
+                    map.get("job-name"));
         }
 
         ippBuf = IppTag.getEnd(ippBuf);
@@ -137,7 +131,8 @@ public class IppCreateJobOperation extends IppOperation {
         return ippBuf;
     }
 
-    public IppResult request(CupsPrinter printer, URL url, CupsAuthentication creds) {
+    public IppResult request(CupsPrinter printer, URL url,
+            CupsAuthentication creds) {
         return request(printer, url, createAttributeMap(), creds);
     }
 
@@ -176,8 +171,9 @@ public class IppCreateJobOperation extends IppOperation {
         }
     }
 
-    private static IppResult sendRequest(CupsPrinter printer, URI uri, ByteBuffer ippBuf,
-    		CupsAuthentication creds) throws IOException {
+    private static IppResult sendRequest(CupsPrinter printer, URI uri,
+            ByteBuffer ippBuf,
+            CupsAuthentication creds) throws IOException {
         CloseableHttpClient client = IppHttp.createHttpClient();
 
         HttpPost httpPost = new HttpPost(uri);
@@ -189,34 +185,42 @@ public class IppCreateJobOperation extends IppOperation {
         ByteArrayInputStream headerStream = new ByteArrayInputStream(bytes);
 
         // set length to -1 to advice the entity to read until EOF
-        InputStreamEntity requestEntity = new InputStreamEntity(headerStream, -1);
+        InputStreamEntity requestEntity =
+                new InputStreamEntity(headerStream, -1,
+                        ContentType.create(IPP_MIME_TYPE));
 
-        requestEntity.setContentType(IPP_MIME_TYPE);
         httpPost.setEntity(requestEntity);
-        CloseableHttpResponse httpResponse = client.execute(httpPost);
-        
-        //System.out.println("Response body");
-        //System.out.println(Base64.getEncoder().encodeToString(IOUtils.toString(httpResponse.getEntity().getContent()).getBytes()));
-        return toIppResult(httpResponse);
+        HttpClientResponseHandler<IppResult> handler =
+                new HttpClientResponseHandler<IppResult>() {
+                    @Override
+                    public IppResult handleResponse(
+                            ClassicHttpResponse response)
+                            throws HttpException, IOException {
+                        // System.out.println("Response body");
+                        // System.out.println(Base64.getEncoder().encodeToString(IOUtils.toString(httpResponse.getEntity().getContent()).getBytes()));
+                        return toIppResult(response);
+                    }
+                };
+
+        return client.execute(httpPost, handler);
     }
-    
-    private static IppResult toIppResult(CloseableHttpResponse httpResponse) throws IOException {
-    	try {
-	        IppResponse ippResponse = new IppResponse();
-	        IppResult ippResult = ippResponse.getResponse(read(httpResponse.getEntity()));
-	        StatusLine statusLine = httpResponse.getStatusLine();
-	        ippResult.setHttpStatusResponse(statusLine.getReasonPhrase());
-	        ippResult.setHttpStatusCode(statusLine.getStatusCode());
-	        return ippResult;
-    	} finally {
-    		try {
-    			httpResponse.close();
-    		} catch (IOException e) {
-                LOG.warn("Failed to close {}:", httpResponse, e);
-            }
-    	}
+
+    private static IppResult toIppResult(ClassicHttpResponse httpResponse)
+            throws IOException {
+        try {
+            IppResponse ippResponse = new IppResponse();
+            IppResult ippResult =
+                    ippResponse.getResponse(read(httpResponse.getEntity()));
+            ippResult.setHttpStatusResponse(httpResponse.getReasonPhrase());
+            ippResult.setHttpStatusCode(httpResponse.getCode());
+            return ippResult;
+        } finally {
+            try {
+                httpResponse.close();
+            } catch (IOException e) {}
+        }
     }
-    
+
     private static ByteBuffer read(HttpEntity entity) throws IOException {
         byte[] bytes = IOUtils.toByteArray(entity.getContent());
         return ByteBuffer.wrap(bytes);

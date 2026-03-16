@@ -14,17 +14,18 @@ package ch.ethz.vppserver.ippclient;
  * the GNU Lesser General Public License along with this program; if not, see
  * <http://www.gnu.org/licenses/>.
  */
-import java.util.List;
 
 import org.cups4j.ipp.attributes.AttributeGroup;
 import org.cups4j.ipp.attributes.Tag;
 
+import java.util.List;
+
 public interface IIppAttributeProvider {
-  public final static String TAG_LIST_FILENAME = "config/ippclient/ipp-list-of-tag.xml";
-  public final static String ATTRIBUTE_LIST_FILENAME = "config/ippclient/ipp-list-of-attributes.xml";
-  public final static String CONTEXT = "ch.ethz.vppserver.schema.ippclient";
+  String TAG_LIST_FILENAME = "config/ippclient/ipp-list-of-tag.xml";
+  String ATTRIBUTE_LIST_FILENAME = "config/ippclient/ipp-list-of-attributes.xml";
+  String CONTEXT = "ch.ethz.vppserver.schema.ippclient";
 
-  public List<Tag> getTagList();
+  List<Tag> getTagList();
 
-  public List<AttributeGroup> getAttributeGroupList();
+  List<AttributeGroup> getAttributeGroupList();
 }

@@ -1,6 +1,6 @@
 package org.cups4j.operations.ipp;
 
-/**
+/*
  * Copyright (C) 2009 Harald Weyhing
  * 
  * This program is free software; you can redistribute it and/or modify it under the terms of the
@@ -14,26 +14,22 @@ package org.cups4j.operations.ipp;
  * the GNU Lesser General Public License along with this program; if not, see
  * <http://www.gnu.org/licenses/>.
  */
+
+import ch.ethz.vppserver.ippclient.IppResult;
+import ch.ethz.vppserver.ippclient.IppTag;
+import org.cups4j.*;
+import org.cups4j.ipp.attributes.Attribute;
+import org.cups4j.ipp.attributes.AttributeGroup;
+import org.cups4j.operations.IppOperation;
+
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.cups4j.CupsAuthentication;
-import org.cups4j.CupsClient;
-import org.cups4j.CupsPrinter;
-import org.cups4j.JobStateEnum;
-import org.cups4j.PrintJobAttributes;
-import org.cups4j.WhichJobsEnum;
-import org.cups4j.ipp.attributes.Attribute;
-import org.cups4j.ipp.attributes.AttributeGroup;
-import org.cups4j.operations.IppOperation;
-
-import ch.ethz.vppserver.ippclient.IppResult;
-import ch.ethz.vppserver.ippclient.IppTag;
 
 public class IppGetJobsOperation extends IppOperation {
 
@@ -48,16 +44,17 @@ public class IppGetJobsOperation extends IppOperation {
   }
 
   /**
-   * 
+   * Creates the header bytes for this operation.
+   *
    * @param url
    *          printer-uri
    * @param map
    *          attributes i.e. requesting-user-name,limit,which-jobs,my-jobs,
    *          requested-attributes
    * @return IPP header
-   * @throws UnsupportedEncodingException
+   * @throws UnsupportedEncodingException in case of encoding problems
    */
-  public ByteBuffer getIppHeader(URL url, Map<String, String> map) throws UnsupportedEncodingException {
+  public ByteBuffer getIppHeader(URI url, Map<String, String> map) throws UnsupportedEncodingException {
     ByteBuffer ippBuf = ByteBuffer.allocateDirect(bufferSize);
 
     map.put("requested-attributes", "job-name job-id job-state job-originating-user-name job-printer-uri copies");

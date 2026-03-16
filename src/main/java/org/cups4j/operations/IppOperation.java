@@ -1,31 +1,18 @@
 package org.cups4j.operations;
 
-/*
- * Copyright (C) 2009 Harald Weyhing
- * 
- * This program is free software; you can redistribute it and/or modify it under the terms of the
- * GNU Lesser General Public License as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
- * See the GNU Lesser General Public License for more details. You should have received a copy of
- * the GNU Lesser General Public License along with this program; if not, see
- * <http://www.gnu.org/licenses/>.
- */
-
 import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
 import ch.ethz.vppserver.ippclient.IppTag;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpException;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.InputStreamEntity;
+import org.apache.hc.core5.http.message.StatusLine;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
@@ -52,7 +39,9 @@ public abstract class IppOperation {
    * Gets the IPP header
    * 
    * @param url
+   * 
    * @return IPP header
+   * 
    * @throws UnsupportedEncodingException
    */
   public ByteBuffer getIppHeader(URL url) throws UnsupportedEncodingException {
@@ -132,15 +121,19 @@ public abstract class IppOperation {
    * 
    * @param url
    * @param map
+   * 
    * @return IPP header
-   * @throws UnsupportedEncodingException
+   *
+   * @throws UnsupportedEncodingException if encoding is not supported.
+   * @deprecated use {@link #getIppHeader(URI, Map)}
    */
+  @Deprecated
   public ByteBuffer getIppHeader(URL url, Map<String, String> map) throws UnsupportedEncodingException {
     return getIppHeader(URI.create(url.toString()), map);
   }
 
   /**
-   * Gets the IPP (or IPPS) header.
+   * Creates the IPP header with the IPP tags.
    *
    * @param url URI beginning with "ipp://..." or "ipps://..."
    * @param map attribute map
@@ -164,7 +157,8 @@ public abstract class IppOperation {
       return ippBuf;
     }
 
-    ippBuf = IppTag.getNameWithoutLanguage(ippBuf, "requesting-user-name", map.get("requesting-user-name"));
+    ippBuf = IppTag.getNameWithoutLanguage(ippBuf, "requesting-user-name",
+        map.get("requesting-user-name"));
 
     if (map.get("limit") != null) {
       int value = Integer.parseInt(map.get("limit"));
@@ -200,7 +194,8 @@ public abstract class IppOperation {
                                 CupsAuthentication creds) throws IOException  {
     IppResult result = sendRequest(printer, url, ippBuf, null, creds);
     if (result.getHttpStatusCode() >= 300) {
-      throw new IOException("HTTP error! Status code:  " + result.getHttpStatusResponse());
+      throw new IOException(
+          "HTTP error! Status code:  " + result.getHttpStatusResponse());
     }
     return result;
   }
@@ -243,26 +238,28 @@ public abstract class IppOperation {
     }
 
     // set length to -1 to advice the entity to read until EOF
-    InputStreamEntity requestEntity = new InputStreamEntity(inputStream, -1);
+    InputStreamEntity requestEntity = new InputStreamEntity(inputStream, -1,
+        ContentType.create(IPP_MIME_TYPE));
 
-    requestEntity.setContentType(IPP_MIME_TYPE);
     httpPost.setEntity(requestEntity);
 
     final IppHttpResult ippHttpResult = new IppHttpResult();
     ippHttpResult.setStatusCode(-1);
 
-    ResponseHandler<byte[]> handler = new ResponseHandler<byte[]>() {
-      public byte[] handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
-        HttpEntity entity = response.getEntity();
-        ippHttpResult.setStatusLine(response.getStatusLine().toString());
-        ippHttpResult.setStatusCode(response.getStatusLine().getStatusCode());
-        if (entity != null) {
-          return EntityUtils.toByteArray(entity);
-        } else {
-          return null;
-        }
-      }
-    };
+    HttpClientResponseHandler<byte[]> handler =
+        new HttpClientResponseHandler<byte[]>() {
+          @Override
+          public byte[] handleResponse(ClassicHttpResponse response)
+              throws HttpException, IOException {
+            HttpEntity entity = response.getEntity();
+            StatusLine line = new StatusLine(response);
+
+            ippHttpResult.setStatusLine(line.toString());
+            ippHttpResult.setStatusCode(response.getCode());
+
+            return (entity != null) ? EntityUtils.toByteArray(entity) : null;
+          }
+        };
 
     byte[] result = client.execute(httpPost, handler);
 
@@ -279,6 +276,7 @@ public abstract class IppOperation {
    * Removes the port number in the submitted URL
    *
    * @param url
+   * 
    * @return url without port number
    */
   protected String stripPortNumber(URL url) {
@@ -305,5 +303,5 @@ public abstract class IppOperation {
   protected String getAttributeValue(Attribute attr) {
     return attr.getAttributeValue().get(0).getValue();
   }
-  
+
 }

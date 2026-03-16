@@ -1,12 +1,14 @@
 package org.cups4j;
 
 public enum PrinterStateEnum {
-    IDLE(3, "idle"), PRINTING(4, "printing"), STOPPED(5, "stopped");
+    IDLE(3, "idle"),
+    PRINTING(4, "printing"),
+    STOPPED(5, "stopped");
 
-    private Integer value;
-    private String stateName;
+    private final int value;
+    private final String stateName;
 
-    PrinterStateEnum(Integer value, String stateName) {
+    PrinterStateEnum(int value, String stateName) {
         this.value = value;
         this.stateName = stateName;
     }
@@ -33,11 +35,15 @@ public enum PrinterStateEnum {
         }
         return null;
     }
-
-    public static PrinterStateEnum fromStringInteger(String value) {
-        if (value != null) {
+    
+    /**
+     * @param stateName name of the printer state
+     * @return printer state enum for name or null
+     */
+    public static PrinterStateEnum fromStateName(String stateName) {
+        if (stateName != null) {
             for (PrinterStateEnum printerState : PrinterStateEnum.values()) {
-                if (value.equalsIgnoreCase(printerState.getValue().toString())) {
+                if (stateName.equalsIgnoreCase(printerState.getStateName())) {
                     return printerState;
                 }
             }
