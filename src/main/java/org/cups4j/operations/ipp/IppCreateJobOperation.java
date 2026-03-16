@@ -88,22 +88,6 @@ public class IppCreateJobOperation extends IppOperation {
     }
 
     /**
-     * Gets the IPP header with requesting-user-name.
-     *
-     * @param url where to send the request
-     * @param map attributes
-     * 
-     * @return IPP header
-     * 
-     * @throws UnsupportedEncodingException if encoding is not supported.
-     * @deprecated use {@link #getIppHeader(URI, Map)}
-     */
-    @Deprecated
-    public ByteBuffer getIppHeader(URL url, Map<String, String> map) throws UnsupportedEncodingException {
-        return getIppHeader(URI.create(url.toString()), map);
-    }
-
-    /**
      * Gets the IPP header with requesting-user-name and job-name.
      *
      * @param url where to send the request
