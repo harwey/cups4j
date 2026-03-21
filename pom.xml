@@ -26,6 +26,12 @@
       <organization>Harald Weyhing</organization>
       <organizationUrl>http://cups4j.org</organizationUrl>
     </developer>
+    <developer>
+      <name>Oliver Böhm</name>
+      <email>ob@jugs.org</email>
+      <organization>Java User Group Stuttgart</organization>
+      <organizationUrl>https://jugs.org</organizationUrl>
+    </developer>
   </developers>
 
   <scm>
