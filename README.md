@@ -22,7 +22,7 @@ To import and use **cups4j** in your project, add the following dependency in yo
 <dependency>
     <groupId>org.cups4j</groupId>
     <artifactId>cups4j</artifactId>
-    <version>0.7.6</version>
+    <version>0.8.0</version>
 </dependency>
 ```
 
