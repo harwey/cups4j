@@ -25,9 +25,9 @@ import org.cups4j.operations.IppOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -92,15 +92,15 @@ public class IppHoldJobOperation extends IppOperation {
   /**
    * Cancels a print job on the IPP server running on the given host.
    * 
-   * @param hostname
-   * @param userName
-   * @param jobID
-   * @param message
+   * @param hostname host name
+   * @param userName user name
+   * @param jobID    job ID
+   * @param printer  printer
    * @return true on successful cancelation otherwise false.
-   * @throws Exception
+   * @throws IOException if request fails
    */
   public boolean holdJob(String hostname, String userName, int jobID, 
-		  CupsPrinter printer, CupsAuthentication creds) throws Exception {
+		  CupsPrinter printer, CupsAuthentication creds) throws IOException {
 
     Map<String, String> map = new HashMap<String, String>();
 
@@ -109,7 +109,7 @@ public class IppHoldJobOperation extends IppOperation {
     }
     map.put("requesting-user-name", userName);
 
-    URL url = new URL("http://" + hostname + "/jobs/" + Integer.toString(jobID));
+    URI url = URI.create(getScheme() + "://" + hostname + ":" + ippPort + "/jobs/" + jobID);
     map.put("job-uri", url.toString());
 
     IppResult result = request(printer, url, map, creds);

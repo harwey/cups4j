@@ -304,4 +304,8 @@ public abstract class IppOperation {
     return attr.getAttributeValue().get(0).getValue();
   }
 
+  protected String getScheme() {
+    return ippPort == 443 ? "https" : "http";
+  }
+
 }

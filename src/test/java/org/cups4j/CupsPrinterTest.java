@@ -103,6 +103,7 @@ public final class CupsPrinterTest extends AbstractIppOperationTest {
         return basename + new String(epochTime).substring(2);
     }
 
+    @Test
     public void testEquals() {
         URI printerURI = URI.create("ipp://pippi.fax");
         CupsPrinter a = new CupsPrinter(null, printerURI, "langstrumpf");
