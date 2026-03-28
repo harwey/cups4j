@@ -121,14 +121,14 @@ public class CupsMoveJobOperation extends IppOperation {
    */
   public boolean moveJob(CupsPrinter printer, String hostname, String userName, int jobID,
                          URI targetPrinterURL, CupsAuthentication creds) throws IOException {
-    Map<String, String> map = new HashMap<String, String>();
+    Map<String, String> map = new HashMap<>();
 
     if (userName == null) {
       userName = CupsClient.DEFAULT_USER;
     }
     map.put("requesting-user-name", userName);
 
-    URL url = new URL("http://" + hostname + "/jobs/" + Integer.toString(jobID));
+    URI url = createURI(hostname, "/jobs/" + jobID);
     map.put("job-uri", url.toString());
 
     map.put("target-printer-uri", stripPortNumber(targetPrinterURL));
