@@ -107,7 +107,7 @@ public class IppReleaseJobOperation extends IppOperation {
     }
     map.put("requesting-user-name", userName);
 
-    URI url = URI.create(getScheme() + "://" + hostname + ":" + ippPort + "/jobs/" + jobID);
+    URI url = createURI(hostname, "/jobs/" + jobID);
     map.put("job-uri", url.toString());
 
     IppResult result = request(printer, url, map, creds);

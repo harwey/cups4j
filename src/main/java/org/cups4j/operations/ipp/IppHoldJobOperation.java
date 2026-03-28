@@ -102,14 +102,14 @@ public class IppHoldJobOperation extends IppOperation {
   public boolean holdJob(String hostname, String userName, int jobID, 
 		  CupsPrinter printer, CupsAuthentication creds) throws IOException {
 
-    Map<String, String> map = new HashMap<String, String>();
+    Map<String, String> map = new HashMap<>();
 
     if (userName == null) {
       userName = CupsClient.DEFAULT_USER;
     }
     map.put("requesting-user-name", userName);
 
-    URI url = URI.create(getScheme() + "://" + hostname + ":" + ippPort + "/jobs/" + jobID);
+    URI url = createURI(hostname, "/jobs/" + jobID);
     map.put("job-uri", url.toString());
 
     IppResult result = request(printer, url, map, creds);
