@@ -7,8 +7,8 @@ import org.cups4j.CupsPrinter;
 import org.cups4j.CupsPrinterIT;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
+import org.cups4j.operations.AbstractIppOperationTest;
 import org.hamcrest.MatcherAssert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,26 +40,26 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
     private final IppSendDocumentOperation operation = new IppSendDocumentOperation(4711);
 
     /**
-     * This is only a basic test to see if the operation tag is set coorect.
+     * This is only a basic test to see if the operation tag is set correct.
      *
-     * @throws UnsupportedEncodingException in case of encoding problemss
+     * @throws UnsupportedEncodingException in case of encoding problems
      */
     @Test
     public void testGetIppHeader() throws UnsupportedEncodingException {
-        ByteBuffer buffer = getIppHeader(operation);
+        ByteBuffer buffer = this.getIppHeader(operation);
         assertEquals(6, buffer.get(3));
-        checkAttribute(buffer, "printer-uri", "http://localhost:631/printers/test-printer");
+        checkAttribute(buffer, "printer-uri", this.getPrinterURL().toString());
     }
 
     /**
      * For the send-document command it is important, that the header contains
      * the job-id. This is tested here.
      *
-     * @throws IOException in case of encoding or other problemss
+     * @throws IOException in case of encoding or other problems
      */
     @Test
     public void testGetIppHeaderWithJobId() throws IOException {
-        URL printerURL = createURL("http://localhost:631/test-printer");
+        URL printerURL = getPrinterURL();
         Map<String, String> attributes = setUpAttributes();
         ByteBuffer buffer = operation.getIppHeader(printerURL, attributes);
         byte[] header = toByteArray(buffer);
@@ -73,13 +73,13 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
      * "last-document" operation attribute set to 'true' indicating that
      * this is the last request.
      *
-     * @throws IOException in case of encoding or other problemss
+     * @throws IOException in case of encoding or other problems
      */
     @Test
     public void testGetIppHeaderOfLastDocument() throws IOException {
         IppSendDocumentOperation op = new IppSendDocumentOperation(6631, 4711, true);
         Map<String, String> attributes = setUpAttributes();
-        ByteBuffer buffer = op.getIppHeader(createURL("http://localhost:6631/test-printer"), attributes);
+        ByteBuffer buffer = op.getIppHeader(this.createURL("http://localhost:6631/test-printer"), attributes);
         byte[] header = toByteArray(buffer);
         IppResult ippResult = new IppResponse().getResponse(ByteBuffer.wrap(header));
         AttributeGroup group = ippResult.getAttributeGroupList().get(0);
@@ -90,7 +90,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
 
     private static void checkIppRequest(byte[] header) throws IOException {
         IppResult ippResult = new IppResponse().getResponse(ByteBuffer.wrap(header));
-        Set<String> groupTagNames = new HashSet<String>();
+        Set<String> groupTagNames = new HashSet<>();
         for (AttributeGroup group : ippResult.getAttributeGroupList()) {
             String tagName = group.getTagName();
             MatcherAssert.assertThat("duplicate tag name", groupTagNames, not(hasItem(tagName)));
@@ -109,7 +109,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
     }
 
     private static void checkAttributeGroupList(AttributeGroup ref, AttributeGroup attributeGroup) {
-        Set<String> attributeNames = new HashSet<String>();
+        Set<String> attributeNames = new HashSet<>();
         for (Attribute attr : attributeGroup.getAttribute()) {
             attributeNames.add(attr.getName());
         }
@@ -124,11 +124,11 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
      * We should see the login user in the header. Otherwise we may get a
      * 401-response (forbidden).
      *
-     * @throws UnsupportedEncodingException in case of encoding problemss
+     * @throws UnsupportedEncodingException in case of encoding problems
      */
     @Test
     public void testGetIppHeaderWithUser() throws UnsupportedEncodingException {
-        URL printerURL = createURL("http://localhost:631/test-printer");
+        URL printerURL = getPrinterURL();
         Map<String, String> attributes = setUpAttributes();
         ByteBuffer buffer = operation.getIppHeader(printerURL, attributes);
         byte[] header = toByteArray(buffer);
@@ -143,7 +143,6 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
     }
 
     @Test
-    @Ignore
     public void testRequest() throws Exception {
         CupsPrinter printer = CupsPrinterIT.getPrinter();
         if (printer == null) {
