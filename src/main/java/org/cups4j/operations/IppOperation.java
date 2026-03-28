@@ -38,11 +38,9 @@ public abstract class IppOperation {
   /**
    * Gets the IPP header
    * 
-   * @param url
-   * 
+   * @param url URL for header
    * @return IPP header
-   * 
-   * @throws UnsupportedEncodingException
+   * @throws UnsupportedEncodingException if encoding is not supported
    */
   public ByteBuffer getIppHeader(URL url) throws UnsupportedEncodingException {
     return getIppHeader(url, null);
@@ -302,6 +300,14 @@ public abstract class IppOperation {
 
   protected String getAttributeValue(Attribute attr) {
     return attr.getAttributeValue().get(0).getValue();
+  }
+
+  protected URI createURI(String hostname, String path) {
+    switch (ippPort) {
+      case 80:  return URI.create("http://" + hostname + path);
+      case 443: return URI.create("https://" + hostname + path);
+      default:  return URI.create("http://" + hostname + ":" + ippPort + path);
+    }
   }
 
 }
