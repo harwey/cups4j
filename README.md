@@ -70,3 +70,8 @@ PrintJob printJob = new PrintJob.Builder(bytes)
 
 ## License
 [LGPL](https://github.com/harwey/cups4j/blob/master/LICENSE)
+
+## More Infos
+
+* Changelog: [CHANGELOG](CHANGELOG.md)
+* RFC IPP: [RFC 2910](https://tools.ietf.org/html/rfc2910) and [RFC 8011](https://tools.ietf.org/html/rfc8011)
