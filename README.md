@@ -1,3 +1,6 @@
+[![License](https://img.shields.io/badge/License-GNU%20LGPL-blue.svg)](https://github.com/harwey/cups4j/blob/master/LICENSE)
+[![Maven Central](https://maven-badges.sml.io/maven-central/org.cups4j/cups4j/badge.svg)](https://maven-badges.sml.io/maven-central/de.aosd.clazzfish/clazzfish)
+
 # Cups4j
 
 ``Cups4j`` — the Java printing library for CUPS.
@@ -11,7 +14,8 @@
   * [Connect to custom host](#connect-to-custom-host)
   * [Get specific printer by URL](#get-specific-printer-by-url)
   * [Add extra PrintJob attributes](#add-extra-printjob-attributes)
-* [License](#license)
+* [More Infos](#more-infos)
+* [License](LICENSE)
 
 ## Importing
 
@@ -67,9 +71,6 @@ PrintJob printJob = new PrintJob.Builder(bytes)
                                 .attributes(attributes)
                                 .build();
 ```
-
-## License
-[LGPL](https://github.com/harwey/cups4j/blob/master/LICENSE)
 
 ## More Infos
 
