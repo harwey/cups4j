@@ -1,5 +1,5 @@
 [![License](https://img.shields.io/badge/License-GNU%20LGPL-blue.svg)](https://github.com/harwey/cups4j/blob/master/LICENSE)
-[![Maven Central](https://maven-badges.sml.io/maven-central/org.cups4j/cups4j/badge.svg)](https://maven-badges.sml.io/maven-central/de.aosd.clazzfish/clazzfish)
+[![Maven Central](https://maven-badges.sml.io/maven-central/org.cups4j/cups4j/badge.svg)](https://maven-badges.sml.io/maven-central/org.cups4j/cups4j)
 
 # Cups4j
 
