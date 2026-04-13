@@ -12,7 +12,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -114,9 +116,15 @@ public final class CupsPrinterIT {
         String jobname = generateJobnameFor(file);
         try {
             byte[] content = FileUtils.readFileToByteArray(file);
+            Map<String, String> attrs = new HashMap<>();
+            attrs.put("print-color-mode", "color");
+            attrs.put("ColorModel", "RGB");
+            attrs.put("cupsColorSpace", "RGB");
             return new PrintJob.Builder(content)
                     .jobName(jobname)
                     .userName(userName)
+                    .color(true)
+                    .attributes(attrs)
                     .build();
         } catch (IOException ioe) {
             throw new IllegalArgumentException("cannot read '" + file + "'", ioe);
