@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ([issue #81](https://github.com/harwey/cups4j/issues/81))
 - testcontainers is used for unit testing
   ([PR #65](https://github.com/harwey/cups4j/pull/65), [PR #90](https://github.com/harwey/cups4j/pull/90))
+- PrintJob.Builder has now an attribute method to build attributes
+  (added with [issue #73](https://github.com/harwey/cups4j/issues/73))
 
 ### Fixed
 

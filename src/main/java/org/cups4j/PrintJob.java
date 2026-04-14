@@ -57,7 +57,7 @@ public class PrintJob {
     private boolean color = false;
     private String pageFormat;
     private String resolution;
-    private Map<String, String> attributes;
+    private Map<String, String> attributes = new HashMap<>();
 
     /**
      * Constructor
@@ -94,7 +94,7 @@ public class PrintJob {
     /**
      * Page ranges
      * 
-     * @param String pageRanges 1-3, 5, 8, 10-13
+     * @param pageRanges 1-3, 5, 8, 10-13
      * @return Builder
      */
     public Builder pageRanges(String pageRanges) {
@@ -175,7 +175,7 @@ public class PrintJob {
     }
 
     /**
-     * Additional attributes for the print operation and the print job
+     * Additional attributes for the print operation and the print job.
      * 
      * @param attributes
      *          provide operation attributes and/or a String of job-attributes
@@ -203,6 +203,21 @@ public class PrintJob {
      */
     public Builder attributes(Map<String, String> attributes) {
       this.attributes = attributes;
+      return this;
+    }
+
+    /**
+     * Additional attributes for the print operation and the print job.
+     * For a list of attributes see {@link #attributes} or
+     * config/ippclient/list-of-attributes.xml.
+     *
+     * @param key   e.g. "compression"
+     * @param value e.g. "none"
+     * @return Builder
+     * @since 0.8.1
+     */
+    public Builder attribute(String key, String value) {
+      this.attributes.put(key, value);
       return this;
     }
 
