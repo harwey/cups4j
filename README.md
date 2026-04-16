@@ -25,7 +25,7 @@ To import and use **cups4j** in your project, add the following dependency in yo
 <dependency>
     <groupId>org.cups4j</groupId>
     <artifactId>cups4j</artifactId>
-    <version>0.8.0</version>
+    <version>0.8.1</version>
 </dependency>
 ```
 
@@ -53,10 +53,6 @@ CupsPrinter cupsPrinter = cupsClient.getPrinter(printerURL);
 
 ### Add extra PrintJob attributes
 ```java
-Map<String, String> attributes = new HashMap<>();
-attributes.put("compression", "none");
-attributes.put("job-attributes", "print-quality:enum:3#fit-to-page:boolean:true#sheet-collate:keyword:collated");
-
 PrintJob printJob = new PrintJob.Builder(bytes)
                                 .jobName("job-name")
                                 .userName("user-name")
@@ -67,7 +63,9 @@ PrintJob printJob = new PrintJob.Builder(bytes)
                                 .color(true)
                                 .pageFormat("iso-a4")
                                 .resolution("300dpi")
-                                .attributes(attributes)
+                                // extra PrintJob attributes
+                                .attribute("compression", "none")
+                                .attribute("job-attributes", "print-quality:enum:3#fit-to-page:boolean:true#sheet-collate:keyword:collated")
                                 .build();
 ```
 
