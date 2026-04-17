@@ -4,6 +4,8 @@ import org.cups4j.operations.cups.CupsGetDefaultOperation;
 import org.cups4j.operations.cups.CupsGetPrintersOperation;
 import org.cups4j.operations.cups.CupsMoveJobOperation;
 import org.cups4j.operations.ipp.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URL;
@@ -25,6 +27,7 @@ import java.util.List;
  * </p>
  */
 public class CupsClient {
+  private static final Logger log = LoggerFactory.getLogger(CupsClient.class);
   public static final String DEFAULT_HOST = "localhost";
   public static final int DEFAULT_PORT = 631;
   public static final String DEFAULT_USER = System.getProperty("user.name", "anonymous");
@@ -119,8 +122,7 @@ public class CupsClient {
    */
   public List<CupsPrinter> getPrintersWithoutDefault() throws Exception {
     CupsGetPrintersOperation cgp = new CupsGetPrintersOperation();
-    List<CupsPrinter> result = cgp.getPrinters(getHost(), getPort(), creds);
-    return result;
+    return cgp.getPrinters(getHost(), getPort(), creds);
   }
 
   /**
@@ -130,13 +132,28 @@ public class CupsClient {
    *          an URL like "http://localhost:631/printers/printername"
    * @return printer
    * @throws Exception in case of problems
+   * @deprecated replaced by {@link #getPrinter(URI)}
    */
+  @Deprecated
   public CupsPrinter getPrinter(URL printerURL) throws Exception {
+    return getPrinter(printerURL.toURI());
+  }
+
+  /**
+   * Returns the printer for the provided URL
+   *
+   * @param printerURL an URI like "http://localhost:631/printers/printername"
+   * @return printer
+   * @throws Exception in case of problems
+   * @since 0.8.1
+   */
+  public CupsPrinter getPrinter(URI printerURL) throws Exception {
     List<CupsPrinter> printers = getPrinters();
     for (CupsPrinter printer : printers) {
-      if (printer.getPrinterURI().toString().equals(printerURL.toString()))
+      if (printer.getPrinterURI().equals(printerURL))
         return printer;
     }
+    log.info("No printer for URI '{}' found.",  printerURL);
     return null;
   }
 
@@ -176,13 +193,13 @@ public class CupsClient {
    * @throws Exception in case of problems
    */
   public CupsPrinter getPrinterOnCurrentHost(String printerURL) throws Exception {
-    return getPrinter(new URL(cupsURL + "/" + printerURL));
+    return getPrinter(URI.create(cupsURL + "/" + printerURL));
   }
 
   /**
    * Returns job attributes for the job associated with the provided jobID
    * 
-   * @param jobID
+   * @param jobID job ID
    * @return Job attributes
    * @throws Exception in case of problems
    */

@@ -47,7 +47,7 @@ CupsClient cupsClient = new CupsClient(URI.create("http://127.0.0.1:631"));
 
 ### Get specific printer by URL
 ```java
-URL printerURL = new URL("http://127.0.0.1:631/printers/printer-name");
+URI printerURL = new URI("http://127.0.0.1:631/printers/printer-name");
 CupsPrinter cupsPrinter = cupsClient.getPrinter(printerURL);
 ```
 

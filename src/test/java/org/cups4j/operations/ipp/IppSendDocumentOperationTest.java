@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -59,7 +58,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
      */
     @Test
     public void testGetIppHeaderWithJobId() throws IOException {
-        URL printerURL = getPrinterURL();
+        URI printerURL = getPrinterURL();
         Map<String, String> attributes = setUpAttributes();
         ByteBuffer buffer = operation.getIppHeader(printerURL, attributes);
         byte[] header = toByteArray(buffer);
@@ -128,7 +127,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
      */
     @Test
     public void testGetIppHeaderWithUser() throws UnsupportedEncodingException {
-        URL printerURL = getPrinterURL();
+        URI printerURL = getPrinterURL();
         Map<String, String> attributes = setUpAttributes();
         ByteBuffer buffer = operation.getIppHeader(printerURL, attributes);
         byte[] header = toByteArray(buffer);
@@ -154,7 +153,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
     }
 
     private void checkRequest(CupsPrinter printer, URI printerURL) throws Exception {
-        Map<String, String> attributes = new HashMap<String, String>();
+        Map<String, String> attributes = new HashMap<>();
         attributes.put("job-attributes", "copies:integer:1#orientation-requested:enum:3#output-mode:keyword:monochrome");
         attributes.put("job-name", "testosteron");
         attributes.put("requesting-user-name", "oboehm");

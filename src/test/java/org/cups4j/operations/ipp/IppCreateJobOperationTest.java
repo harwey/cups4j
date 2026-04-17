@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +39,7 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
 
   @Test
   public void testGetIppHeader() throws UnsupportedEncodingException {
-    URL printerURL = getPrinterURL();
+    URI printerURL = getPrinterURL();
     ByteBuffer buffer = operation.getIppHeader(printerURL);
     checkAttribute(buffer, "printer-uri", printerURL.toString());
     checkAttribute(buffer, "requesting-user-name", System.getProperty("user.name", "anonymous"));
@@ -51,12 +51,6 @@ public class IppCreateJobOperationTest extends AbstractIppOperationTest {
     map.put("job-name", "Test-Job");
     ByteBuffer buffer = operation.getIppHeader(getPrinterURL(), map);
     checkAttribute(buffer, "job-name", "Test-Job");
-  }
-
-  private static byte[] toByteArray(ByteBuffer buffer) {
-    byte[] array = new byte[buffer.limit()];
-    buffer.get(array);
-    return array;
   }
 
   @Ignore

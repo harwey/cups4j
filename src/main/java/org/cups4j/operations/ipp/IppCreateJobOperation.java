@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 by Oliver Boehm
+ * Copyright (c) 2018-2026 by Oliver Boehm
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -43,6 +43,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,7 +56,7 @@ import java.util.Map;
  */
 public class IppCreateJobOperation extends IppOperation {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IppCreateJobOperation.class);
+    private static final Logger log = LoggerFactory.getLogger(IppCreateJobOperation.class);
 
     public IppCreateJobOperation() {
         operationID = 0x0005;
@@ -74,10 +75,24 @@ public class IppCreateJobOperation extends IppOperation {
      * @return IPP header
      * 
      * @throws UnsupportedEncodingException if encoding is not supported.
+     * @deprecated replaced by {@link #getIppHeader(URI, Map)}
      */
+    @Deprecated
     @Override
     public ByteBuffer getIppHeader(URL url)
             throws UnsupportedEncodingException {
+        return getIppHeader(url, createAttributeMap());
+    }
+
+    /**
+     * Gets the IPP header with requesting-user-name.
+     *
+     * @param url where to send the request
+     * @return IPP header
+     * @throws UnsupportedEncodingException if encoding is not supported.
+     * @since 0.8.1
+     */
+    public ByteBuffer getIppHeader(URI url) throws UnsupportedEncodingException {
         return getIppHeader(url, createAttributeMap());
     }
 
@@ -196,8 +211,10 @@ public class IppCreateJobOperation extends IppOperation {
                     public IppResult handleResponse(
                             ClassicHttpResponse response)
                             throws HttpException, IOException {
-                        // System.out.println("Response body");
-                        // System.out.println(Base64.getEncoder().encodeToString(IOUtils.toString(httpResponse.getEntity().getContent()).getBytes()));
+                        if (log.isDebugEnabled()) {
+                             log.debug("Response body");
+                             log.debug(Base64.getEncoder().encodeToString(IOUtils.toString(response.getEntity().getContent()).getBytes()));
+                        }
                         return toIppResult(response);
                     }
                 };

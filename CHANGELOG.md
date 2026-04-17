@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- at least Java 11 required
+- URL parameters are now deprecated and replaced by URI parameters
+
 ### Added
 
 - changelog added

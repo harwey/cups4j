@@ -4,7 +4,7 @@ import org.cups4j.CupsPrinter;
 import org.cups4j.operations.AbstractIppOperationTest;
 import org.junit.Test;
 
-import java.net.URL;
+import java.net.URI;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -37,7 +37,7 @@ public class CupsGetPrintersOperationTest extends AbstractIppOperationTest {
 	
 	@Test
 	public void getPrinterByURL() throws Exception {
-		URL printerURL = this.getPrinterURL();
+		URI printerURL = this.getPrinterURL();
 		CupsPrinter printer = this.client.getPrinter(printerURL);
 		assertNotNull(printer);
 		assertEquals(printerURL.toString(), printer.getPrinterURL().toString());
