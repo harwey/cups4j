@@ -1,6 +1,6 @@
 package org.cups4j.operations.ipp;
 
-/**
+/*
  * Copyright (C) 2009 Harald Weyhing
  * 
  * This program is free software; you can redistribute it and/or modify it under the terms of the
@@ -118,7 +118,7 @@ public class IppGetJobAttributesOperation extends IppOperation {
    * @throws IOException in case of I/O problems
    * @deprecated use {@link #getPrintJobAttributes(URI, String, int, CupsAuthentication)}
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public PrintJobAttributes getPrintJobAttributes(String hostname, String userName,
                                                   int port, int jobID, CupsAuthentication creds) throws IOException {
     return getPrintJobAttributes(URI.create("http://" + hostname + ":" + port), userName, jobID, creds);

@@ -232,7 +232,7 @@ public class CupsPrinter {
    * @deprecated use {@link #createJob(PrintJob)} or
    *             {@link #createJob(String, String)}
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public int createJob(String jobName) {
     return createJob(jobName, CupsClient.DEFAULT_USER);
   }
@@ -370,7 +370,7 @@ public class CupsPrinter {
    * @return printer URL
    * @deprecated since 0.8, use {@link #getPrinterURI()}
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public URL getPrinterURL() {
       try {
           return printerURL.toURL();

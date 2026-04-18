@@ -57,7 +57,7 @@ public abstract class IppOperation {
    * @throws IOException in case of I/O problems
    * @deprecated use {@link #request(CupsPrinter, URI, Map, CupsAuthentication)}
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public IppResult request(CupsPrinter printer, URL url, Map<String, String> map,
                            CupsAuthentication creds) throws IOException {
     return request(printer, URI.create(url.toString()), map, creds);
@@ -91,7 +91,7 @@ public abstract class IppOperation {
    * @throws IOException in case of I/O problems
    * @deprecated use {@link #request(CupsPrinter, URI, Map, InputStream, CupsAuthentication)}
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public IppResult request(CupsPrinter printer, URL url, Map<String, String> map, InputStream document,
 		  CupsAuthentication creds) throws IOException {
     return request(printer, URI.create(url.toString()), map, document, creds);
@@ -125,7 +125,7 @@ public abstract class IppOperation {
    * @throws UnsupportedEncodingException if encoding is not supported.
    * @deprecated use {@link #getIppHeader(URI, Map)}
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public ByteBuffer getIppHeader(URL url, Map<String, String> map) throws UnsupportedEncodingException {
     return getIppHeader(URI.create(url.toString()), map);
   }
@@ -136,7 +136,7 @@ public abstract class IppOperation {
    * @param url URI beginning with "ipp://..." or "ipps://..."
    * @param map attribute map
    * @return IPP header
-   * @throws UnsupportedEncodingException
+   * @throws UnsupportedEncodingException if encoding is not supported
    * @since 0.8
    */
   public ByteBuffer getIppHeader(URI url, Map<String, String> map) throws UnsupportedEncodingException {

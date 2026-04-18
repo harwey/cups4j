@@ -134,7 +134,7 @@ public class CupsClient {
    * @throws Exception in case of problems
    * @deprecated replaced by {@link #getPrinter(URI)}
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public CupsPrinter getPrinter(URL printerURL) throws Exception {
     return getPrinter(printerURL.toURI());
   }

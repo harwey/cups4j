@@ -77,7 +77,7 @@ public class IppCreateJobOperation extends IppOperation {
      * @throws UnsupportedEncodingException if encoding is not supported.
      * @deprecated replaced by {@link #getIppHeader(URI, Map)}
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     @Override
     public ByteBuffer getIppHeader(URL url)
             throws UnsupportedEncodingException {
