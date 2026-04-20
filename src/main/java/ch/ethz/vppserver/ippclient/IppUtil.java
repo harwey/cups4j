@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.charset.StandardCharsets;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
@@ -30,7 +31,7 @@ import java.util.ArrayList;
  */
 public class IppUtil {
 
-  private final static String DEFAULT_CHARSET = "UTF-8";
+  private final static Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;;
 
   /**
    * 
@@ -74,30 +75,37 @@ public class IppUtil {
    * @return String representation
    */
   static String toString(byte[] dst) {
-    int l = dst.length;
-    StringBuilder sb = new StringBuilder(l);
-    for (int i = 0; i < l; i++) {
-      int b = dst[i];
-      int ival = ((int) b) & 0xff;
-      char c = (char) ival;
-      sb.append(c);
-    }
-    return sb.toString();
+    return toString(dst, StandardCharsets.UTF_8);
   }
 
   /**
-   * 
+   *
+   * @param dst
+   *          array of byte
+   * @param charset
+   *          charset used to decode the bytes
+   * @return String representation
+   */
+  static String toString(byte[] dst, Charset charset) {
+    if (charset == null) {
+      charset = DEFAULT_CHARSET;
+    }
+    return new String(dst, charset);
+  }
+
+  /**
+   *
    * @param str
    *          String to encode
-   * @param encoding
+   * @param charset
    * @return byte array
    * @throws UnsupportedEncodingException
    */
-  static public byte[] toBytes(String str, String encoding) throws UnsupportedEncodingException {
-    if (encoding == null) {
-      encoding = DEFAULT_CHARSET;
+  static public byte[] toBytes(String str, Charset charset) throws UnsupportedEncodingException {
+    if (charset == null) {
+      charset = DEFAULT_CHARSET;
     }
-    return str.getBytes(encoding);
+    return str.getBytes(charset);
   }
 
   /**
@@ -184,15 +192,14 @@ public class IppUtil {
   /**
    * 
    * @param str
-   * @param charsetName
+   * @param charset
    * @return
    * @throws CharacterCodingException
    */
-  static public String getTranslatedString(String str, String charsetName) throws CharacterCodingException {
-    if (charsetName == null) {
-      charsetName = DEFAULT_CHARSET;
+  static public String getTranslatedString(String str, Charset charset) throws CharacterCodingException {
+    if (charset == null) {
+      charset = DEFAULT_CHARSET;
     }
-    Charset charset = Charset.forName(charsetName);
     CharsetDecoder decoder = charset.newDecoder();
     CharsetEncoder encoder = charset.newEncoder();
     decoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
