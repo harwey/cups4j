@@ -3,6 +3,10 @@ package ch.ethz.vppserver.ippclient;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.StandardCharsets;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +48,7 @@ public class IppResponse {
   private AttributeGroup _attributeGroupResult = null;
   private Attribute _attributeResult = null;
   private List<AttributeGroup> _result = null;
+  private Charset _responseCharset = StandardCharsets.UTF_8;
 
   private static IIppAttributeProvider ippAttributeProvider = null;
 
@@ -77,6 +82,7 @@ public class IppResponse {
     _attributeGroupResult = null;
     _attributeResult = null;
     _result.clear();
+    _responseCharset = StandardCharsets.UTF_8;
 
     IppResult result = new IppResult();
     boolean httpResponse = false;
@@ -135,6 +141,7 @@ public class IppResponse {
     _attributeGroupResult = null;
     _attributeResult = null;
     _result.clear();
+    _responseCharset = StandardCharsets.UTF_8;
 
     IppResult result = new IppResult();
     boolean ippHeaderResponse = false;
@@ -229,7 +236,7 @@ public class IppResponse {
     IppResult result = new IppResult();
     byte[] buffer = new byte[_buf.capacity() - _buf.position()];
     _buf.get(buffer);
-    String errorText = new String(buffer);
+    String errorText = new String(buffer, StandardCharsets.UTF_8);
     if (errorText.contains("Unauthorized")) {
       result.setIppStatusResponse("client-error-not-authorized (0x403)");
     } else {
@@ -388,7 +395,8 @@ public class IppResponse {
     if ((length != 0) && (_buf.remaining() >= length)) {
       byte[] dst = new byte[length];
       _buf.get(dst);
-      String value = IppUtil.toString(dst);
+      String value = IppUtil.toString(dst, _responseCharset);
+      updateResponseCharset(value);
       String hex = IppUtil.toHexWithMarker(tag);
       AttributeValue attrValue = new AttributeValue();
       attrValue.setTag(hex);
@@ -421,7 +429,7 @@ public class IppResponse {
     if ((length != 0) && (_buf.remaining() >= length)) {
       byte[] dst = new byte[length];
       _buf.get(dst);
-      String value = IppUtil.toString(dst);
+      String value = IppUtil.toString(dst, _responseCharset);
       String hex = IppUtil.toHexWithMarker(tag);
       AttributeValue attrValue = new AttributeValue();
       attrValue.setTag(hex);
@@ -435,7 +443,7 @@ public class IppResponse {
       if ((length != 0) && (_buf.remaining() >= length)) {
         dst = new byte[length];
         _buf.get(dst);
-        value = IppUtil.toString(dst);
+        value = IppUtil.toString(dst, _responseCharset);
         attrValue = new AttributeValue();
         attrValue.setValue(value);
         _attributeResult.getAttributeValue().add(attrValue);
@@ -464,7 +472,7 @@ public class IppResponse {
     if ((length != 0) && (_buf.remaining() >= length)) {
       byte[] dst = new byte[length];
       _buf.get(dst);
-      String value = IppUtil.toString(dst);
+      String value = IppUtil.toString(dst, _responseCharset);
       String hex = IppUtil.toHexWithMarker(tag);
       AttributeValue attrValue = new AttributeValue();
       attrValue.setTag(hex);
@@ -478,7 +486,7 @@ public class IppResponse {
       if ((length != 0) && (_buf.remaining() >= length)) {
         dst = new byte[length];
         _buf.get(dst);
-        value = IppUtil.toString(dst);
+        value = IppUtil.toString(dst, _responseCharset);
         attrValue = new AttributeValue();
         attrValue.setValue(value);
         _attributeResult.getAttributeValue().add(attrValue);
@@ -686,12 +694,32 @@ public class IppResponse {
     }
     byte[] dst = new byte[length];
     _buf.get(dst);
-    String name = IppUtil.toString(dst);
+    String name = IppUtil.toString(dst, StandardCharsets.US_ASCII);
     if (_attributeResult != null) {
       _attributeGroupResult.getAttribute().add(_attributeResult);
     }
     _attributeResult = new Attribute();
     _attributeResult.setName(name.toString());
+  }
+
+  private void updateResponseCharset(String value) {
+    if ((_attributeResult == null) || (value == null)) {
+      return;
+    }
+    if (!"attributes-charset".equals(_attributeResult.getName())) {
+      return;
+    }
+
+    String charsetName = value.trim();
+    if (charsetName.isEmpty()) {
+      return;
+    }
+
+    try {
+      _responseCharset = Charset.forName(charsetName);
+    } catch (IllegalCharsetNameException | UnsupportedCharsetException ex) {
+      LOG.warn("Unsupported IPP attributes-charset '{}', using {}", charsetName, _responseCharset.name());
+    }
   }
 
   /**
