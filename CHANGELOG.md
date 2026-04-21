@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- fix IPP response text decoding using attributes-charset
+  ([PR #93](https://github.com/harwey/cups4j/pull/93))
 - the following job operations can now handle non-standard IPP ports
   - CupsMoveJobOperation
   - IppHoldJobOperation
