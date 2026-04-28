@@ -1,6 +1,6 @@
 package ch.ethz.vppserver.ippclient;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.cups4j.ipp.attributes.AttributeGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
