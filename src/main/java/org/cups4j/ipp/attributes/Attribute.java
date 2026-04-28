@@ -58,7 +58,7 @@ public class Attribute {
    *
    * @return all attribute values as CSV
    */
-  public String lgetValue() {
+  public String getValue() {
     StringBuilder buf = new StringBuilder();
     for (AttributeValue av : getAttributeValue()) {
       buf.append(',');
