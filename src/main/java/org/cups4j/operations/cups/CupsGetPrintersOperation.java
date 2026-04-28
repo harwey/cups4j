@@ -25,6 +25,8 @@ import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
 import org.cups4j.ipp.attributes.AttributeValue;
 import org.cups4j.operations.IppOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -33,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 
 public class CupsGetPrintersOperation extends IppOperation {
+
+  private static final Logger log = LoggerFactory.getLogger(CupsGetPrintersOperation.class);
 
   public CupsGetPrintersOperation() {
     operationID = 0x4002;
@@ -120,6 +124,8 @@ public class CupsGetPrintersOperation extends IppOperation {
             sidesDefault = getAttributeValue(attr);
           } else if (attr.getName().equals("printer-make-and-model")){
             printerMakeAndModel = getAttributeValue(attr);
+          } else {
+            log.debug("Attribute {} is ignored.", attr);
           }
         }
 

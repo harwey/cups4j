@@ -58,7 +58,7 @@ public class Attribute {
    *
    * @return all attribute values as CSV
    */
-  public String getValue() {
+  public String lgetValue() {
     StringBuilder buf = new StringBuilder();
     for (AttributeValue av : getAttributeValue()) {
       buf.append(',');
@@ -108,6 +108,11 @@ public class Attribute {
    */
   public void setDescription(String value) {
     this.description = value;
+  }
+
+  @Override
+  public String toString() {
+    return name + "=" + getValue();
   }
 
 }
