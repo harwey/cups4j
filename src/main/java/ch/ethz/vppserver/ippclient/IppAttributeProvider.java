@@ -20,8 +20,8 @@ import org.cups4j.ipp.attributes.AttributeList;
 import org.cups4j.ipp.attributes.Tag;
 import org.cups4j.ipp.attributes.TagList;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Unmarshaller;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
