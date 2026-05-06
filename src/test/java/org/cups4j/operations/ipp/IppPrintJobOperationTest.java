@@ -16,7 +16,7 @@
  */
 package org.cups4j.operations.ipp;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;

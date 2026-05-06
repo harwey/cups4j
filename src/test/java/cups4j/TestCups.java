@@ -2,14 +2,14 @@ package cups4j;
 
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URI;
 import java.util.List;
 
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 public class TestCups {
   @Test
@@ -51,7 +51,7 @@ public class TestCups {
    */
   public static CupsClient getCupsClient() {
     URI cupsURI = URI.create(System.getProperty("cups.url", "http://localhost:631"));
-    assumeTrue(cupsURI + " not available", isOnline(cupsURI.getHost(), cupsURI.getPort()));
+    assumeTrue(isOnline(cupsURI.getHost(), cupsURI.getPort()), cupsURI + " not available");
     return new CupsClient(cupsURI);
   }
 

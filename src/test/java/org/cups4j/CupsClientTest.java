@@ -1,9 +1,8 @@
 package org.cups4j;
 
 import cups4j.TestCups;
-import org.hamcrest.MatcherAssert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +10,8 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.startsWith;
-import static org.junit.Assert.assertFalse;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Unit tests for {@link CupsClient} class.
@@ -23,7 +23,7 @@ public class CupsClientTest {
   private static CupsClient client;
   private static final Logger LOG = LoggerFactory.getLogger(CupsClientTest.class);
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpClient() throws Exception {
     client = TestCups.getCupsClient();
   }
@@ -34,7 +34,7 @@ public class CupsClientTest {
     assertFalse(printers.isEmpty());
     for (CupsPrinter printer : printers) {
       LOG.info("printer: " + printer.getName() + "[isClass=" + printer.isPrinterClass() + "]");
-      MatcherAssert.assertThat(printer.getPrinterURI().getPath(), startsWith("/printer"));
+      assertThat(printer.getPrinterURI().getPath(), startsWith("/printer"));
     }
   }
 
@@ -43,7 +43,7 @@ public class CupsClientTest {
     CupsPrinter defaultPrinter = client.getDefaultPrinter();
     if (defaultPrinter != null) {
       List<CupsPrinter> printers = client.getPrinters();
-      MatcherAssert.assertThat(printers, hasItem(defaultPrinter));
+      assertThat(printers, hasItem(defaultPrinter));
     }
   }
 

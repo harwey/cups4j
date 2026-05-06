@@ -1,13 +1,11 @@
 package org.cups4j.ipp.attributes;
 
 import ch.ethz.vppserver.ippclient.IppAttributeProvider;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class IppAttributeProviderTest {
 	
