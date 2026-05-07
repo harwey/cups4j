@@ -23,15 +23,15 @@ import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
@@ -44,8 +44,9 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Klasse AbstractIppOperationTest.
@@ -53,6 +54,7 @@ import static org.junit.Assert.fail;
  * @author oboehm
  * @since x.x (23.03.2018)
  */
+@Testcontainers
 public abstract class AbstractIppOperationTest {
     
     private static final String TEST_PRINTER_NAME = "test-printer";
@@ -60,16 +62,16 @@ public abstract class AbstractIppOperationTest {
     protected final String userName = "admin";
     protected final CupsAuthentication creds = new CupsAuthentication(this.userName, "admin");
 
-    @BeforeClass
+    @BeforeAll
     public static void requireDocker() {
-        Assume.assumeTrue(
-                "Docker is not running",
-                DockerClientFactory.instance().isDockerAvailable()
+        assumeTrue(
+                DockerClientFactory.instance().isDockerAvailable(),
+                "Docker is not running"
         );
     }
 
-    @Rule
-    public GenericContainer cups = new GenericContainer(DockerImageName.parse("ydkn/cups")) //
+    @Container
+    public GenericContainer<?> cups = new GenericContainer<>(DockerImageName.parse("ydkn/cups")) //
             .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("container"))) //
             .withExposedPorts(CupsClient.DEFAULT_PORT) //
             .waitingFor(Wait.forHttp("/"));
@@ -133,7 +135,7 @@ public abstract class AbstractIppOperationTest {
         fail("Attribute '" + name + "' not found.");
     }
     
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         createTestPrinters();
     

@@ -3,8 +3,8 @@ package org.cups4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.cups4j.operations.AbstractIppOperationTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for {@link CupsPrinter} class.
@@ -25,7 +25,7 @@ public final class CupsPrinterTest extends AbstractIppOperationTest {
     private static final Logger LOG = LoggerFactory.getLogger(CupsPrinterTest.class);
     private CupsPrinter printer;
 
-    @Before
+    @BeforeEach
     public void setUpPrinter() {
         printer = this.getPrinter();
         LOG.info("Use printer '{}' for testing", printer.getName());
@@ -67,10 +67,10 @@ public final class CupsPrinterTest extends AbstractIppOperationTest {
         printer.print(job1, job2);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testPrintListWithDifferentUsers() {
         File file = new File("src/test/resources/test.txt");
-        printer.print(createPrintJob(file, "oli"), createPrintJob(file, "stan"));
+        assertThrows(IllegalStateException.class, () -> printer.print(createPrintJob(file, "oli"), createPrintJob(file, "stan")));
     }
 
     private PrintJob createPrintJob(File file) {

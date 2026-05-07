@@ -7,14 +7,14 @@ import org.cups4j.PrintJob.Builder;
 import org.cups4j.PrintJobAttributes;
 import org.cups4j.PrintRequestResult;
 import org.cups4j.operations.AbstractIppOperationTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Tests for {@link IppGetJobAttributesOperation}
@@ -25,7 +25,7 @@ public class IppGetJobAttributesOperationTest extends AbstractIppOperationTest {
 	
 	private CupsPrinter printer;
 	
-	@Before
+	@BeforeEach
 	public void setUpPrinter() {
 		this.printer = this.getPrinter();
 	}

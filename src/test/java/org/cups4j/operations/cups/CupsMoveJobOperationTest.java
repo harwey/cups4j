@@ -6,14 +6,14 @@ import org.cups4j.PrintJob.Builder;
 import org.cups4j.PrintRequestResult;
 import org.cups4j.WhichJobsEnum;
 import org.cups4j.operations.AbstractIppOperationTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link CupsMoveJobOperation}
