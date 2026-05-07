@@ -1,17 +1,16 @@
 /*
  * Copyright (c) 2018-2026 by Oliver Boehm
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * This program is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * See the GNU Lesser General Public License for more details. You should have received a copy of
+ * the GNU Lesser General Public License along with this program; if not, see
+ * <http://www.gnu.org/licenses/>.
  *
  * (c)reated 23.03.2018 by oboehm (ob@oasd.de)
  */
@@ -21,8 +20,8 @@ import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
 import ch.ethz.vppserver.ippclient.IppTag;
 import org.apache.commons.io.IOUtils;
+import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
@@ -176,7 +175,7 @@ public class IppCreateJobOperation extends IppOperation {
      * @param map     printer attributes
      * @param creds   credential
      * @return IPP result
-     * @sinde 0.8
+     * @since 0.8
      */
     public IppResult request(CupsPrinter printer, URI url, Map<String, String> map, CupsAuthentication creds) {
         try {
@@ -189,7 +188,7 @@ public class IppCreateJobOperation extends IppOperation {
     private static IppResult sendRequest(CupsPrinter printer, URI uri,
             ByteBuffer ippBuf,
             CupsAuthentication creds) throws IOException {
-        CloseableHttpClient client = IppHttp.createHttpClient();
+        HttpClient client = IppHttp.createHttpClient();
 
         HttpPost httpPost = new HttpPost(uri);
         IppHttp.setHttpHeaders(httpPost, printer, creds);

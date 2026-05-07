@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
@@ -38,7 +39,7 @@ public final class IppHttp {
 
 	private IppHttp() {}
 
-	public static CloseableHttpClient createHttpClient() {
+	public static HttpClient createHttpClient() {
 		return client;
 	}
 

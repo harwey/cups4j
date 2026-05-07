@@ -3,8 +3,8 @@ package org.cups4j.operations;
 import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
 import ch.ethz.vppserver.ippclient.IppTag;
+import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
@@ -219,7 +219,7 @@ public abstract class IppOperation {
       return null;
     }
 
-    CloseableHttpClient client = IppHttp.createHttpClient();
+    HttpClient client = IppHttp.createHttpClient();
 
     HttpPost httpPost = new HttpPost(url.toString());
     IppHttp.setHttpHeaders(httpPost, printer, creds);
