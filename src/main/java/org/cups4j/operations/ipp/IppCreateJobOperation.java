@@ -22,10 +22,7 @@ import ch.ethz.vppserver.ippclient.IppTag;
 import org.apache.commons.io.IOUtils;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.core5.http.ClassicHttpResponse;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.HttpException;
+import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.InputStreamEntity;
 import org.cups4j.CupsAuthentication;
@@ -125,13 +122,11 @@ public class IppCreateJobOperation extends IppOperation {
 
         if (map.get("requested-attributes") != null) {
             String[] sta = map.get("requested-attributes").split(" ");
-            if (sta != null) {
-                ippBuf = IppTag.getKeyword(ippBuf, "requested-attributes",
-                        sta[0]);
-                int l = sta.length;
-                for (int i = 1; i < l; i++) {
-                    ippBuf = IppTag.getKeyword(ippBuf, null, sta[i]);
-                }
+            ippBuf = IppTag.getKeyword(ippBuf, "requested-attributes",
+                    sta[0]);
+            int l = sta.length;
+            for (int i = 1; i < l; i++) {
+                ippBuf = IppTag.getKeyword(ippBuf, null, sta[i]);
             }
         }
 
@@ -190,7 +185,7 @@ public class IppCreateJobOperation extends IppOperation {
             CupsAuthentication creds) throws IOException {
         HttpClient client = IppHttp.createHttpClient();
 
-        HttpPost httpPost = new HttpPost(uri);
+        ClassicHttpRequest httpPost = new HttpPost(uri);
         IppHttp.setHttpHeaders(httpPost, printer, creds);
 
         byte[] bytes = new byte[ippBuf.limit()];
@@ -209,7 +204,7 @@ public class IppCreateJobOperation extends IppOperation {
                     @Override
                     public IppResult handleResponse(
                             ClassicHttpResponse response)
-                            throws HttpException, IOException {
+                            throws IOException {
                         if (log.isDebugEnabled()) {
                              log.debug("Response body");
                              log.debug(Base64.getEncoder().encodeToString(IOUtils.toString(response.getEntity().getContent()).getBytes()));
