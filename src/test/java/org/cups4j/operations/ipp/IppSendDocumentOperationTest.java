@@ -8,7 +8,6 @@ import org.cups4j.CupsPrinterIT;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
 import org.cups4j.operations.AbstractIppOperationTest;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -62,7 +62,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
         Map<String, String> attributes = setUpAttributes();
         ByteBuffer buffer = operation.getIppHeader(printerURL, attributes);
         byte[] header = toByteArray(buffer);
-        MatcherAssert.assertThat(new String(header), containsString("job-id"));
+        assertThat(new String(header), containsString("job-id"));
         checkIppRequest(header);
         checkIppRequestAttributes(header);
     }
@@ -92,7 +92,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
         Set<String> groupTagNames = new HashSet<>();
         for (AttributeGroup group : ippResult.getAttributeGroupList()) {
             String tagName = group.getTagName();
-            MatcherAssert.assertThat("duplicate tag name", groupTagNames, not(hasItem(tagName)));
+            assertThat("duplicate tag name", groupTagNames, not(hasItem(tagName)));
             groupTagNames.add(tagName);
         }
     }
@@ -132,7 +132,7 @@ public class IppSendDocumentOperationTest extends AbstractIppOperationTest {
         ByteBuffer buffer = operation.getIppHeader(printerURL, attributes);
         byte[] header = toByteArray(buffer);
         String user = System.getProperty("user.name", "anonymous");
-        MatcherAssert.assertThat(new String(header), containsString(user));
+        assertThat(new String(header), containsString(user));
     }
 
     private static byte[] toByteArray(ByteBuffer buffer) {
