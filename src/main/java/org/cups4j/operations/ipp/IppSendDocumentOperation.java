@@ -21,7 +21,6 @@ import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
 import ch.ethz.vppserver.ippclient.IppTag;
 import org.apache.commons.io.IOUtils;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -37,6 +36,7 @@ import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
 import org.cups4j.PrintJob;
 import org.cups4j.ipp.attributes.AttributeGroup;
+import org.cups4j.http.ApacheIppRequest;
 import org.cups4j.operations.IppHttp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -299,8 +299,7 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
 
     private IppResult sendRequest(CupsPrinter printer, URI uri, ByteBuffer ippBuf,
     		InputStream documentStream, CupsAuthentication creds) throws IOException {
-        HttpPost httpPost = new HttpPost(uri);
-        // httpPost.conn
+        ApacheIppRequest ippRequest = ApacheIppRequest.post(uri);
 
         ConnectionConfig.custom().setConnectTimeout(Timeout.ofSeconds(10))
                 .setSocketTimeout(Timeout.ofSeconds(10)).build();
@@ -313,8 +312,8 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
                 new SequenceInputStream(headerStream, documentStream);
         InputStreamEntity requestEntity = new InputStreamEntity(inputStream, -1,
                 ContentType.create(IPP_MIME_TYPE));
-        httpPost.setEntity(requestEntity);
-        IppHttp.setHttpHeaders(httpPost, printer, creds);
+        ippRequest.setEntity(requestEntity);
+        IppHttp.setHttpHeaders(ippRequest, printer, creds);
 
         CloseableHttpClient client = HttpClients.custom().build();
         try {
@@ -329,7 +328,7 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
                         }
 
                     };
-            return client.execute(httpPost, handler);
+            return client.execute(ippRequest.getHttpRequest(), handler);
         } finally {
             client.close();
         }

@@ -4,7 +4,6 @@ import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
 import ch.ethz.vppserver.ippclient.IppTag;
 import org.apache.hc.client5.http.classic.HttpClient;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
@@ -16,6 +15,7 @@ import org.apache.hc.core5.http.message.StatusLine;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
+import org.cups4j.http.ApacheIppRequest;
 import org.cups4j.ipp.attributes.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -165,12 +165,10 @@ public abstract class IppOperation {
 
     if (map.get("requested-attributes") != null) {
       String[] sta = map.get("requested-attributes").split(" ");
-      if (sta != null) {
-        ippBuf = IppTag.getKeyword(ippBuf, "requested-attributes", sta[0]);
-        int l = sta.length;
-        for (int i = 1; i < l; i++) {
-          ippBuf = IppTag.getKeyword(ippBuf, null, sta[i]);
-        }
+      ippBuf = IppTag.getKeyword(ippBuf, "requested-attributes", sta[0]);
+      int l = sta.length;
+      for (int i = 1; i < l; i++) {
+        ippBuf = IppTag.getKeyword(ippBuf, null, sta[i]);
       }
     }
 
@@ -221,8 +219,8 @@ public abstract class IppOperation {
 
     HttpClient client = IppHttp.createHttpClient();
 
-    HttpPost httpPost = new HttpPost(url.toString());
-    IppHttp.setHttpHeaders(httpPost, printer, creds);
+    ApacheIppRequest ippRequest = ApacheIppRequest.post(url.toString());
+    IppHttp.setHttpHeaders(ippRequest, printer, creds);
 
     byte[] bytes = new byte[ippBuf.limit()];
     ippBuf.get(bytes);
@@ -239,7 +237,7 @@ public abstract class IppOperation {
     InputStreamEntity requestEntity = new InputStreamEntity(inputStream, -1,
         ContentType.create(IPP_MIME_TYPE));
 
-    httpPost.setEntity(requestEntity);
+    ippRequest.setEntity(requestEntity);
 
     final IppHttpResult ippHttpResult = new IppHttpResult();
     ippHttpResult.setStatusCode(-1);
@@ -259,7 +257,7 @@ public abstract class IppOperation {
           }
         };
 
-    byte[] result = client.execute(httpPost, handler);
+    byte[] result = client.execute(ippRequest.getHttpRequest(), handler);
 
     IppResponse ippResponse = new IppResponse();
 

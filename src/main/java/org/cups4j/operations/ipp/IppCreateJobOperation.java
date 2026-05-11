@@ -21,13 +21,13 @@ import ch.ethz.vppserver.ippclient.IppResult;
 import ch.ethz.vppserver.ippclient.IppTag;
 import org.apache.commons.io.IOUtils;
 import org.apache.hc.client5.http.classic.HttpClient;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.InputStreamEntity;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
+import org.cups4j.http.ApacheIppRequest;
 import org.cups4j.operations.IppHttp;
 import org.cups4j.operations.IppOperation;
 import org.slf4j.Logger;
@@ -185,8 +185,8 @@ public class IppCreateJobOperation extends IppOperation {
             CupsAuthentication creds) throws IOException {
         HttpClient client = IppHttp.createHttpClient();
 
-        ClassicHttpRequest httpPost = new HttpPost(uri);
-        IppHttp.setHttpHeaders(httpPost, printer, creds);
+        ApacheIppRequest ippRequest = ApacheIppRequest.post(uri);
+        IppHttp.setHttpHeaders(ippRequest, printer, creds);
 
         byte[] bytes = new byte[ippBuf.limit()];
         ippBuf.get(bytes);
@@ -198,7 +198,7 @@ public class IppCreateJobOperation extends IppOperation {
                 new InputStreamEntity(headerStream, -1,
                         ContentType.create(IPP_MIME_TYPE));
 
-        httpPost.setEntity(requestEntity);
+        ippRequest.setEntity(requestEntity);
         HttpClientResponseHandler<IppResult> handler =
                 new HttpClientResponseHandler<IppResult>() {
                     @Override
@@ -213,7 +213,7 @@ public class IppCreateJobOperation extends IppOperation {
                     }
                 };
 
-        return client.execute(httpPost, handler);
+        return client.execute(ippRequest.getHttpRequest(), handler);
     }
 
     private static IppResult toIppResult(ClassicHttpResponse httpResponse)
