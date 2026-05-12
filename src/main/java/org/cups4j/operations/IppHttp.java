@@ -4,7 +4,6 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -14,6 +13,8 @@ import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.util.Timeout;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsPrinter;
+import org.cups4j.http.ApacheIppClient;
+import org.cups4j.http.IppClient;
 import org.cups4j.http.IppRequest;
 
 public final class IppHttp {
@@ -23,7 +24,7 @@ public final class IppHttp {
 	private static final int CUPSTIMEOUT =
 			Integer.parseInt(System.getProperty("cups4j.timeout", "10000"));
 
-	private static final CloseableHttpClient client = HttpClients.custom()
+	private static final IppClient client = new ApacheIppClient(HttpClients.custom()
 			.disableCookieManagement()
 			.disableRedirectHandling()
 			.evictExpiredConnections()
@@ -35,11 +36,11 @@ public final class IppHttp {
 							.setConnectTimeout(Timeout.ofMilliseconds(CUPSTIMEOUT))
 							.build())
 					.build())
-			.build();
+			.build());
 
 	private IppHttp() {}
 
-	public static HttpClient createHttpClient() {
+	public static IppClient createHttpClient() {
 		return client;
 	}
 

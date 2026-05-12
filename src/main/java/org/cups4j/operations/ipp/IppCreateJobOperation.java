@@ -20,14 +20,14 @@ import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
 import ch.ethz.vppserver.ippclient.IppTag;
 import org.apache.commons.io.IOUtils;
-import org.apache.hc.client5.http.classic.HttpClient;
-import org.apache.hc.core5.http.*;
-import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.io.entity.InputStreamEntity;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
 import org.cups4j.http.ApacheIppRequest;
+import org.cups4j.http.IppClient;
+import org.cups4j.http.IppResponseHandler;
 import org.cups4j.operations.IppHttp;
 import org.cups4j.operations.IppOperation;
 import org.slf4j.Logger;
@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
@@ -183,7 +184,7 @@ public class IppCreateJobOperation extends IppOperation {
     private static IppResult sendRequest(CupsPrinter printer, URI uri,
             ByteBuffer ippBuf,
             CupsAuthentication creds) throws IOException {
-        HttpClient client = IppHttp.createHttpClient();
+        IppClient client = IppHttp.createHttpClient();
 
         ApacheIppRequest ippRequest = ApacheIppRequest.post(uri);
         IppHttp.setHttpHeaders(ippRequest, printer, creds);
@@ -199,42 +200,26 @@ public class IppCreateJobOperation extends IppOperation {
                         ContentType.create(IPP_MIME_TYPE));
 
         ippRequest.setEntity(requestEntity);
-        HttpClientResponseHandler<IppResult> handler =
-                new HttpClientResponseHandler<IppResult>() {
-                    @Override
-                    public IppResult handleResponse(
-                            ClassicHttpResponse response)
-                            throws IOException {
-                        if (log.isDebugEnabled()) {
-                             log.debug("Response body");
-                             log.debug(Base64.getEncoder().encodeToString(IOUtils.toString(response.getEntity().getContent()).getBytes()));
-                        }
-                        return toIppResult(response);
+        IppResponseHandler<IppResult> handler =
+                (statusCode, reasonPhrase, body) -> {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Response body");
+                        log.debug(Base64.getEncoder().encodeToString(IOUtils.toByteArray(body)));
                     }
+                    return toIppResult(statusCode, reasonPhrase, body);
                 };
 
-        return client.execute(ippRequest.getHttpRequest(), handler);
+        return client.execute(ippRequest, handler);
     }
 
-    private static IppResult toIppResult(ClassicHttpResponse httpResponse)
+    private static IppResult toIppResult(int statusCode, String reasonPhrase, InputStream body)
             throws IOException {
-        try {
-            IppResponse ippResponse = new IppResponse();
-            IppResult ippResult =
-                    ippResponse.getResponse(read(httpResponse.getEntity()));
-            ippResult.setHttpStatusResponse(httpResponse.getReasonPhrase());
-            ippResult.setHttpStatusCode(httpResponse.getCode());
-            return ippResult;
-        } finally {
-            try {
-                httpResponse.close();
-            } catch (IOException e) {}
-        }
-    }
-
-    private static ByteBuffer read(HttpEntity entity) throws IOException {
-        byte[] bytes = IOUtils.toByteArray(entity.getContent());
-        return ByteBuffer.wrap(bytes);
+        IppResponse ippResponse = new IppResponse();
+        IppResult ippResult =
+                ippResponse.getResponse(ByteBuffer.wrap(IOUtils.toByteArray(body)));
+        ippResult.setHttpStatusResponse(reasonPhrase);
+        ippResult.setHttpStatusCode(statusCode);
+        return ippResult;
     }
 
 }

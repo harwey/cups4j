@@ -18,6 +18,7 @@ import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.core5.http.HttpEntity;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsPrinter;
+import org.cups4j.http.IppClient;
 import org.cups4j.http.IppRequest;
 import org.junit.jupiter.api.Test;
 
@@ -34,14 +35,14 @@ public final class IppHttpTest {
 
     @Test
     public void testCreateHttpClient() {
-        HttpClient client = IppHttp.createHttpClient();
+        IppClient client = IppHttp.createHttpClient();
         assertNotNull(client);
     }
 
     @Test
     public void testCreateHttpClientIsSingleton() {
-        HttpClient first = IppHttp.createHttpClient();
-        HttpClient second = IppHttp.createHttpClient();
+        IppClient first = IppHttp.createHttpClient();
+        IppClient second = IppHttp.createHttpClient();
         assertSame(first, second);
     }
 

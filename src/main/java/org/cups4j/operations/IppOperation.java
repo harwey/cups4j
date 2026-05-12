@@ -3,19 +3,15 @@ package org.cups4j.operations;
 import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
 import ch.ethz.vppserver.ippclient.IppTag;
-import org.apache.hc.client5.http.classic.HttpClient;
-import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.commons.io.IOUtils;
 import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.HttpException;
-import org.apache.hc.core5.http.io.HttpClientResponseHandler;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.InputStreamEntity;
-import org.apache.hc.core5.http.message.StatusLine;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
 import org.cups4j.http.ApacheIppRequest;
+import org.cups4j.http.IppClient;
+import org.cups4j.http.IppResponseHandler;
 import org.cups4j.ipp.attributes.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -217,7 +213,7 @@ public abstract class IppOperation {
       return null;
     }
 
-    HttpClient client = IppHttp.createHttpClient();
+    IppClient client = IppHttp.createHttpClient();
 
     ApacheIppRequest ippRequest = ApacheIppRequest.post(url.toString());
     IppHttp.setHttpHeaders(ippRequest, printer, creds);
@@ -242,22 +238,13 @@ public abstract class IppOperation {
     final IppHttpResult ippHttpResult = new IppHttpResult();
     ippHttpResult.setStatusCode(-1);
 
-    HttpClientResponseHandler<byte[]> handler =
-        new HttpClientResponseHandler<byte[]>() {
-          @Override
-          public byte[] handleResponse(ClassicHttpResponse response)
-              throws HttpException, IOException {
-            HttpEntity entity = response.getEntity();
-            StatusLine line = new StatusLine(response);
+    IppResponseHandler<byte[]> handler = (statusCode, reasonPhrase, body) -> {
+      ippHttpResult.setStatusLine("HTTP/1.1 " + statusCode + " " + reasonPhrase);
+      ippHttpResult.setStatusCode(statusCode);
+      return (body != null) ? IOUtils.toByteArray(body) : null;
+    };
 
-            ippHttpResult.setStatusLine(line.toString());
-            ippHttpResult.setStatusCode(response.getCode());
-
-            return (entity != null) ? EntityUtils.toByteArray(entity) : null;
-          }
-        };
-
-    byte[] result = client.execute(ippRequest.getHttpRequest(), handler);
+    byte[] result = client.execute(ippRequest, handler);
 
     IppResponse ippResponse = new IppResponse();
 
