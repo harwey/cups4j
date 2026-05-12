@@ -4,8 +4,6 @@ import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
 import ch.ethz.vppserver.ippclient.IppTag;
 import org.apache.commons.io.IOUtils;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.io.entity.InputStreamEntity;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
@@ -229,11 +227,7 @@ public abstract class IppOperation {
       inputStream = new SequenceInputStream(headerStream, documentStream);
     }
 
-    // set length to -1 to advice the entity to read until EOF
-    InputStreamEntity requestEntity = new InputStreamEntity(inputStream, -1,
-        ContentType.create(IPP_MIME_TYPE));
-
-    ippRequest.setEntity(requestEntity);
+    ippRequest.setEntity(inputStream, IPP_MIME_TYPE);
 
     final IppHttpResult ippHttpResult = new IppHttpResult();
     ippHttpResult.setStatusCode(-1);

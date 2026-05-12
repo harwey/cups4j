@@ -16,8 +16,10 @@ package org.cups4j.http;
 
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.core5.http.ClassicHttpRequest;
-import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.io.entity.InputStreamEntity;
 
+import java.io.InputStream;
 import java.net.URI;
 
 /**
@@ -53,8 +55,8 @@ public class ApacheIppRequest implements IppRequest {
     }
 
     @Override
-    public void setEntity(HttpEntity entity) {
-        delegate.setEntity(entity);
+    public void setEntity(InputStream content, String contentType) {
+        delegate.setEntity(new InputStreamEntity(content, -1, ContentType.create(contentType)));
     }
 
     public ClassicHttpRequest getHttpRequest() {

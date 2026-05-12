@@ -14,7 +14,7 @@
  */
 package org.cups4j.http;
 
-import org.apache.hc.core5.http.HttpEntity;
+import java.io.InputStream;
 
 /**
  * Abstraction over an HTTP request for IPP operations.
@@ -22,7 +22,7 @@ import org.apache.hc.core5.http.HttpEntity;
  * Apaches's HttpClient to Javas built-in HttpClient.
  *
  * @author oboehm
- * @since 0.8
+ * @since 0.8.2
  */
 public interface IppRequest {
 
@@ -30,6 +30,6 @@ public interface IppRequest {
 
     void setHeader(String name, String value);
 
-    void setEntity(HttpEntity entity);
+    void setEntity(InputStream content, String contentType);
 
 }

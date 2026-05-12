@@ -21,17 +21,9 @@ import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
 import ch.ethz.vppserver.ippclient.IppTag;
 import org.apache.commons.io.IOUtils;
-import org.apache.hc.client5.http.config.ConnectionConfig;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.core5.http.ClassicHttpResponse;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.HttpException;
-import org.apache.hc.core5.http.io.HttpClientResponseHandler;
-import org.apache.hc.core5.http.io.entity.InputStreamEntity;
-import org.apache.hc.core5.http.message.StatusLine;
-import org.apache.hc.core5.util.Timeout;
 import org.cups4j.CupsAuthentication;
+import org.cups4j.http.IppClient;
+import org.cups4j.http.IppResponseHandler;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
 import org.cups4j.PrintJob;
@@ -301,60 +293,39 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
     		InputStream documentStream, CupsAuthentication creds) throws IOException {
         ApacheIppRequest ippRequest = ApacheIppRequest.post(uri);
 
-        ConnectionConfig.custom().setConnectTimeout(Timeout.ofSeconds(10))
-                .setSocketTimeout(Timeout.ofSeconds(10)).build();
-
         byte[] bytes = new byte[ippBuf.limit()];
         ippBuf.get(bytes);
         ByteArrayInputStream headerStream = new ByteArrayInputStream(bytes);
 
         InputStream inputStream =
                 new SequenceInputStream(headerStream, documentStream);
-        InputStreamEntity requestEntity = new InputStreamEntity(inputStream, -1,
-                ContentType.create(IPP_MIME_TYPE));
-        ippRequest.setEntity(requestEntity);
+        ippRequest.setEntity(inputStream, IPP_MIME_TYPE);
         IppHttp.setHttpHeaders(ippRequest, printer, creds);
 
-        CloseableHttpClient client = HttpClients.custom().build();
-        try {
-            HttpClientResponseHandler<IppResult> handler =
-                    new HttpClientResponseHandler<IppResult>() {
-                        @Override
-                        public IppResult handleResponse(
-                                ClassicHttpResponse response)
-                                throws HttpException, IOException {
-                            LOG.debug("Received from {}: {}", uri, response);
-                            return getIppResult(response);
-                        }
-
-                    };
-            return client.execute(ippRequest.getHttpRequest(), handler);
-        } finally {
-            client.close();
-        }
+        IppClient client = IppHttp.createHttpClient();
+        IppResponseHandler<IppResult> handler =
+                (statusCode, reasonPhrase, body) -> {
+                    LOG.debug("Received from {}: {}", uri, statusCode);
+                    return getIppResult(statusCode, reasonPhrase, body);
+                };
+        return client.execute(ippRequest, handler);
     }
 
-    private static IppResult getIppResult(ClassicHttpResponse httpResponse)
+    private static IppResult getIppResult(int statusCode, String reasonPhrase, InputStream body)
             throws IOException {
-        InputStream istream = httpResponse.getEntity().getContent();
-        try {
-            byte[] result = IOUtils.toByteArray(istream);
-            IppResponse ippResponse = new IppResponse();
-            IppResult ippResult =
-                    ippResponse.getResponse(ByteBuffer.wrap(result));
-            ippResult.setHttpStatusCode(httpResponse.getCode());
-            if (ippResult.getHttpStatusCode() == 426) {
-                ippResult.setHttpStatusResponse(new String(result));
-                LOG.warn("Received {} after send-document.", ippResult);
-            } else {
-                ippResult.setHttpStatusResponse(
-                        new StatusLine(httpResponse).toString());
-
-            }
-            return ippResult;
-        } finally {
-            istream.close();
+        byte[] result = IOUtils.toByteArray(body);
+        IppResponse ippResponse = new IppResponse();
+        IppResult ippResult =
+                ippResponse.getResponse(ByteBuffer.wrap(result));
+        ippResult.setHttpStatusCode(statusCode);
+        if (statusCode == 426) {
+            ippResult.setHttpStatusResponse(new String(result));
+            LOG.warn("Received {} after send-document.", ippResult);
+        } else {
+            ippResult.setHttpStatusResponse(
+                    "HTTP/1.1 " + statusCode + " " + reasonPhrase);
         }
+        return ippResult;
     }
 
 }

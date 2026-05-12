@@ -14,8 +14,6 @@
  */
 package org.cups4j.operations;
 
-import org.apache.hc.client5.http.classic.HttpClient;
-import org.apache.hc.core5.http.HttpEntity;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsPrinter;
 import org.cups4j.http.IppClient;
@@ -100,8 +98,8 @@ public final class IppHttpTest {
         }
 
         @Override
-        public void setEntity(HttpEntity entity) {
-            throw new UnsupportedOperationException("not implemented: setEntity " + entity);
+        public void setEntity(java.io.InputStream content, String contentType) {
+            throw new UnsupportedOperationException("not implemented");
         }
 
         String getHeader(String name) {

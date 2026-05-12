@@ -20,8 +20,6 @@ import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
 import ch.ethz.vppserver.ippclient.IppTag;
 import org.apache.commons.io.IOUtils;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.io.entity.InputStreamEntity;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
@@ -194,12 +192,7 @@ public class IppCreateJobOperation extends IppOperation {
 
         ByteArrayInputStream headerStream = new ByteArrayInputStream(bytes);
 
-        // set length to -1 to advice the entity to read until EOF
-        InputStreamEntity requestEntity =
-                new InputStreamEntity(headerStream, -1,
-                        ContentType.create(IPP_MIME_TYPE));
-
-        ippRequest.setEntity(requestEntity);
+        ippRequest.setEntity(headerStream, IPP_MIME_TYPE);
         IppResponseHandler<IppResult> handler =
                 (statusCode, reasonPhrase, body) -> {
                     if (log.isDebugEnabled()) {
