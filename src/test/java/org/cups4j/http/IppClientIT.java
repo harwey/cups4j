@@ -56,7 +56,7 @@ public class IppClientIT extends AbstractIppOperationTest {
     }
 
     private IppRequest getRequest(InputStream istream) {
-        IppRequest request = ApacheIppRequest.post(getPrintersURI());
+        IppRequest request = IppHttp.createRequest(getPrintersURI());
         request.setEntity(istream, "application/ipp");
         return request;
     }

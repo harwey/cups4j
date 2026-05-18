@@ -23,8 +23,8 @@ import org.apache.commons.io.IOUtils;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
-import org.cups4j.http.ApacheIppRequest;
 import org.cups4j.http.IppClient;
+import org.cups4j.http.IppRequest;
 import org.cups4j.http.IppResponseHandler;
 import org.cups4j.operations.IppHttp;
 import org.cups4j.operations.IppOperation;
@@ -184,7 +184,7 @@ public class IppCreateJobOperation extends IppOperation {
             CupsAuthentication creds) throws IOException {
         IppClient client = IppHttp.createHttpClient();
 
-        ApacheIppRequest ippRequest = ApacheIppRequest.post(uri);
+        IppRequest ippRequest = IppHttp.createRequest(uri);
         IppHttp.setHttpHeaders(ippRequest, printer, creds);
 
         byte[] bytes = new byte[ippBuf.limit()];

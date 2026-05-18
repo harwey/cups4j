@@ -7,8 +7,8 @@ import org.apache.commons.io.IOUtils;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
-import org.cups4j.http.ApacheIppRequest;
 import org.cups4j.http.IppClient;
+import org.cups4j.http.IppRequest;
 import org.cups4j.http.IppResponseHandler;
 import org.cups4j.ipp.attributes.Attribute;
 import org.slf4j.Logger;
@@ -213,7 +213,7 @@ public abstract class IppOperation {
 
     IppClient client = IppHttp.createHttpClient();
 
-    ApacheIppRequest ippRequest = ApacheIppRequest.post(url.toString());
+    IppRequest ippRequest = IppHttp.createRequest(url);
     IppHttp.setHttpHeaders(ippRequest, printer, creds);
 
     byte[] bytes = new byte[ippBuf.limit()];

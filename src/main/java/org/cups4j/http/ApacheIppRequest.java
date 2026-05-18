@@ -40,10 +40,6 @@ public class ApacheIppRequest implements IppRequest {
         return new ApacheIppRequest(new HttpPost(uri));
     }
 
-    public static ApacheIppRequest post(String uri) {
-        return new ApacheIppRequest(new HttpPost(uri));
-    }
-
     @Override
     public void addHeader(String name, String value) {
         delegate.addHeader(name, value);

@@ -23,12 +23,12 @@ import ch.ethz.vppserver.ippclient.IppTag;
 import org.apache.commons.io.IOUtils;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.http.IppClient;
+import org.cups4j.http.IppRequest;
 import org.cups4j.http.IppResponseHandler;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
 import org.cups4j.PrintJob;
 import org.cups4j.ipp.attributes.AttributeGroup;
-import org.cups4j.http.ApacheIppRequest;
 import org.cups4j.operations.IppHttp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -238,10 +238,7 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
                 map.get("job-name"));
 
         if (map.get("ipp-attribute-fidelity") != null) {
-            boolean value = false;
-            if (map.get("ipp-attribute-fidelity").equals("true")) {
-                value = true;
-            }
+            boolean value = map.get("ipp-attribute-fidelity").equals("true");
             ippBuf = IppTag.getBoolean(ippBuf, "ipp-attribute-fidelity", value);
         }
 
@@ -291,7 +288,7 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
 
     private IppResult sendRequest(CupsPrinter printer, URI uri, ByteBuffer ippBuf,
     		InputStream documentStream, CupsAuthentication creds) throws IOException {
-        ApacheIppRequest ippRequest = ApacheIppRequest.post(uri);
+        IppRequest ippRequest = IppHttp.createRequest(uri);
 
         byte[] bytes = new byte[ippBuf.limit()];
         ippBuf.get(bytes);
