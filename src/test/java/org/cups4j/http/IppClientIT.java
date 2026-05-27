@@ -16,7 +16,6 @@ package org.cups4j.http;
 
 import org.apache.commons.io.IOUtils;
 import org.cups4j.operations.AbstractIppOperationTest;
-import org.cups4j.operations.IppHttp;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -31,7 +30,11 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author oboehm
  * @since 0.8.2 (14.05.26)
  */
-public class IppClientIT extends AbstractIppOperationTest {
+public abstract class IppClientIT extends AbstractIppOperationTest {
+
+    protected abstract IppClient createHttpClient();
+
+    protected abstract IppRequest createRequest();
 
     /**
      * As unit test we post the content of "ipp/Get-Printers.ipp". This
@@ -45,7 +48,7 @@ public class IppClientIT extends AbstractIppOperationTest {
         try (InputStream istream = getClass().getClassLoader().getResourceAsStream("ipp/Get-Printers.ipp")) {
             assertNotNull(istream);
             IppRequest request = getRequest(istream);
-            IppClient ippClient = IppHttp.createHttpClient();
+            IppClient ippClient = createHttpClient();
             IppResponseHandler<byte[]> handler = (statusCode, reasonPhrase, body) -> {
                 assertEquals(200, statusCode, "reason phrase: " + reasonPhrase);
                 return IOUtils.toByteArray(body);
@@ -56,12 +59,12 @@ public class IppClientIT extends AbstractIppOperationTest {
     }
 
     private IppRequest getRequest(InputStream istream) {
-        IppRequest request = IppHttp.createRequest(getPrintersURI());
+        IppRequest request = createRequest();
         request.setEntity(istream, "application/ipp");
         return request;
     }
 
-    private URI getPrintersURI() {
+    protected URI getPrintersURI() {
         int port = cups.getFirstMappedPort();
         return URI.create(String.format("http://localhost:%d/printers", port));
     }
