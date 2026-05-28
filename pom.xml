@@ -79,19 +79,19 @@
     <dependency>
       <groupId>org.glassfish.jaxb</groupId>
       <artifactId>jaxb-runtime</artifactId>
-      <version>4.0.8</version>
+      <version>4.0.9</version>
     </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>2.0.17</version>
+      <version>2.0.18</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j2-impl</artifactId>
-      <version>2.25.4</version>
+      <version>2.26.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -161,32 +161,6 @@
           <ignoredVersions>.*-M.*,.*-rc.*,.*-RC.*,.*-dev,.*-alpha.*,.*-beta.*</ignoredVersions>
           <processDependencyManagementTransitive>false</processDependencyManagementTransitive>
         </configuration>
-      </plugin>
-      <!-- mvn rewrite:run -->
-      <plugin>
-        <groupId>org.openrewrite.maven</groupId>
-        <artifactId>rewrite-maven-plugin</artifactId>
-        <version>6.39.0</version>
-        <configuration>
-          <exportDatatables>true</exportDatatables>
-          <activeRecipes>
-            <recipe>org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta</recipe>
-            <recipe>org.openrewrite.java.testing.junit5.JUnit4to5Migration</recipe>
-            <recipe>org.openrewrite.java.testing.testcontainers.Testcontainers2Migration</recipe>
-          </activeRecipes>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.openrewrite.recipe</groupId>
-            <artifactId>rewrite-migrate-java</artifactId>
-            <version>3.34.0</version>
-          </dependency>
-          <dependency>
-            <groupId>org.openrewrite.recipe</groupId>
-            <artifactId>rewrite-testing-frameworks</artifactId>
-            <version>3.35.2</version>
-          </dependency>
-        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
