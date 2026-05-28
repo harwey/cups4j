@@ -16,6 +16,7 @@ package org.cups4j.http;
 
 import org.apache.commons.io.IOUtils;
 import org.cups4j.operations.AbstractIppOperationTest;
+import org.cups4j.operations.IppHttp;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -30,11 +31,15 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author oboehm
  * @since 0.8.2 (14.05.26)
  */
-public abstract class IppClientIT extends AbstractIppOperationTest {
+public class IppClientIT extends AbstractIppOperationTest {
 
-    protected abstract IppClient createHttpClient();
+    protected IppClient createHttpClient() {
+        return IppHttp.createHttpClient();
+    }
 
-    protected abstract IppRequest createRequest();
+    protected IppRequest createRequest() {
+        return IppHttp.createRequest(getPrintersURI());
+    }
 
     /**
      * As unit test we post the content of "ipp/Get-Printers.ipp". This
