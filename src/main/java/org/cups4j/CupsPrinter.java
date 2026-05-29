@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2009-2026 by Harald Weyhing & Oliver Boehm
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * See the GNU Lesser General Public License for more details. You should have received a copy of
+ * the GNU Lesser General Public License along with this program; if not, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ * (c)reated 17.03.2009 by Harald Weyhing
+ */
 package org.cups4j;
 
 import ch.ethz.vppserver.ippclient.IppResult;
@@ -39,12 +55,12 @@ public class CupsPrinter {
     private String printerStateReasons = null;
 
   private String numberUpDefault = null;
-  private List<String> numberUpSupported = new ArrayList<String>();
-  private List<String> mediaSupported = new ArrayList<String>();
-  private List<String> resolutionSupported = new ArrayList<String>();
-  private List<String> colorModeSupported = new ArrayList<String>();
-  private List<String> mimeTypesSupported = new ArrayList<String>();
-  private List<String> sidesSupported = new ArrayList<String>();
+  private List<String> numberUpSupported = new ArrayList<>();
+  private List<String> mediaSupported = new ArrayList<>();
+  private List<String> resolutionSupported = new ArrayList<>();
+  private List<String> colorModeSupported = new ArrayList<>();
+  private List<String> mimeTypesSupported = new ArrayList<>();
+  private List<String> sidesSupported = new ArrayList<>();
 
   private String makeAndModel = null;
   
@@ -522,7 +538,7 @@ public class CupsPrinter {
    * Sets the printer URI.
    *
    * @param printerURL new printer URI
-   * @since 0.9
+   * @since 0.8.2
    */
   public void setPrinterURI(URI printerURL) {
     this.printerURL = printerURL;

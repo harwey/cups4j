@@ -14,12 +14,15 @@ package org.cups4j;
  * the GNU Lesser General Public License along with this program; if not, see
  * <http://www.gnu.org/licenses/>.
  */
-import java.net.URL;
-import java.text.DateFormat;
-import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.text.DateFormat;
+import java.util.Date;
 
 /**
  * Holds print job attributes
@@ -31,8 +34,8 @@ public class PrintJobAttributes {
   private static final Logger LOG = LoggerFactory.getLogger(PrintJobAttributes.class);
   private DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM);
 
-  URL jobURL = null;
-  URL printerURL = null;
+  private URI jobURI = null;
+  private URI printerURI = null;
   int jobID = -1;
   JobStateEnum jobState = null;
   String jobName = null;
@@ -46,20 +49,94 @@ public class PrintJobAttributes {
   // This value is optional and might not be reported by your IPP server
   int size = -1;
 
+  /**
+   * Gets the URI of a job.
+   *
+   * @return an URI
+   * @deprecated use {@link #getJobURI()}
+   */
+  @Deprecated
   public URL getJobURL() {
-    return jobURL;
+    try {
+      return jobURI != null ? jobURI.toURL() : null;
+    } catch (MalformedURLException e) {
+      throw new IllegalStateException("Invalid job URL: " + jobURI, e);
+    }
   }
 
+  /**
+   * Gets the URI of a job.
+   *
+   * @return job URI
+   * @since 0.8.2
+   */
+  public URI getJobURI() {
+    return jobURI;
+  }
+
+  /**
+   * Sets the ZRK of a job.
+   *
+   * @param jobURL the job URL
+   * @deprecated use {@link #setJobURI(URI)}
+   */
   public void setJobURL(URL jobURL) {
-    this.jobURL = jobURL;
+    setJobURI(jobURL != null ? URI.create(jobURL.toString()) : null);
   }
 
+  /**
+   * Sets the URI of a job.
+   *
+   * @param jobURI the job URI
+   * @since 0.8.2
+   */
+  public void setJobURI(URI jobURI) {
+    this.jobURI = jobURI;
+  }
+
+  /**
+   * Gets the URL of the printer.
+   *
+   * @return printer URL
+   * @deprecated use {@link #getPrinterURI()}
+   */
   public URL getPrinterURL() {
-    return printerURL;
+    try {
+      return printerURI != null ? printerURI.toURL() : null;
+    } catch (MalformedURLException e) {
+      throw new IllegalStateException("Invalid printer URL: " + printerURI, e);
+    }
   }
 
+  /**
+   * Gets the URI of the printer.
+   *
+   * @return printer URI
+   * @since 0.8.2
+   */
+  public URI getPrinterURI() {
+    return printerURI;
+  }
+
+  /**
+   * Sets the printer URL.
+   *
+   * @param printerURL the printer URL
+   * @deprecated use {@link #setPrinterURI(URI)}
+   */
+  @Deprecated
   public void setPrinterURL(URL printerURL) {
-    this.printerURL = printerURL;
+    this.printerURI = printerURL != null ? URI.create(printerURL.toString()) : null;
+  }
+
+  /**
+   * Sets the printer URI.
+   * 
+   * @param printerURI the printer URI
+   * @since 0.8.2
+   */
+  public void setPrinterURI(URI printerURI) {
+    this.printerURI = printerURI;
   }
 
   public int getJobID() {
