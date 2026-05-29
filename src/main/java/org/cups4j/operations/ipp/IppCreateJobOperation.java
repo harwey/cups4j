@@ -77,7 +77,7 @@ public class IppCreateJobOperation extends IppOperation {
     public ByteBuffer getIppHeader(URL url)
             throws UnsupportedEncodingException {
         log.warn("Method getIppHeader(URL) is deprecated. Use getIppHeader(URI) instead.");
-        return getIppHeader(url, createAttributeMap());
+        return getIppHeader(URI.create(url.toString()), createAttributeMap());
     }
 
     /**
@@ -93,7 +93,7 @@ public class IppCreateJobOperation extends IppOperation {
     }
 
     private static Map<String, String> createAttributeMap() {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put("requesting-user-name", CupsClient.DEFAULT_USER);
         return map;
     }
@@ -140,9 +140,20 @@ public class IppCreateJobOperation extends IppOperation {
         return ippBuf;
     }
 
+    /**
+     * Requests the given printer.
+     *
+     * @param printer printer
+     * @param url     printer URL
+     * @param creds   credentials
+     * @return IPP result
+     * @throws IOException in case of I/O problems
+     * @deprecated use {@link #request(CupsPrinter, URI, CupsAuthentication)}
+     */
+    @Deprecated
     public IppResult request(CupsPrinter printer, URL url,
-            CupsAuthentication creds) {
-        return request(printer, url, createAttributeMap(), creds);
+            CupsAuthentication creds) throws IOException {
+        return request(printer, URI.create(url.toString()), creds);
     }
 
     /**
@@ -156,10 +167,6 @@ public class IppCreateJobOperation extends IppOperation {
      */
     public IppResult request(CupsPrinter printer, URI url, CupsAuthentication creds) {
         return request(printer, url, createAttributeMap(), creds);
-    }
-
-    public IppResult request(CupsPrinter printer, URL url, Map<String, String> map, CupsAuthentication creds) {
-        return request(printer, URI.create(url.toString()), map, creds);
     }
 
     /**
