@@ -76,6 +76,7 @@ public class IppCreateJobOperation extends IppOperation {
     @Override
     public ByteBuffer getIppHeader(URL url)
             throws UnsupportedEncodingException {
+        log.warn("Method getIppHeader(URL) is deprecated. Use getIppHeader(URI) instead.");
         return getIppHeader(url, createAttributeMap());
     }
 

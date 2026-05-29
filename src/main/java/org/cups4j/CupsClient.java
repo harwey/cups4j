@@ -136,6 +136,7 @@ public class CupsClient {
    */
   @Deprecated(forRemoval = true)
   public CupsPrinter getPrinter(URL printerURL) throws Exception {
+    log.warn("Method getPrinter(URL) is deprecated. Use getPrinter(URI) instead.");
     return getPrinter(printerURL.toURI());
   }
 

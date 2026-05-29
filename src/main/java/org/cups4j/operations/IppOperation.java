@@ -27,7 +27,7 @@ public abstract class IppOperation {
 
   protected final static String IPP_MIME_TYPE = "application/ipp";
 
-  private static final Logger LOG = LoggerFactory.getLogger(IppOperation.class);
+  private static final Logger log = LoggerFactory.getLogger(IppOperation.class);
 
   /**
    * Gets the IPP header
@@ -54,6 +54,7 @@ public abstract class IppOperation {
   @Deprecated(forRemoval = true)
   public IppResult request(CupsPrinter printer, URL url, Map<String, String> map,
                            CupsAuthentication creds) throws IOException {
+    log.warn("Method request(.., URL, ..) is deprecated. Use request(.., URI, ..) instead.");
     return request(printer, URI.create(url.toString()), map, creds);
   }
 
@@ -88,6 +89,7 @@ public abstract class IppOperation {
   @Deprecated(forRemoval = true)
   public IppResult request(CupsPrinter printer, URL url, Map<String, String> map, InputStream document,
 		  CupsAuthentication creds) throws IOException {
+    log.warn("Method request(.., URL) is deprecated. Use request(.., URI) instead.");
     return request(printer, URI.create(url.toString()), map, document, creds);
   }
 
@@ -121,6 +123,7 @@ public abstract class IppOperation {
    */
   @Deprecated(forRemoval = true)
   public ByteBuffer getIppHeader(URL url, Map<String, String> map) throws UnsupportedEncodingException {
+    log.warn("Method getIppHeader(URL, ..) is deprecated. Use getIppHeader(URI, ..) instead.");
     return getIppHeader(URI.create(url.toString()), map);
   }
 
@@ -135,7 +138,7 @@ public abstract class IppOperation {
    */
   public ByteBuffer getIppHeader(URI url, Map<String, String> map) throws UnsupportedEncodingException {
     if (url == null) {
-      LOG.error("IppGetJObsOperation.getIppHeader(): uri is null");
+      log.error("IppGetJObsOperation.getIppHeader(): uri is null");
       return null;
     }
 

@@ -121,6 +121,7 @@ public class IppGetJobAttributesOperation extends IppOperation {
   @Deprecated(forRemoval = true)
   public PrintJobAttributes getPrintJobAttributes(String hostname, String userName,
                                                   int port, int jobID, CupsAuthentication creds) throws IOException {
+    log.warn("Method getPrintJobAttributes(String, ..) is deprecated. Use getPrintJobAttributes(URI, ..) instead.");
     return getPrintJobAttributes(URI.create("http://" + hostname + ":" + port), userName, jobID, creds);
   }
 

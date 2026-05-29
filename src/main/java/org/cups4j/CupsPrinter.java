@@ -4,6 +4,8 @@ import ch.ethz.vppserver.ippclient.IppResult;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
 import org.cups4j.operations.ipp.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +19,7 @@ import java.util.*;
  */
 
 public class CupsPrinter {
+  private static final Logger log = LoggerFactory.getLogger(CupsPrinter.class);
   private URI printerURL = null;
   private String name = null;
   private PrinterStateEnum state = null;
@@ -372,6 +375,7 @@ public class CupsPrinter {
    */
   @Deprecated(forRemoval = true)
   public URL getPrinterURL() {
+      log.warn("Method getPrinterURL() is deprecated. Use getPrinterURI() instead.");
       try {
           return printerURL.toURL();
       } catch (MalformedURLException ex) {
