@@ -112,4 +112,21 @@ public final class CupsPrinterTest extends AbstractIppOperationTest {
         assertEquals(a.hashCode(), b.hashCode());
     }
 
+    @Test
+    public void testSetPrinterURI() {
+        URI printerURI = URI.create("ipp://localhost/printers/myprinter");
+        CupsPrinter p = new CupsPrinter(null, URI.create("ipp://old/url"), "test");
+        p.setPrinterURI(printerURI);
+        assertEquals(printerURI, p.getPrinterURI());
+        assertFalse(p.isPrinterClass());
+    }
+
+    @Test
+    public void testSetPrinterURIWithClass() {
+        URI classURI = URI.create("ipp://localhost/classes/myclass");
+        CupsPrinter p = new CupsPrinter(null, URI.create("ipp://old/url"), "test");
+        p.setPrinterURI(classURI);
+        assertTrue(p.isPrinterClass());
+    }
+
 }

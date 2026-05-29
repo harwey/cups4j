@@ -24,7 +24,7 @@ public class CupsClientTest {
   private static final Logger LOG = LoggerFactory.getLogger(CupsClientTest.class);
 
   @BeforeAll
-  public static void setUpClient() throws Exception {
+  public static void setUpClient() {
     client = TestCups.getCupsClient();
   }
 
@@ -33,7 +33,7 @@ public class CupsClientTest {
     List<CupsPrinter> printers = client.getPrinters();
     assertFalse(printers.isEmpty());
     for (CupsPrinter printer : printers) {
-      LOG.info("printer: " + printer.getName() + "[isClass=" + printer.isPrinterClass() + "]");
+      LOG.info("printer: {} [isClass={}]", printer.getName(), printer.isPrinterClass());
       assertThat(printer.getPrinterURI().getPath(), startsWith("/printer"));
     }
   }

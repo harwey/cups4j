@@ -81,13 +81,13 @@ public class CupsPrinter {
   }
 
   /**
-   * Print method
+   * Print method.
    *
-   * @param printJob
+   * @param printJob print job
    * @return PrintRequestResult
-   * @throws Exception
+   * @throws IOException in case of I/O problems
    */
-  public PrintRequestResult print(PrintJob printJob) throws Exception {
+  public PrintRequestResult print(PrintJob printJob) throws IOException {
     int ippJobID = -1;
     InputStream document = printJob.getDocument();
     String userName = printJob.getUserName();
@@ -319,7 +319,7 @@ public class CupsPrinter {
   }
 
   /**
-   * Get a list of jobs
+   * Get a list of jobs.
    *
    * @param whichJobs
    *          completed, not completed or all
@@ -507,8 +507,20 @@ public class CupsPrinter {
    *
    * @param printerURL new printer URI
    * @since 0.8
+   * @deprecated replaced by {@link #setPrinterURI(URI)}
    */
+  @Deprecated
   public void setPrinterURL(URI printerURL) {
+    setPrinterURI(printerURL);
+  }
+
+  /**
+   * Sets the printer URI.
+   *
+   * @param printerURL new printer URI
+   * @since 0.9
+   */
+  public void setPrinterURI(URI printerURL) {
     this.printerURL = printerURL;
     updateClassAttribute();
   }
