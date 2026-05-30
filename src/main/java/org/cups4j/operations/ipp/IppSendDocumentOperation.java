@@ -66,6 +66,17 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         this.lastDocument = lastDocument;
     }
 
+    /**
+     * Requests the given printer.
+     *
+     * @param printer    printer
+     * @param printerURL printer URI
+     * @param printJob   print job
+     * @param creds      credentials
+     * @return IPP result
+     * @deprecated use {@link #request(CupsPrinter, URI, PrintJob, CupsAuthentication)}
+     */
+    @Deprecated
     public IppResult request(CupsPrinter printer, URL printerURL,
                              PrintJob printJob, CupsAuthentication creds) {
         return request(printer, URI.create(printerURL.toString()), printJob, creds);

@@ -101,7 +101,9 @@ public class CupsMoveJobOperation extends IppOperation {
    * @param creds            credential
    * @return true on successful cancelation otherwise false.
    * @throws IOException in case of I/O problems
+   * @deprecated use {@link #moveJob(CupsPrinter, String, String, int, URI, CupsAuthentication)}
    */
+  @Deprecated
   public boolean moveJob(CupsPrinter printer, String hostname, String userName, int jobID, 
 		  URL targetPrinterURL, CupsAuthentication creds) throws IOException {
     return moveJob(printer, hostname, userName, jobID, URI.create(targetPrinterURL.toString()), creds);

@@ -80,6 +80,7 @@ public class PrintJobAttributes {
    * @param jobURL the job URL
    * @deprecated use {@link #setJobURI(URI)}
    */
+  @Deprecated
   public void setJobURL(URL jobURL) {
     setJobURI(jobURL != null ? URI.create(jobURL.toString()) : null);
   }

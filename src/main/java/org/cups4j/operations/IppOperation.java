@@ -31,13 +31,27 @@ public abstract class IppOperation {
 
   /**
    * Gets the IPP header
-   * 
+   *
    * @param url URL for header
    * @return IPP header
    * @throws UnsupportedEncodingException if encoding is not supported
+   * @deprecated use {@link #getIppHeader(URI)}
    */
+  @Deprecated
   public ByteBuffer getIppHeader(URL url) throws UnsupportedEncodingException {
     return getIppHeader(url, null);
+  }
+
+  /**
+   * Gets the IPP header
+   *
+   * @param uri URI for header
+   * @return IPP header
+   * @throws UnsupportedEncodingException if encoding is not supported
+   * @since 0.8.2
+   */
+  public ByteBuffer getIppHeader(URI uri) throws UnsupportedEncodingException {
+    return getIppHeader(uri, null);
   }
 
   /**
@@ -113,8 +127,8 @@ public abstract class IppOperation {
   /**
    * Gets the IPP header
    * 
-   * @param url
-   * @param map
+   * @param url the URL
+   * @param map attribute map
    * 
    * @return IPP header
    *
@@ -255,10 +269,12 @@ public abstract class IppOperation {
   /**
    * Removes the port number in the submitted URL
    *
-   * @param url
+   * @param url the URL
    * 
    * @return url without port number
+   * @deprecated use {@link #stripPortNumber(URI)}
    */
+  @Deprecated
   protected String stripPortNumber(URL url) {
     return stripPortNumber(URI.create(url.toString()));
   }

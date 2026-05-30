@@ -72,7 +72,9 @@ public class CupsPrinter {
    * @param creds       credentials
    * @param printerURL  e.g. ipp://localhost/printers/NECP6
    * @param printerName e.g. "NECP6"
+   * @deprecated use {@link #CupsPrinter(CupsAuthentication, URI, String)}
    */
+  @Deprecated
   public CupsPrinter(CupsAuthentication creds, URL printerURL, String printerName) {
     this(creds, URI.create(printerURL.toString()), printerName);
   }
@@ -518,6 +520,13 @@ public class CupsPrinter {
     return mimeTypesSupported;
   }
 
+  /**
+   * Sets the printer URI.
+   *
+   * @param printerURL new printer URI
+   * @deprecated replaced by {@link #setPrinterURI(URI)}
+   */
+  @Deprecated
   public void setPrinterURL(URL printerURL) {
     setPrinterURL(URI.create(printerURL.toString()));
   }
