@@ -67,6 +67,17 @@ public class CupsPrinter {
   private final CupsAuthentication creds;
 
   /**
+   * This constructor creates a CupsPrinter object without authorization.
+   *
+   * @param printerURL  e.g. ipps://localhost/printers/NECP6
+   * @param printerName e.g. "NECP6"
+   * @since 0.8.2
+   */
+  public CupsPrinter(URI printerURL, String printerName) {
+    this(null, printerURL, printerName);
+  }
+
+  /**
    * Constructor
    *
    * @param creds       credentials

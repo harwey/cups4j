@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ([issue #99](https://github.com/harwey/cups4j/issues/99))
 - methods with URL arguments are deprecated and replaced by URI arguments
 
+### Security
+
+- printer name is sanitized to avoid HTTP Header Injection 
 
 
 ## [0.8.1] (01-May-2026)

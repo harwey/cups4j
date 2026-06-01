@@ -75,6 +75,18 @@ public final class IppHttpTest {
     }
 
     @Test
+    public void testSetHttpHeadersPreventsHeaderInjection() {
+        String maliciousName = "my-printer\r\nX-Injected: true";
+        CupsPrinter printer = new CupsPrinter(PRINTER_URI, maliciousName);
+        TestHttpRequest request = new TestHttpRequest();
+        IppHttp.setHttpHeaders(request, printer, null);
+        String header = request.getHeader("target-group");
+        assertNotNull(header);
+        assertFalse(header.contains("\r"), "Header value must not contain CR");
+        assertFalse(header.contains("\n"), "Header value must not contain LF");
+    }
+
+    @Test
     public void testSetHttpHeadersWithBasicAuth() {
         TestHttpRequest request = new TestHttpRequest();
         IppHttp.setHttpHeaders(request, null, AUTH);

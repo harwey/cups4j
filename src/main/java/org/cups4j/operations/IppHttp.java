@@ -8,6 +8,8 @@ import org.cups4j.http.IppClient;
 import org.cups4j.http.IppRequest;
 import org.cups4j.http.JdkIppClient;
 import org.cups4j.http.JdkIppRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -16,6 +18,7 @@ import java.time.Duration;
 
 public final class IppHttp {
 
+	private static final Logger log = LoggerFactory.getLogger(IppHttp.class);
 	private static final int CUPSTIMEOUT =
 			Integer.parseInt(System.getProperty("cups4j.timeout", "10000"));
 
@@ -38,8 +41,10 @@ public final class IppHttp {
 			IppRequest httpPost,
 			CupsPrinter targetPrinter,
 			CupsAuthentication creds) {
-		httpPost.addHeader("target-group",
-				(targetPrinter == null) ? "local" : targetPrinter.getName());
+		String group = (targetPrinter == null) ? "local" : targetPrinter.getName();
+		group = group.replaceAll("[\\r\\n]", "");
+		httpPost.addHeader("target-group", group);
+		log.debug("HTTP header 'target-group' is set to '{}'", group);
 
 		if (creds != null && StringUtils.isNotBlank(creds.getUserid())
 				&& StringUtils.isNotBlank(creds.getPassword())) {
