@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ([issue #97](https://github.com/harwey/cups4j/issues/97))
 - CupsPrinter.setPrinterURI(..) replaces the setPrinterURL(..) method,
   ([issue #99](https://github.com/harwey/cups4j/issues/99))
-- methods with URL arguments are deprecated and replaced by URI arguments
+- remaining methods with URL arguments are deprecated and replaced by URI arguments
 
 ### Security
 
