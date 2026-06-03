@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Jakarta Migration
+  ([PR #96](https://github.com/harwey/cups4j/pull/96))
 - Apache's HttpClient replaced by buitin HttpClient of JDK 11
   ([issue #97](https://github.com/harwey/cups4j/issues/97))
 - CupsPrinter.setPrinterURI(..) replaces the setPrinterURL(..) method,
