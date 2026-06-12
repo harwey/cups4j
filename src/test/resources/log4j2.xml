@@ -9,6 +9,6 @@
     <Root level="info">
       <AppenderRef ref="STDOUT" />
     </Root>
-    <Logger name="org.cups4j.operations.cups.CupsGetPrintersOperation" level="debug"/>
+    <Logger name="org.cups4j.operations.cups.CupsGetPrintersOperation" level="info"/>
   </Loggers>
 </Configuration>

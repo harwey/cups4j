@@ -3,6 +3,7 @@ package org.cups4j;
 import cups4j.TestCups;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
+import org.cups4j.ipp.attributes.Attribute;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -181,6 +182,13 @@ public final class CupsPrinterIT {
         JobStateEnum jobStatus = printer.getJobStatus("mmustermann", jobId);
         assertNotNull(jobStatus);
         assertEquals("OlisJob", TestCups.getCupsClient().getJobAttributes(jobId).getJobName());
+    }
+
+    @Test
+    public void testGetPrinterAttributes()  throws Exception {
+        CupsPrinter printer = getPrinter();
+        List<Attribute> attributes = printer.getAttributes();
+        assertFalse(attributes.isEmpty());
     }
 
     /**

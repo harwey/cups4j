@@ -65,6 +65,7 @@ public class CupsPrinter {
   private String makeAndModel = null;
   
   private final CupsAuthentication creds;
+  private final List<Attribute> attributes = new ArrayList<>();
 
   /**
    * This constructor creates a CupsPrinter object without authorization.
@@ -85,7 +86,7 @@ public class CupsPrinter {
    * @param printerName e.g. "NECP6"
    * @deprecated use {@link #CupsPrinter(CupsAuthentication, URI, String)}
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public CupsPrinter(CupsAuthentication creds, URL printerURL, String printerName) {
     this(creds, URI.create(printerURL.toString()), printerName);
   }
@@ -332,12 +333,6 @@ public class CupsPrinter {
     return result;
   }
 
-  /**
-   *
-   * @param map
-   * @param name
-   * @param value
-   */
   private void addAttribute(Map<String, String> map, String name, String value) {
     if (value != null && name != null) {
       String attribute = map.get(name);
@@ -532,12 +527,22 @@ public class CupsPrinter {
   }
 
   /**
+   * Returns a list af all printer attributes.
+   *
+   * @return list of attributes
+   * @since 0.8.3
+   */
+  public List<Attribute> getAttributes() {
+    return attributes;
+  }
+
+  /**
    * Sets the printer URI.
    *
    * @param printerURL new printer URI
    * @deprecated replaced by {@link #setPrinterURI(URI)}
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public void setPrinterURL(URL printerURL) {
     setPrinterURL(URI.create(printerURL.toString()));
   }
@@ -549,7 +554,7 @@ public class CupsPrinter {
    * @since 0.8
    * @deprecated replaced by {@link #setPrinterURI(URI)}
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public void setPrinterURL(URI printerURL) {
     setPrinterURI(printerURL);
   }

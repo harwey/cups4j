@@ -16,7 +16,6 @@ package org.cups4j.operations.cups;
  */
 
 import ch.ethz.vppserver.ippclient.IppResult;
-import java.net.URI;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
@@ -28,6 +27,7 @@ import org.cups4j.operations.IppOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -130,6 +130,7 @@ public class CupsGetPrintersOperation extends IppOperation {
         }
 
         printer = new CupsPrinter(creds, printerURI, printerName);
+        printer.getAttributes().addAll(group.getAttribute());
         printer.setState(printerState);
         if (printerState != null) {
           printer.setPrinterState(printerState.getStateName());
@@ -152,6 +153,8 @@ public class CupsGetPrintersOperation extends IppOperation {
         printer.setMakeAndModel(printerMakeAndModel);
 
         printers.add(printer);
+      } else {
+        log.debug("Group {} is ignored.", group);
       }
     }
 

@@ -72,4 +72,6 @@ PrintJob printJob = new PrintJob.Builder(bytes)
 ## More Infos
 
 * Changelog: [CHANGELOG](CHANGELOG.md)
-* RFC IPP: [RFC 2910](https://tools.ietf.org/html/rfc2910) and [RFC 8011](https://tools.ietf.org/html/rfc8011)
+* RFCs Internet Printing Protocol: 
+  * [RFC 8010](https://tools.ietf.org/html/rfc8010) (Encoding and Transport), [RFC 8011](https://tools.ietf.org/html/rfc8011) (Model and Semantics)
+  * URL Scheme: [RFC 3510](https://tools.ietf.org/html/3510) (IPP), [RFC 7472](https://tools.ietf.org/html/rfc7472) (IPP over HTTPS)

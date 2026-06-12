@@ -18,6 +18,8 @@ public class AttributeValue {
   protected SetOfKeyword setOfKeyword;
   @XmlElement(name = "set-of-enum")
   protected SetOfEnum setOfEnum;
+  @XmlElement(name = "collection-attribute")
+  protected CollectionAttribute collectionAttribute;
   @XmlAttribute(required = true)
   protected String tag;
   @XmlAttribute(name = "tag-name", required = true)
@@ -67,6 +69,26 @@ public class AttributeValue {
    */
   public void setSetOfEnum(SetOfEnum value) {
     this.setOfEnum = value;
+  }
+
+  /**
+   * Gets the value of the collectionAttribute property.
+   *
+   * @return possible object is {@link CollectionAttribute }
+   * @since 0.8.3
+   */
+  public CollectionAttribute getCollectionAttribute() {
+    return collectionAttribute;
+  }
+
+  /**
+   * Sets the value of the collectionAttribute property.
+   *
+   * @param value allowed object is {@link CollectionAttribute }
+   * @since 0.8.3
+   */
+  public void setCollectionAttribute(CollectionAttribute value) {
+    this.collectionAttribute = value;
   }
 
   /**
