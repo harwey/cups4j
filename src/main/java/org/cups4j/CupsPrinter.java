@@ -19,6 +19,7 @@ package org.cups4j;
 import ch.ethz.vppserver.ippclient.IppResult;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
+import org.cups4j.ipp.attributes.AttributeValue;
 import org.cups4j.operations.ipp.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +37,8 @@ import java.util.*;
 
 public class CupsPrinter {
   private static final Logger log = LoggerFactory.getLogger(CupsPrinter.class);
-  private URI printerURL = null;
-  private String name = null;
+  private URI printerURL;
+  private String name;
   private PrinterStateEnum state = null;
   private String description = null;
   private String location = null;
@@ -65,7 +66,7 @@ public class CupsPrinter {
   private String makeAndModel = null;
   
   private final CupsAuthentication creds;
-  private final List<Attribute> attributes = new ArrayList<>();
+  private final List<Attribute> attributes;
 
   /**
    * This constructor creates a CupsPrinter object without authorization.
@@ -100,11 +101,43 @@ public class CupsPrinter {
    * @since 0.8
    */
   public CupsPrinter(CupsAuthentication creds, URI printerURL, String printerName) {
-    super();
+    this(creds, printerURL, List.of(createAttribute("printer-name", printerName)));
+  }
+
+  /**
+   * Instantiates a printer with a list of attributes. The given list must
+   * contain at least the printer-name attribute.
+   *
+   * @param creds      credentials
+   * @param printerURL e.g. ipps://localhost/printers/NECP6
+   * @param attributes list of printer attributes with "printer-name"
+   * @since 0.8.3
+   */
+  public CupsPrinter(CupsAuthentication creds, URI printerURL, List<Attribute> attributes) {
     this.creds = creds;
     this.printerURL = printerURL;
-    this.name = printerName;
+    this.attributes = attributes;
+    this.name = getAttributeValue("printer-name", attributes);
     updateClassAttribute();
+  }
+
+  private static Attribute createAttribute(String name, String value) {
+    Attribute attribute = new Attribute();
+    attribute.setName(name);
+    AttributeValue attributeValue = new AttributeValue();
+    attributeValue.setValue(value);
+    attribute.getAttributeValue().add(attributeValue);
+    return attribute;
+  }
+
+  private static String getAttributeValue(String name, List<Attribute> values) {
+    for (Attribute attr : values) {
+      if (attr.getName().equals(name)) {
+        return attr.getValue();
+      }
+    }
+    log.warn("Attribute '{}' not in list of attributes {}.", name, values);
+    return "";
   }
 
   private void updateClassAttribute() {

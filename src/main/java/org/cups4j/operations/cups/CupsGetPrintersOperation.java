@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,13 +61,11 @@ public class CupsGetPrintersOperation extends IppOperation {
     // map.put("requested-attributes", "all");
     this.ippPort = cupsURL.getPort();
 
-    IppResult result = request(null, new URL(cupsURL + "/printers"), map, creds);
+    IppResult result = request(null, URI.create(cupsURL + "/printers"), map, creds);
 
     for (AttributeGroup group : result.getAttributeGroupList()) {
-      CupsPrinter printer = null;
       if (group.getTagName().equals("printer-attributes-tag")) {
         URI printerURI = null;
-        String printerName = null;
         String printerLocation = null;
         String printerDescription = null;
         PrinterStateEnum printerState = null;
@@ -89,8 +86,6 @@ public class CupsGetPrintersOperation extends IppOperation {
         for (Attribute attr : group.getAttribute()) {
           if (attr.getName().equals("printer-uri-supported")) {
             printerURI = URI.create(cupsURL + URI.create(getAttributeValue(attr)).getPath());
-          } else if (attr.getName().equals("printer-name")) {
-            printerName = getAttributeValue(attr);
           } else if (attr.getName().equals("printer-location")) {
             printerLocation = getAttributeValue(attr);
           } else if (attr.getName().equals("printer-info")) {
@@ -124,13 +119,10 @@ public class CupsGetPrintersOperation extends IppOperation {
             sidesDefault = getAttributeValue(attr);
           } else if (attr.getName().equals("printer-make-and-model")){
             printerMakeAndModel = getAttributeValue(attr);
-          } else {
-            log.debug("Attribute {} is ignored.", attr);
           }
         }
 
-        printer = new CupsPrinter(creds, printerURI, printerName);
-        printer.getAttributes().addAll(group.getAttribute());
+        CupsPrinter printer = new CupsPrinter(creds, printerURI, group.getAttribute());
         printer.setState(printerState);
         if (printerState != null) {
           printer.setPrinterState(printerState.getStateName());
