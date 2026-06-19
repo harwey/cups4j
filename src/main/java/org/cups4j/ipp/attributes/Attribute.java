@@ -11,10 +11,20 @@ import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @XmlType(name = "attribute")
 public class Attribute {
+
+  /** Constant with NULL semantic. */
+  public static final Attribute NONE = new Attribute();
+
+  static {
+    NONE.name = "NONE";
+    NONE.description = "not a real attribute";
+    NONE.attributeValue = Collections.emptyList();
+  }
 
   @XmlElement(name ="attribute-value")
   protected List<AttributeValue> attributeValue;

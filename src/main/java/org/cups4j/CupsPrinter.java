@@ -20,6 +20,7 @@ import ch.ethz.vppserver.ippclient.IppResult;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
 import org.cups4j.ipp.attributes.AttributeValue;
+import org.cups4j.operations.cups.CupsGetPrintersOperation;
 import org.cups4j.operations.ipp.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -175,10 +176,9 @@ public class CupsPrinter {
     attributes.put("requesting-user-name", userName);
     attributes.put("job-name", jobName);
 
-    String copiesString = null;
     StringBuffer rangesString = new StringBuffer();
     if (copies > 0) {// other values are considered bad value by CUPS
-      copiesString = "copies:integer:" + copies;
+      String copiesString = "copies:integer:" + copies;
       addAttribute(attributes, "job-attributes", copiesString);
     }
     if (portrait) {
@@ -535,6 +535,17 @@ public class CupsPrinter {
     return mediaSupported;
   }
 
+  /**
+   * Get a list of media sources (paper trays) which are supported.
+   *
+   * @return e.g. List.of("auto-tray", "tray-1", "tray-2")
+   * @since 0.8.3
+   */
+  public List<String> getMediaSourceSupported() {
+    Attribute mediaSourceSupported = getAttribute("media-source-supported");
+    return CupsGetPrintersOperation.getAttributeValues(mediaSourceSupported);
+  }
+
   public String getMediaDefault() {
     return mediaDefault;
   }
@@ -567,6 +578,24 @@ public class CupsPrinter {
    */
   public List<Attribute> getAttributes() {
     return attributes;
+  }
+
+  /**
+   * Returns the attribute with the given name. If there is no attribute
+   * with the asked name, {@link Attribute#NONE} is returned.
+   *
+   * @param attributeName name of attribute
+   * @return attribute or Attribute.NONE
+   * @since 0.8.3
+   */
+  public Attribute getAttribute(String attributeName) {
+    for (Attribute attribute : attributes) {
+      if (attribute.getName().equals(attributeName)) {
+        return attribute;
+      }
+    }
+    log.info("Attribute '{}' not found in printer attributes.", attributeName);
+    return Attribute.NONE;
   }
 
   /**

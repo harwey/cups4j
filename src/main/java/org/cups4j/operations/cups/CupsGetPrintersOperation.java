@@ -57,8 +57,9 @@ public class CupsGetPrintersOperation extends IppOperation {
     Map<String, String> map = new HashMap<>();
     map.put(
             "requested-attributes",
-            "copies-supported page-ranges-supported printer-name printer-info printer-state printer-location printer-make-and-model printer-uri-supported media-supported media-default sides-supported sides-default orientation-requested-supported printer-resolution-supported printer printer-resolution-default number-up-default number-up-supported document-format-supported print-color-mode-supported print-color-mode-default device-uri");
-    // map.put("requested-attributes", "all");
+            "copies-supported page-ranges-supported printer-name printer-info printer-state printer-location printer-make-and-model printer-uri-supported media-supported media-default sides-supported sides-default orientation-requested-supported printer-resolution-supported printer printer-resolution-default number-up-default number-up-supported document-format-supported print-color-mode-supported print-color-mode-default device-uri" +
+                    " media-source-supported media-col-ready");
+//    map.put("requested-attributes", "all");
     this.ippPort = cupsURL.getPort();
 
     IppResult result = request(null, URI.create(cupsURL + "/printers"), map, creds);
@@ -69,17 +70,17 @@ public class CupsGetPrintersOperation extends IppOperation {
         String printerLocation = null;
         String printerDescription = null;
         PrinterStateEnum printerState = null;
-        List<String> mediaSupportedList = new ArrayList<String>();
+        List<String> mediaSupportedList = new ArrayList<>();
         String mediaDefault = null;
-        List<String> printerResolutionSupported = new ArrayList<String>();
+        List<String> printerResolutionSupported = new ArrayList<>();
         String printerResolutionDefault = null;
-        List<String> printerColorModeSupported = new ArrayList<String>();
+        List<String> printerColorModeSupported = new ArrayList<>();
         String printerColorModeDefault = null;
-        List<String> mimeTypesSupported = new ArrayList<String>();
+        List<String> mimeTypesSupported = new ArrayList<>();
         String sidesDefault = null;
-        List<String> sidesSupported = new ArrayList<String>();
+        List<String> sidesSupported = new ArrayList<>();
         String numberUpDefault = null;
-        List<String> numberUpSupported = new ArrayList<String>();
+        List<String> numberUpSupported = new ArrayList<>();
         String deviceURI = null;
         String printerMakeAndModel = null;
 
@@ -153,7 +154,7 @@ public class CupsGetPrintersOperation extends IppOperation {
     return printers;
   }
 
-  protected List<String> getAttributeValues(Attribute attr) {
+  public static List<String> getAttributeValues(Attribute attr) {
     List<String> values = new ArrayList<String>();
     if (attr.getAttributeValue() != null && attr.getAttributeValue().size() > 0) {
       for (AttributeValue value : attr.getAttributeValue()) {
@@ -163,6 +164,7 @@ public class CupsGetPrintersOperation extends IppOperation {
     return values;
   }
 
+  @Override
   protected String getAttributeValue(Attribute attr) {
     String result = null;
     if (attr.getAttributeValue() != null && attr.getAttributeValue().size() > 0) {
