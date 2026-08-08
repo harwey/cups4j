@@ -113,14 +113,25 @@ public class IppPrintJobOperation extends IppOperation {
       ippBuf = IppTag.getInteger(ippBuf, "job-media-sheets", value);
     }
 
-    if (map.get("job-attributes") != null) {
-      String[] attributeBlocks = map.get("job-attributes").split("#");
-      ippBuf = getJobAttributes(ippBuf, attributeBlocks);
+    if (map.get("job-attributes") != null || map.get("media-col") != null) {
+      ippBuf = IppTag.getJobAttributesTag(ippBuf);
+      if (map.get("job-attributes") != null) {
+        ippBuf = getAttributes(ippBuf, map.get("job-attributes").split("#"));
+      }
+      if (map.get("media-col") != null) {
+        ippBuf = getMediaCollection(ippBuf, map.get("media-col").split("#"));
+      }
     }
 
     ippBuf = IppTag.getEnd(ippBuf);
     ippBuf.flip();
     return ippBuf;
+  }
+
+  private static ByteBuffer getMediaCollection(ByteBuffer ippBuf, String[] attributeBlocks) throws UnsupportedEncodingException {
+    ippBuf = IppTag.getBeginCollection(ippBuf, "media-col");
+    ippBuf = getAttributes(ippBuf, attributeBlocks, true);
+    return IppTag.getEndCollection(ippBuf);
   }
 
   /**
@@ -143,6 +154,15 @@ public class IppPrintJobOperation extends IppOperation {
 
     ippBuf = IppTag.getJobAttributesTag(ippBuf);
 
+    return getAttributes(ippBuf, attributeBlocks);
+  }
+
+  private static ByteBuffer getAttributes(ByteBuffer ippBuf, String[] attributeBlocks) throws UnsupportedEncodingException {
+    return getAttributes(ippBuf, attributeBlocks, false);
+  }
+
+  private static ByteBuffer getAttributes(ByteBuffer ippBuf, String[] attributeBlocks, boolean collectionMembers)
+      throws UnsupportedEncodingException {
     int l = attributeBlocks.length;
     for (int i = 0; i < l; i++) {
       String[] attr = attributeBlocks[i].split(":");
@@ -152,6 +172,11 @@ public class IppPrintJobOperation extends IppOperation {
       String name = attr[0];
       String tagName = attr[1];
       String value = attr[2];
+
+      if (collectionMembers) {
+        ippBuf = IppTag.getMemberAttributeName(ippBuf, name);
+        name = null;
+      }
 
       if (tagName.equals("boolean")) {
         if (value.equals("true")) {

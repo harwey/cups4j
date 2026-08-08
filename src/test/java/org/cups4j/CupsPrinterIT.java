@@ -41,13 +41,13 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public final class CupsPrinterIT {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CupsPrinterIT.class);
+    private static final Logger log = LoggerFactory.getLogger(CupsPrinterIT.class);
     private CupsPrinter printer;
 
     @BeforeEach
     public void setUpPrinter() throws Exception {    
         printer = getPrinter();
-        LOG.info("Printer {} was choosen for testing.", printer);
+        log.info("Printer {} was choosen for testing.", printer);
     }
 
     @Test
@@ -57,7 +57,7 @@ public final class CupsPrinterIT {
 
     @Test
     @Disabled
-    public void testPrintPDF() {
+    public void testPrintPDF() throws IOException {
         print(printer, new File("src/test/resources/test.pdf"));
     }
 
@@ -87,18 +87,14 @@ public final class CupsPrinterIT {
 
     @Test
     @Disabled
-    public void testPrintText() {
+    public void testPrintText() throws IOException {
         print(printer, new File("src/test/resources/test.txt"));
     }
 
-    private PrintRequestResult print(CupsPrinter printer, File file) {
+    private PrintRequestResult print(CupsPrinter printer, File file) throws IOException {
         PrintJob job = createPrintJob(file);
-        LOG.info("Print job '{}' will be sent to {}.", job, printer);
-        try {
-            return printer.print(job);
-        } catch (Exception ex) {
-            throw new IllegalStateException("print of '" + file + "' failed", ex);
-        }
+        log.info("Print job '{}' will be sent to {}.", job, printer);
+        return printer.print(job);
     }
 
     @Test
@@ -127,7 +123,7 @@ public final class CupsPrinterIT {
         PrintJob job = new PrintJob.Builder("secret".getBytes()).jobName("testPrintListWithNoUser").build();
         printer.print(job, job);
     }
-    
+
     private PrintJob createPrintJob(File file, String userName) {
         String jobname = generateJobnameFor(file);
         try {
@@ -205,8 +201,34 @@ public final class CupsPrinterIT {
         CupsPrinter printer = getPrinter();
         List<Attribute> attributes = printer.getAttributes();
         assertFalse(attributes.isEmpty());
-        LOG.info("Printer {} supports media {}.", printer, printer.getMediaSupported());
-        LOG.info("Printer {} supports printer trays {}.", printer, printer.getMediaSourceSupported());
+        log.info("Printer {} supports media {}.", printer, printer.getMediaSupported());
+        log.info("Printer {} supports printer trays {}.", printer, printer.getMediaSourceSupported());
+    }
+
+    /**
+     * This test was inserted with issue #21 to test the handling of
+     * different paper trays. It was started with VM arguments
+     * <ul>
+     *     <li>-Dcups.url=... -Dprinter=ps-opt-mfp075</li>
+     * </ul>
+     *
+     * @throws Exception in case of error
+     */
+    @Test
+    public void testPrintWithTray2() throws Exception {
+        CupsPrinter printer = getPrinter();
+        List<String> supported = printer.getMediaSourceSupported();
+        log.info("Printer {} supports as media sources {}.", printer, supported);
+        if (supported.contains("tray-2")) {
+            PrintJob printJob = new PrintJob.Builder("Print Test with 'tray-2'".getBytes())
+                    .jobName("TestTray2")
+                    .copies(1)
+                    .attribute("media-col", "media-source:keyword:tray-2")
+                    .build();
+            printer.print(printJob);
+        } else {
+            log.warn("No job will be printed becauce printer {} supports not 'tray-2' as media-source {}.", printer, supported);
+        }
     }
 
     /**
@@ -219,9 +241,9 @@ public final class CupsPrinterIT {
     public static CupsPrinter getPrinter() throws Exception  {
         String name = System.getProperty("printer");
         if (name == null) {
-            LOG.info("To specify printer please set system property 'printer'.");
+            log.info("To specify printer please set system property 'printer'.");
             CupsPrinter printer = TestCups.getCupsClient().getDefaultPrinter();
-          Assumptions.assumeFalse(printer == null);
+            Assumptions.assumeFalse(printer == null);
             return printer;
         } else {
             return getPrinter(name);

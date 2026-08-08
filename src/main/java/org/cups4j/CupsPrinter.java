@@ -227,6 +227,7 @@ public class CupsPrinter {
     } else {
       addAttribute(attributes, "job-attributes", "sides:keyword:one-sided");
     }
+    addMediaSourceAttribute(attributes);
     IppPrintJobOperation command = new IppPrintJobOperation(printerURL.getPort());
     IppResult ippResult = command.request(this, printerURL, attributes, document, creds);
     PrintRequestResult result = new PrintRequestResult(ippResult);
@@ -364,6 +365,15 @@ public class CupsPrinter {
     PrintRequestResult result = new PrintRequestResult(ippResult);
     result.setJobId(jobId);
     return result;
+  }
+
+  private void addMediaSourceAttribute(Map<String, String> map) {
+    String value = map.get("media-source");
+    if (value != null) {
+      String jobValue = "media-source:keyword:" + value;
+      addAttribute(map, "media-col", jobValue);
+      log.debug("Media attribute '{}' is added.", jobValue);
+    }
   }
 
   private void addAttribute(Map<String, String> map, String name, String value) {

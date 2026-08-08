@@ -1,12 +1,12 @@
 package ch.ethz.vppserver.ippclient;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+
+/*
  * Copyright (C) 2008 ITS of ETH Zurich, Switzerland, Sarah Windler Burri
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -52,6 +52,9 @@ public class IppTag {
   private final static byte ENUM_TAG = 0x23;
   private final static byte RESOLUTION_TAG = 0x32;
   private final static byte RANGE_OF_INTEGER_TAG = 0x33;
+  private static final byte BEGIN_COLLECTION_TAG = 0x34;
+  private static final byte END_COLLECTION_TAG = 0x37;
+  private static final byte MEMBER_ATTRIBUTE_NAME_TAG = 0x4a;
   private final static byte TEXT_WITHOUT_LANGUAGE_TAG = 0x41;
   private final static byte NAME_WITHOUT_LANGUAGE_TAG = 0x42;
   private final static byte KEYWORD_TAG = 0x44;
@@ -705,6 +708,35 @@ public class IppTag {
     ippBuf.putInt(value1);
     ippBuf.putInt(value2);
     return ippBuf;
+  }
+
+  public static ByteBuffer getBeginCollection(ByteBuffer ippBuf, String attributeName)
+          throws UnsupportedEncodingException {
+    ippBuf.put(BEGIN_COLLECTION_TAG);
+    putAttName(ippBuf, attributeName);
+    ippBuf.putShort(NULL_LENGTH);
+    return ippBuf;
+  }
+
+  public static ByteBuffer getEndCollection(ByteBuffer ippBuf) {
+    ippBuf.put(END_COLLECTION_TAG);
+    ippBuf.putShort(NULL_LENGTH);
+    ippBuf.putShort(NULL_LENGTH);
+    return ippBuf;
+  }
+
+  public static ByteBuffer getMemberAttributeName(ByteBuffer ippBuf, String memberName)
+          throws UnsupportedEncodingException {
+    ippBuf.put(MEMBER_ATTRIBUTE_NAME_TAG);
+    ippBuf.putShort(NULL_LENGTH);
+    putAttName(ippBuf, memberName);
+    return ippBuf;
+  }
+
+  public static ByteBuffer getCollectionKeyword(ByteBuffer ippBuf, String memberName, String value)
+          throws UnsupportedEncodingException {
+    ippBuf = getMemberAttributeName(ippBuf, memberName);
+    return getKeyword(ippBuf, null, value);
   }
 
   /**

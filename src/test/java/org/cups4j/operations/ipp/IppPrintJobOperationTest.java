@@ -26,6 +26,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit-tests for {@link IppPrintJobOperation} class.
@@ -50,6 +51,39 @@ public class IppPrintJobOperationTest {
         // THEN
         String text = new String(bytes);
         assertThat(text, containsString("one-sided"));
+    }
+
+    @Test
+    public void getIppHeaderWithMediaCollection() throws UnsupportedEncodingException {
+        // GIVEN
+        Map<String, String> map = new HashMap<>();
+        map.put("media-col", "media-source:keyword:tray-2");
+        map.put("requesting-user-name", "oli");
+        // WHEN
+        ByteBuffer ippHeader = operation.getIppHeader(URI.create("http://localhost:631/printers/testfax"), map);
+        byte[] bytes = new byte[ippHeader.limit()];
+        ippHeader.get(bytes);
+        // THEN: media-col collection members are encoded as required by RFC 8010.
+        int mediaCollection = indexOf(bytes, "media-col".getBytes());
+        int memberName = indexOf(bytes, "media-source".getBytes());
+        assertEquals(0x34, bytes[mediaCollection - 3] & 0xff);
+        assertEquals(0x4a, bytes[memberName - 5] & 0xff);
+        assertEquals(0, bytes[memberName - 4]);
+        assertEquals(0, bytes[memberName - 3]);
+        assertEquals(0x44, bytes[memberName + "media-source".length()] & 0xff);
+    }
+
+    private static int indexOf(byte[] bytes, byte[] value) {
+        for (int i = 0; i <= bytes.length - value.length; i++) {
+            int j = 0;
+            while (j < value.length && bytes[i + j] == value[j]) {
+                j++;
+            }
+            if (j == value.length) {
+                return i;
+            }
+        }
+        throw new AssertionError("Expected value not found in IPP header");
     }
 
 }
