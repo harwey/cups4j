@@ -118,7 +118,7 @@ public class CupsPrinter {
     this.creds = creds;
     this.printerURL = printerURL;
     this.attributes = attributes;
-    this.name = getAttributeValue("printer-name", attributes);
+    this.name = getAttribute("printer-name").getValue();
     updateClassAttribute();
   }
 
@@ -129,16 +129,6 @@ public class CupsPrinter {
     attributeValue.setValue(value);
     attribute.getAttributeValue().add(attributeValue);
     return attribute;
-  }
-
-  private static String getAttributeValue(String name, List<Attribute> values) {
-    for (Attribute attr : values) {
-      if (attr.getName().equals(name)) {
-        return attr.getValue();
-      }
-    }
-    log.warn("Attribute '{}' not in list of attributes {}.", name, values);
-    return "";
   }
 
   private void updateClassAttribute() {

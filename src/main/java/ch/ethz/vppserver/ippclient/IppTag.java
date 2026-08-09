@@ -733,12 +733,6 @@ public class IppTag {
     return ippBuf;
   }
 
-  public static ByteBuffer getCollectionKeyword(ByteBuffer ippBuf, String memberName, String value)
-          throws UnsupportedEncodingException {
-    ippBuf = getMemberAttributeName(ippBuf, memberName);
-    return getKeyword(ippBuf, null, value);
-  }
-
   /**
    * 
    * @param ippBuf
