@@ -17,14 +17,22 @@ import java.util.List;
 @XmlType(name = "attribute")
 public class Attribute {
 
-  /** Constant with NULL semantic. */
-  public static final Attribute NONE = new Attribute();
-
-  static {
-    NONE.name = "NONE";
-    NONE.description = "not a real attribute";
-    NONE.attributeValue = Collections.emptyList();
-  }
+  /** Constant with NULL semantic. This instance is immutable. */
+  public static final Attribute NONE = new Attribute() {
+    {
+      name = "NONE";
+      description = "not a real attribute";
+      attributeValue = Collections.emptyList();
+    }
+    @Override
+    public void setName(String value) {
+      throw new UnsupportedOperationException("NONE is immutable");
+    }
+    @Override
+    public void setDescription(String value) {
+      throw new UnsupportedOperationException("NONE is immutable");
+    }
+  };
 
   @XmlElement(name ="attribute-value")
   protected List<AttributeValue> attributeValue;

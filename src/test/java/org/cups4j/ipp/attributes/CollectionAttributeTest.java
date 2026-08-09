@@ -19,8 +19,15 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class CollectionAttributeTest {
+
+    @Test
+    public void testAttributeNoneIsImmutable() {
+        assertThrows(UnsupportedOperationException.class, () -> Attribute.NONE.setName("evil"));
+        assertThrows(UnsupportedOperationException.class, () -> Attribute.NONE.setDescription("evil"));
+    }
 
     @Test
     public void testGetMemberAttribute() {
