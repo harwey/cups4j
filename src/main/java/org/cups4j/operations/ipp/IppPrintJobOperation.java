@@ -130,7 +130,14 @@ public class IppPrintJobOperation extends IppOperation {
 
   private static ByteBuffer getMediaCollection(ByteBuffer ippBuf, String[] attributeBlocks) throws UnsupportedEncodingException {
     ippBuf = IppTag.getBeginCollection(ippBuf, "media-col");
-    ippBuf = getAttributes(ippBuf, attributeBlocks, true);
+    for (String block : attributeBlocks) {
+      String[] attr = block.split(":");
+      if (attr.length != 3) {
+        return ippBuf;
+      }
+      ippBuf = IppTag.getMemberAttributeName(ippBuf, attr[0]);
+      ippBuf = encodeAttribute(ippBuf, null, attr[1], attr[2]);
+    }
     return IppTag.getEndCollection(ippBuf);
   }
 
@@ -158,71 +165,62 @@ public class IppPrintJobOperation extends IppOperation {
   }
 
   private static ByteBuffer getAttributes(ByteBuffer ippBuf, String[] attributeBlocks) throws UnsupportedEncodingException {
-    return getAttributes(ippBuf, attributeBlocks, false);
-  }
-
-  private static ByteBuffer getAttributes(ByteBuffer ippBuf, String[] attributeBlocks, boolean collectionMembers)
-      throws UnsupportedEncodingException {
-    int l = attributeBlocks.length;
-    for (int i = 0; i < l; i++) {
-      String[] attr = attributeBlocks[i].split(":");
-      if ((attr == null) || (attr.length != 3)) {
+    for (String block : attributeBlocks) {
+      String[] attr = block.split(":");
+      if (attr.length != 3) {
         return ippBuf;
       }
-      String name = attr[0];
-      String tagName = attr[1];
-      String value = attr[2];
+      ippBuf = encodeAttribute(ippBuf, attr[0], attr[1], attr[2]);
+    }
+    return ippBuf;
+  }
 
-      if (collectionMembers) {
-        ippBuf = IppTag.getMemberAttributeName(ippBuf, name);
+  private static ByteBuffer encodeAttribute(ByteBuffer ippBuf, String name, String tagName, String value)
+      throws UnsupportedEncodingException {
+    if (tagName.equals("boolean")) {
+      if (value.equals("true")) {
+        ippBuf = IppTag.getBoolean(ippBuf, name, true);
+      } else {
+        ippBuf = IppTag.getBoolean(ippBuf, name, false);
+      }
+    } else if (tagName.equals("integer")) {
+      ippBuf = IppTag.getInteger(ippBuf, name, Integer.parseInt(value));
+    } else if (tagName.equals("rangeOfInteger")) {
+      String[] range = value.split("-");
+      int low = Integer.parseInt(range[0]);
+      int high = Integer.parseInt(range[1]);
+      ippBuf = IppTag.getRangeOfInteger(ippBuf, name, low, high);
+    } else if (tagName.equals("setOfRangeOfInteger")) {
+      String ranges[] = value.split(",");
+
+      for (String range : ranges) {
+        range = range.trim();
+        String[] values = range.split("-");
+
+        int value1 = Integer.parseInt(values[0]);
+        int value2 = value1;
+        // two values provided?
+        if (values.length == 2) {
+          value2 = Integer.parseInt(values[1]);
+        }
+
+        // first attribute value needs name, additional values need to get the
+        // "null" name
+        ippBuf = IppTag.getRangeOfInteger(ippBuf, name, value1, value2);
         name = null;
       }
-
-      if (tagName.equals("boolean")) {
-        if (value.equals("true")) {
-          ippBuf = IppTag.getBoolean(ippBuf, name, true);
-        } else {
-          ippBuf = IppTag.getBoolean(ippBuf, name, false);
-        }
-      } else if (tagName.equals("integer")) {
-        ippBuf = IppTag.getInteger(ippBuf, name, Integer.parseInt(value));
-      } else if (tagName.equals("rangeOfInteger")) {
-        String[] range = value.split("-");
-        int low = Integer.parseInt(range[0]);
-        int high = Integer.parseInt(range[1]);
-        ippBuf = IppTag.getRangeOfInteger(ippBuf, name, low, high);
-      } else if (tagName.equals("setOfRangeOfInteger")) {
-        String ranges[] = value.split(",");
-
-        for (String range : ranges) {
-          range = range.trim();
-          String[] values = range.split("-");
-
-          int value1 = Integer.parseInt(values[0]);
-          int value2 = value1;
-          // two values provided?
-          if (values.length == 2) {
-            value2 = Integer.parseInt(values[1]);
-          }
-
-          // first attribute value needs name, additional values need to get the
-          // "null" name
-          ippBuf = IppTag.getRangeOfInteger(ippBuf, name, value1, value2);
-          name = null;
-        }
-      } else if (tagName.equals("keyword")) {
-        ippBuf = IppTag.getKeyword(ippBuf, name, value);
-      } else if (tagName.equals("name")) {
-        ippBuf = IppTag.getNameWithoutLanguage(ippBuf, name, value);
-      } else if (tagName.equals("enum")) {
-        ippBuf = IppTag.getEnum(ippBuf, name, Integer.parseInt(value));
-      } else if (tagName.equals("resolution")) {
-        String[] resolution = value.split(",");
-        int value1 = Integer.parseInt(resolution[0]);
-        int value2 = Integer.parseInt(resolution[1]);
-        byte value3 = Byte.valueOf(resolution[2]);
-        ippBuf = IppTag.getResolution(ippBuf, name, value1, value2, value3);
-      }
+    } else if (tagName.equals("keyword")) {
+      ippBuf = IppTag.getKeyword(ippBuf, name, value);
+    } else if (tagName.equals("name")) {
+      ippBuf = IppTag.getNameWithoutLanguage(ippBuf, name, value);
+    } else if (tagName.equals("enum")) {
+      ippBuf = IppTag.getEnum(ippBuf, name, Integer.parseInt(value));
+    } else if (tagName.equals("resolution")) {
+      String[] resolution = value.split(",");
+      int value1 = Integer.parseInt(resolution[0]);
+      int value2 = Integer.parseInt(resolution[1]);
+      byte value3 = Byte.valueOf(resolution[2]);
+      ippBuf = IppTag.getResolution(ippBuf, name, value1, value2, value3);
     }
     return ippBuf;
   }
