@@ -66,6 +66,7 @@ PrintJob printJob = new PrintJob.Builder(bytes)
                                 // extra PrintJob attributes
                                 .attribute("compression", "none")
                                 .attribute("job-attributes", "print-quality:enum:3#fit-to-page:boolean:true#sheet-collate:keyword:collated")
+                                .attribute("media-col", "media-source:keyword:tray-2")
                                 .build();
 ```
 

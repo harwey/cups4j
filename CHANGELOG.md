@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased]
+
+### Added
+
+- print jobs can specify a media-source (paper tray) via the `media-col` attribute
+  ([issue #21](https://github.com/harwey/cups4j/issues/21))
+
+
 ## [0.8.2] (02-Jun-2026)
 
 ### Changed
