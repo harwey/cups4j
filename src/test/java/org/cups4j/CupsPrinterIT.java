@@ -223,7 +223,7 @@ public final class CupsPrinterIT {
             PrintJob printJob = new PrintJob.Builder("Print Test with 'tray-2'".getBytes())
                     .jobName("TestTray2")
                     .copies(1)
-                    .attribute("media-col", "media-source:keyword:tray-2")
+                    .mediaSource("tray-2")  // or: .attribute("media-col", "media-source:keyword:tray-2")
                     .build();
             printer.print(printJob);
         } else {
