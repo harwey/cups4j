@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2026 Oli B.
  *
  * This file is part of Cups4J. Cups4J is free software: you can redistribute it and/or modify it
@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PrintJobTest {
+class PrintJobTest {
 
     /**
      * Unit tests for {@link PrintJob} class and its builder.
@@ -27,12 +27,21 @@ public class PrintJobTest {
      * @author oboehm
      */
     @Test
-    public void testBuilder() {
+    void testBuilder() {
         PrintJob printJob = new PrintJob.Builder("Hello world!".getBytes())
                 .attribute("print-color-mode", "color")
                 .attribute("ColorModel", "RGB")
                 .build();
         assertEquals(2, printJob.getAttributes().size());
+    }
+
+    @Test
+    void testMediaSource() {
+        PrintJob printJob = new PrintJob.Builder("testMediaSource".getBytes())
+                .mediaSource("tray-1")
+                .build();
+        assertEquals(1, printJob.getAttributes().size());
+        assertEquals("media-source:keyword:tray-1", printJob.getAttributes().get("media-col"));
     }
 
 }

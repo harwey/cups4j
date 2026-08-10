@@ -60,21 +60,18 @@ public class PrintJob {
     private Map<String, String> attributes = new HashMap<>();
 
     /**
-     * Constructor
+     * Constructor.
      * 
-     * @param byte[] document
-     * 
+     * @param document as byte[]
      */
     public Builder(byte[] document) {
       this.document = new ByteArrayInputStream(document);
     }
 
     /**
-     * Constructor
+     * Constructor.
      * 
-     * @param InputStream
-     *          document
-     * 
+     * @param document as InputStream
      */
     public Builder(InputStream document) {
       this.document = document;
@@ -218,6 +215,23 @@ public class PrintJob {
      */
     public Builder attribute(String key, String value) {
       this.attributes.put(key, value);
+      return this;
+    }
+
+    /**
+     * Set the media-source attribute to define, where the printer paper
+     * comes from.
+     * <p>
+     * See {@link CupsPrinter#getMediaSourceSupported()} to see which values
+     * are supported by the printer.
+     * </p>
+     *
+     * @param value e.g. "tray-1", "tray-2" or "manual"
+     * @return Builder
+     * @since 0.8.3
+     */
+    public Builder mediaSource(String value) {
+      this.attributes.put("media-col", "media-source:keyword:" + value);
       return this;
     }
 
