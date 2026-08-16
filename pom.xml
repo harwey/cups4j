@@ -5,7 +5,7 @@
 
   <groupId>org.cups4j</groupId>
   <artifactId>cups4j</artifactId>
-  <version>0.8.3-SNAPSHOT</version>
+  <version>0.8.3</version>
   <packaging>jar</packaging>
 
   <name>cups4j</name>
