@@ -1,17 +1,16 @@
 /*
  * Copyright (c) 2018 by Oliver Boehm
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * This file is part of Cups4J. Cups4J is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later version.
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * Cups4J is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
+ * General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * You should have received a copy of the GNU Lesser General Public License along with Cups4J. If
+ * not, see <http://www.gnu.org/licenses/>.
  *
  * (c)reated 23.03.2018 by oboehm (ob@oasd.de)
  */
@@ -22,12 +21,12 @@ import ch.ethz.vppserver.ippclient.IppResult;
 import ch.ethz.vppserver.ippclient.IppTag;
 import org.apache.commons.io.IOUtils;
 import org.cups4j.CupsAuthentication;
-import org.cups4j.http.IppClient;
-import org.cups4j.http.IppRequest;
-import org.cups4j.http.IppResponseHandler;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
 import org.cups4j.PrintJob;
+import org.cups4j.http.IppClient;
+import org.cups4j.http.IppRequest;
+import org.cups4j.http.IppResponseHandler;
 import org.cups4j.ipp.attributes.AttributeGroup;
 import org.cups4j.operations.IppHttp;
 import org.slf4j.Logger;
@@ -35,7 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URI;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
@@ -66,21 +64,21 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         this.lastDocument = lastDocument;
     }
 
-    /**
-     * Requests the given printer.
-     *
-     * @param printer    printer
-     * @param printerURL printer URI
-     * @param printJob   print job
-     * @param creds      credentials
-     * @return IPP result
-     * @deprecated use {@link #request(CupsPrinter, URI, PrintJob, CupsAuthentication)}
-     */
-    @Deprecated
-    public IppResult request(CupsPrinter printer, URL printerURL,
-                             PrintJob printJob, CupsAuthentication creds) {
-        return request(printer, URI.create(printerURL.toString()), printJob, creds);
-    }
+//    /**
+//     * Requests the given printer.
+//     *
+//     * @param printer    printer
+//     * @param printerURL printer URI
+//     * @param printJob   print job
+//     * @param creds      credentials
+//     * @return IPP result
+//     * @deprecated use {@link #request(CupsPrinter, URI, PrintJob, CupsAuthentication)}
+//     */
+//    @Deprecated
+//    public IppResult request(CupsPrinter printer, URL printerURL,
+//                             PrintJob printJob, CupsAuthentication creds) {
+//        return request(printer, URI.create(printerURL.toString()), printJob, creds);
+//    }
 
     /**
      * Requests the given printer.
