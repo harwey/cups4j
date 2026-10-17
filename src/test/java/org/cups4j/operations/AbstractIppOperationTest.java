@@ -73,6 +73,7 @@ public abstract class AbstractIppOperationTest {
     @Container
     public GenericContainer<?> cups = new GenericContainer<>(DockerImageName.parse("ydkn/cups")) //
             .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("container"))) //
+            .withEnv("ADMIN_PASSWORD", "admin") //
             .withExposedPorts(CupsClient.DEFAULT_PORT) //
             .waitingFor(Wait.forHttp("/"));
     protected CupsClient client;
