@@ -14,6 +14,8 @@
  */
 package org.cups4j.http;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -65,6 +67,15 @@ public class JdkIppRequest implements IppRequest {
                 : HttpRequest.BodyPublishers.noBody();
         builder.method("POST", bodyPublisher);
         return builder.build();
+    }
+
+    @Override
+    public String toString() {
+        String s = getClass().getSimpleName() + " from " + uri;
+        if (StringUtils.isNotBlank(contentType)) {
+            s += " (" + contentType + ")";
+        }
+        return s;
     }
 
 }

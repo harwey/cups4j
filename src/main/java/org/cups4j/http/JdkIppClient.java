@@ -16,7 +16,6 @@ package org.cups4j.http;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -43,8 +42,6 @@ public class JdkIppClient implements IppClient {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IOException("Request was interrupted", e);
-        } catch (SocketException ex) {
-            throw new NetworkException("cannot connect to " + httpRequest, ex);
         }
     }
 

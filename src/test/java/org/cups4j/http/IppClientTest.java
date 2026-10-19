@@ -34,9 +34,9 @@ import static org.junit.jupiter.api.Assertions.fail;
  * @author oboehm
  * @since 0.8.3
  */
-class JdkIppClientTest {
+class IppClientTest {
 
-    private static final Logger log = LoggerFactory.getLogger(JdkIppClientTest.class);
+    private static final Logger log = LoggerFactory.getLogger(IppClientTest.class);
 
     /**
      * Simulates a network failure by sending a request to a port where no
@@ -48,7 +48,7 @@ class JdkIppClientTest {
     @Test
     void networkFailure() throws IOException {
         JdkIppRequest request = JdkIppRequest.post(unusedURI());
-        IppClient client = new JdkIppClient(HttpClient.newHttpClient());
+        IppClient client = new RetryingIppClient(HttpClient.newHttpClient());
         IppResponseHandler<byte[]> handler = (statusCode, reasonPhrase, body) ->
                 fail("handler must not be called if the network is down");
         IOException ex = assertThrows(IOException.class,
