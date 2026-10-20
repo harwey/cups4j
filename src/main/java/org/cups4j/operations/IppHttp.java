@@ -4,10 +4,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsPrinter;
-import org.cups4j.http.IppClient;
-import org.cups4j.http.IppRequest;
-import org.cups4j.http.JdkIppClient;
-import org.cups4j.http.JdkIppRequest;
+import org.cups4j.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +19,7 @@ public final class IppHttp {
 	private static final int CUPSTIMEOUT =
 			Integer.parseInt(System.getProperty("cups4j.timeout", "10000"));
 
-	private static final IppClient client = new JdkIppClient(HttpClient.newBuilder()
+	private static final IppClient client = new RetryingIppClient(HttpClient.newBuilder()
 			.followRedirects(HttpClient.Redirect.NEVER)
 			.connectTimeout(Duration.ofMillis(CUPSTIMEOUT))
 			.build());

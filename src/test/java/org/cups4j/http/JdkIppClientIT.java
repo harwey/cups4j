@@ -28,7 +28,7 @@ public class JdkIppClientIT extends IppClientIT {
 
     @Override
     protected IppClient createHttpClient() {
-        return new JdkIppClient(HttpClient.newBuilder()
+        return new RetryingIppClient(HttpClient.newBuilder()
                 .followRedirects(HttpClient.Redirect.NEVER)
                 .connectTimeout(Duration.ofMillis(10000))
                 .build());

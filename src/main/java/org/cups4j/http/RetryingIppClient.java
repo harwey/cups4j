@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.http.HttpClient;
+import java.util.Objects;
 
 /**
  * The class RetryingIppClient ...
@@ -38,17 +39,27 @@ public class RetryingIppClient extends JdkIppClient implements IppClient {
 
     @Override
     public <T> T execute(IppRequest request, IppResponseHandler<T> handler) throws IOException {
-        NetworkException exception = new NetworkException("cannot connect to " + request);
+        IOException last = null;
         for (int attempt = 1; attempt <= 3; attempt++) {
             try {
+                log.debug("{}. try to connect with {}.", attempt, request);
                 return super.execute(request, handler);
             } catch (SocketException sex) {
                 log.warn("Connection {} failed ({} - use DEBUG level to see stacktrace).", request, sex.getMessage());
                 log.debug("Details:", sex);
-                exception.addSuppressed(sex);
-                log.info("Trying reconnect of {}...", request);
+                if ((last != null) && !isSimilar(sex, last)) {
+                    sex.addSuppressed(last);
+                    throw new NetworkException("cannot connect to " + request, sex);
+                }
+                last = sex;
             }
         }
-        throw exception;
+        throw new NetworkException("cannot connect to " + request, last);
     }
+
+    private static boolean isSimilar(Throwable t1, Throwable t2) {
+        return t1.getClass().equals(t2.getClass())
+                && Objects.equals(t1.getMessage(), t2.getMessage());
+    }
+
 }
