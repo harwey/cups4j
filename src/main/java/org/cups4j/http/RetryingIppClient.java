@@ -15,12 +15,15 @@
 
 package org.cups4j.http;
 
+import org.apache.commons.lang3.ThreadUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.http.HttpClient;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 /**
@@ -40,7 +43,7 @@ public class RetryingIppClient extends JdkIppClient implements IppClient {
     @Override
     public <T> T execute(IppRequest request, IppResponseHandler<T> handler) throws IOException {
         IOException last = null;
-        for (int attempt = 1; attempt <= 3; attempt++) {
+        for (int attempt = 1; ; attempt++) {
             try {
                 log.debug("{}. try to connect with {}.", attempt, request);
                 return super.execute(request, handler);
@@ -52,6 +55,13 @@ public class RetryingIppClient extends JdkIppClient implements IppClient {
                     throw new NetworkException("cannot connect to " + request, sex);
                 }
                 last = sex;
+                if (attempt >= 3) {
+                    log.debug("Give up to connect to {} after {} try.", request, attempt);
+                    break;
+                }
+                Duration delay = Duration.of(attempt * 50L, ChronoUnit.MILLIS);
+                log.trace("Waiting {} after {} try to connect to {}.", delay, attempt, request );
+                ThreadUtils.sleepQuietly(delay);
             }
         }
         throw new NetworkException("cannot connect to " + request, last);
