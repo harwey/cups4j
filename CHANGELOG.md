@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - automatic retry mechanism added if connection fails
   ([issue #70](https://github.com/harwey/cups4j/issues/70))
+
+
+## [0.8.3] (16-Aug-2026)
+
+### Added
+
 - print jobs can specify a media-source (paper tray) via the `media-col` attribute
   ([issue #21](https://github.com/harwey/cups4j/issues/21))
 - `mediaSource(..)` added to `PrintJob.Builder` as suggested in [issue #12](https://github.com/harwey/cups4j/issues/12)
