@@ -203,6 +203,9 @@ public final class CupsPrinterIT {
         assertFalse(attributes.isEmpty());
         log.info("Printer {} supports media {}.", printer, printer.getMediaSupported());
         log.info("Printer {} supports printer trays {}.", printer, printer.getMediaSourceSupported());
+        for (Attribute attr : attributes) {
+            log.info("Printer {} has attribute {}.", printer, attr);
+        }
     }
 
     /**
