@@ -30,8 +30,6 @@ import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
@@ -54,13 +52,26 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * @author oboehm
  * @since x.x (23.03.2018)
  */
-@Testcontainers
 public abstract class AbstractIppOperationTest {
     
     private static final String TEST_PRINTER_NAME = "test-printer";
+    private static final GenericContainer<?> CUPS = new GenericContainer<>(DockerImageName.parse("ydkn/cups")) //
+            .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("container"))) //
+            .withEnv("ADMIN_PASSWORD", "admin") //
+            .withExposedPorts(CupsClient.DEFAULT_PORT) //
+            .waitingFor(Wait.forHttp("/"));
+
+    static {
+        if (DockerClientFactory.instance().isDockerAvailable()) {
+            CUPS.start();
+        }
+    }
+
     protected final String printerName = System.getProperty("printer", TEST_PRINTER_NAME);
     protected final String userName = "admin";
     protected final CupsAuthentication creds = new CupsAuthentication(this.userName, "admin");
+    protected final GenericContainer<?> cups = CUPS;
+    protected CupsClient client;
 
     @BeforeAll
     public static void requireDocker() {
@@ -69,14 +80,6 @@ public abstract class AbstractIppOperationTest {
                 "Docker is not running"
         );
     }
-
-    @Container
-    public GenericContainer<?> cups = new GenericContainer<>(DockerImageName.parse("ydkn/cups")) //
-            .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("container"))) //
-            .withEnv("ADMIN_PASSWORD", "admin") //
-            .withExposedPorts(CupsClient.DEFAULT_PORT) //
-            .waitingFor(Wait.forHttp("/"));
-    protected CupsClient client;
    
     protected ByteBuffer getIppHeader(IppOperation operation) throws UnsupportedEncodingException {
         URI printerURL = this.getPrinterURL();
@@ -138,6 +141,7 @@ public abstract class AbstractIppOperationTest {
     
     @BeforeEach
     public void setUp() throws Exception {
+        this.cups.execInContainer("cancel", "-a");  // cancel jobs from last run
         createTestPrinters();
     
         this.client = new CupsClient(this.cups.getHost(), this.cups.getFirstMappedPort(), this.userName, this.creds);
