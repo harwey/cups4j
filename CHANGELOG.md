@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- printer resolution can be set in DPI or DPCM, e.g. "300dpi"
+  ([issue #47](https://github.com/harwey/cups4j/issues/47))
+
+
 ### Added
 
 - automatic retry mechanism added if connection fails

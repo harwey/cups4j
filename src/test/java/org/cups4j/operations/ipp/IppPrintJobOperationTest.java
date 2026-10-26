@@ -16,8 +16,13 @@
  */
 package org.cups4j.operations.ipp;
 
+import ch.ethz.vppserver.ippclient.IppResponse;
+import ch.ethz.vppserver.ippclient.IppResult;
+import org.cups4j.ipp.attributes.Attribute;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -40,10 +45,8 @@ public class IppPrintJobOperationTest {
     @Test
     public void getIppHeader() throws UnsupportedEncodingException {
         // GIVEN
-        Map<String, String> map = new HashMap<>();
-        map.put("job-attributes", "copies:integer:1#orientation-requested:enum:3#output-mode:keyword:monochrome#sides:keyword:one-sided");
-        map.put("job-name", "testjob");
-        map.put("requesting-user-name", "oli");
+        Map<String, String> map = createMapWithJobAttributes(
+                "copies:integer:1#orientation-requested:enum:3#output-mode:keyword:monochrome#sides:keyword:one-sided");
         // WHEN
         ByteBuffer ippHeader = operation.getIppHeader(URI.create("http://localhost:631/printers/testfax"), map);
         byte[] bytes = new byte[ippHeader.limit()];
@@ -71,6 +74,43 @@ public class IppPrintJobOperationTest {
         assertEquals(0, bytes[memberName - 4]);
         assertEquals(0, bytes[memberName - 3]);
         assertEquals(0x44, bytes[memberName + "media-source".length()] & 0xff);
+    }
+
+    @Test
+    void getIppHeaderWithResolution() throws IOException {
+        // GIVEN
+        Map<String, String> map = createMapWithJobAttributes("printer-resolution:resolution:75,75,4");
+        // WHEN
+        ByteBuffer ippHeader = operation.getIppHeader(URI.create("http://localhost:631/printers/testfax"), map);
+        // THEN
+        assertResolution("75,75,4", ippHeader);
+    }
+
+    @Test
+    void getIppHeaderWithResolution300dpi() throws IOException {
+        // GIVEN
+        Map<String, String> map = createMapWithJobAttributes("printer-resolution:resolution:300dpi");
+        // WHEN
+        ByteBuffer ippHeader = operation.getIppHeader(URI.create("http://localhost:631/printers/testfax"), map);
+        // THEN: IPP expects "x,y,units", so "300dpi" should be transformed to it
+        assertResolution("300,300,3", ippHeader);
+    }
+
+    private static @NotNull Map<String, String> createMapWithJobAttributes(String value) {
+        Map<String, String> map = new HashMap<>();
+        map.put("job-attributes", value);
+        map.put("job-name", "testjob");
+        map.put("requesting-user-name", "oli");
+        return map;
+    }
+
+    private static void assertResolution(String expected, ByteBuffer ippHeader) throws IOException {
+        byte[] bytes = new byte[ippHeader.limit()];
+        ippHeader.get(bytes);
+        IppResult ippResult = new IppResponse().getResponse(ByteBuffer.wrap(bytes));
+        Attribute resolution = ippResult.getAttributeGroup("job-attributes-tag")
+                .getAttribute("printer-resolution");
+        assertEquals(expected, resolution.getValue());
     }
 
     private static int indexOf(byte[] bytes, byte[] value) {

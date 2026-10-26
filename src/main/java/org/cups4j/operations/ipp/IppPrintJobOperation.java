@@ -15,6 +15,7 @@ package org.cups4j.operations.ipp;
  * <http://www.gnu.org/licenses/>.
  */
 import ch.ethz.vppserver.ippclient.IppTag;
+import org.cups4j.ipp.units.PrinterResolution;
 import org.cups4j.operations.IppOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -216,11 +217,8 @@ public class IppPrintJobOperation extends IppOperation {
     } else if (tagName.equals("enum")) {
       ippBuf = IppTag.getEnum(ippBuf, name, Integer.parseInt(value));
     } else if (tagName.equals("resolution")) {
-      String[] resolution = value.split(",");
-      int value1 = Integer.parseInt(resolution[0]);
-      int value2 = Integer.parseInt(resolution[1]);
-      byte value3 = Byte.valueOf(resolution[2]);
-      ippBuf = IppTag.getResolution(ippBuf, name, value1, value2, value3);
+      PrinterResolution res = PrinterResolution.of(value);
+      ippBuf = IppTag.getResolution(ippBuf, name, res.getX(), res.getY(), res.getUnit());
     }
     return ippBuf;
   }
