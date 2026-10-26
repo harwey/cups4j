@@ -36,6 +36,14 @@ class PrintJobTest {
     }
 
     @Test
+    void testResolution() {
+        PrintJob printJob = new PrintJob.Builder("testResolution".getBytes())
+                .resolution("300dpi")
+                .build();
+        assertEquals("300,300,3", printJob.getResolution());
+    }
+
+    @Test
     void testMediaSource() {
         PrintJob printJob = new PrintJob.Builder("testMediaSource".getBytes())
                 .mediaSource("tray-1")

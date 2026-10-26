@@ -14,6 +14,8 @@ package org.cups4j;
  * You should have received a copy of the GNU Lesser General Public License along with Cups4J. If
  * not, see <http://www.gnu.org/licenses/>.
  */
+import org.cups4j.ipp.units.PrinterResolution;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -29,7 +31,7 @@ public class PrintJob {
   private boolean portrait = true;
   private boolean color = false;
   private String pageFormat;
-  private String resolution;
+  private PrinterResolution resolution;
 
   private Map<String, String> attributes;
 
@@ -56,7 +58,7 @@ public class PrintJob {
     private boolean portrait = true;
     private boolean color = false;
     private String pageFormat;
-    private String resolution;
+    private PrinterResolution resolution;
     private Map<String, String> attributes = new HashMap<>();
 
     /**
@@ -167,7 +169,7 @@ public class PrintJob {
     }
 
     public Builder resolution(String resolution) {
-      this.resolution = resolution;
+      this.resolution = PrinterResolution.of(resolution);
       return this;
     }
 
@@ -304,7 +306,7 @@ public class PrintJob {
   }
 
   public String getResolution() {
-    return resolution;
+    return resolution == null ? null : resolution.getResolution();
   }
 
   @Override
