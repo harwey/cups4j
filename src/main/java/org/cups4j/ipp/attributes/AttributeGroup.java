@@ -131,4 +131,13 @@ public class AttributeGroup {
     this.description = value;
   }
 
+  @Override
+  public String toString() {
+    String s = getClass().getSimpleName() + " '" + tagName + "'";
+    if (description != null) {
+      s += " (" + description + ")";
+    }
+    return s;
+  }
+
 }

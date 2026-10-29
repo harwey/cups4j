@@ -212,8 +212,8 @@ public class CupsClient {
    * Returns job attributes for the job associated with the provided jobID and
    * user name
    * 
-   * @param userName
-   * @param jobID
+   * @param userName user name
+   * @param jobID    job ID
    * @return Job attributes
    * @throws Exception in case of problems
    */
@@ -311,6 +311,11 @@ public class CupsClient {
 
     return new CupsMoveJobOperation(getPort()).moveJob(currentPrinter, currentHost, userName, jobID,
         targetPrinter.getPrinterURI(), creds);
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + " " + user + "@" + cupsURL;
   }
 
 }
