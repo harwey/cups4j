@@ -27,6 +27,7 @@ import org.cups4j.operations.IppOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,11 +48,11 @@ public class CupsGetPrintersOperation extends IppOperation {
     this.ippPort = port;
   }
 
-  public List<CupsPrinter> getPrinters(String hostname, int port, CupsAuthentication creds) throws Exception {
+  public List<CupsPrinter> getPrinters(String hostname, int port, CupsAuthentication creds) throws IOException {
     return getPrinters(CupsClient.toURI(hostname, port), creds);
   }
 
-  public List<CupsPrinter> getPrinters(URI cupsURL, CupsAuthentication creds) throws Exception {
+  public List<CupsPrinter> getPrinters(URI cupsURL, CupsAuthentication creds) throws IOException {
     List<CupsPrinter> printers = new ArrayList<>();
 
     Map<String, String> map = new HashMap<>();

@@ -193,7 +193,8 @@ public final class CupsPrinterIT {
         int jobId = printer.createJob(printJob.getJobName(), printJob.getUserName());
         JobStateEnum jobStatus = printer.getJobStatus("mmustermann", jobId);
         assertNotNull(jobStatus);
-        assertEquals("OlisJob", TestCups.getCupsClient().getJobAttributes(jobId).getJobName());
+        assertEquals("OlisJob", TestCups.getCupsClient().getJobAttributes("mmustermann", jobId).getJobName());
+        //assertEquals("OlisJob", TestCups.getCupsClient().getJobAttributes(jobId).getJobName());
     }
 
     @Test

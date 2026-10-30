@@ -22,6 +22,7 @@ import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
 import org.cups4j.operations.IppOperation;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
@@ -98,7 +99,7 @@ public class IppGetJobsOperation extends IppOperation {
   }
 
   public List<PrintJobAttributes> getPrintJobs(CupsPrinter printer, WhichJobsEnum whichJobs, String userName,
-      boolean myJobs, CupsAuthentication creds) throws Exception {
+      boolean myJobs, CupsAuthentication creds) throws IOException {
     List<PrintJobAttributes> jobs = new ArrayList<PrintJobAttributes>();
     PrintJobAttributes jobAttributes = null;
     Map<String, String> map = new HashMap<String, String>();

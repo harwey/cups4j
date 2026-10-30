@@ -7,7 +7,9 @@ import org.cups4j.operations.ipp.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
@@ -108,9 +110,9 @@ public class CupsClient {
    * Returns all available printers
    * 
    * @return List of Printers
-   * @throws Exception in case of problems
+   * @throws IOException in case of problems
    */
-  public List<CupsPrinter> getPrinters() throws Exception {
+  public List<CupsPrinter> getPrinters() throws IOException {
     return new CupsGetPrintersOperation(getPort()).getPrinters(cupsURL, creds);
   }
 
@@ -118,9 +120,9 @@ public class CupsClient {
    * Returns all available printers except CUPS specific default printer
    * 
    * @return List of Printers
-   * @throws Exception in case of problems
+   * @throws IOException in case of problems
    */
-  public List<CupsPrinter> getPrintersWithoutDefault() throws Exception {
+  public List<CupsPrinter> getPrintersWithoutDefault() throws IOException {
     CupsGetPrintersOperation cgp = new CupsGetPrintersOperation();
     return cgp.getPrinters(getHost(), getPort(), creds);
   }
@@ -131,11 +133,12 @@ public class CupsClient {
    * @param printerURL
    *          an URL like "http://localhost:631/printers/printername"
    * @return printer
-   * @throws Exception in case of problems
+   * @throws IOException        in case of I/O problems
+   * @throws URISyntaxException if the URL cannot be converted to a URI
    * @deprecated replaced by {@link #getPrinter(URI)}
    */
   @Deprecated(forRemoval = true)
-  public CupsPrinter getPrinter(URL printerURL) throws Exception {
+  public CupsPrinter getPrinter(URL printerURL) throws IOException, URISyntaxException {
     log.warn("Method getPrinter(URL) is deprecated. Use getPrinter(URI) instead.");
     return getPrinter(printerURL.toURI());
   }
@@ -145,10 +148,10 @@ public class CupsClient {
    *
    * @param printerURL an URI like "http://localhost:631/printers/printername"
    * @return printer
-   * @throws Exception in case of problems
+   * @throws IOException in case of problems
    * @since 0.8.1
    */
-  public CupsPrinter getPrinter(URI printerURL) throws Exception {
+  public CupsPrinter getPrinter(URI printerURL) throws IOException {
     List<CupsPrinter> printers = getPrinters();
     for (CupsPrinter printer : printers) {
       if (printer.getPrinterURI().equals(printerURL))
@@ -164,9 +167,9 @@ public class CupsClient {
    * @param printerName
    *          the printer name
    * @return printer
-   * @throws Exception in case of problems
+   * @throws IOException in case of problems
    */
-  public CupsPrinter getPrinter(String printerName) throws Exception {
+  public CupsPrinter getPrinter(String printerName) throws IOException {
     List<CupsPrinter> printers = getPrinters();
     for (CupsPrinter printer : printers) {
       if (printer.getName().equals(printerName))
@@ -179,9 +182,9 @@ public class CupsClient {
    * Returns default printer
    * 
    * @return default printer
-   * @throws Exception in case of problems
+   * @throws IOException in case of problems
    */
-  public CupsPrinter getDefaultPrinter() throws Exception {
+  public CupsPrinter getDefaultPrinter() throws IOException {
     return new CupsGetDefaultOperation().getDefaultPrinter(cupsURL, creds);
   }
 
@@ -191,9 +194,9 @@ public class CupsClient {
    * @param printerURL
    *          a URL like /printers/printername
    * @return printer
-   * @throws Exception in case of problems
+   * @throws IOException in case of problems
    */
-  public CupsPrinter getPrinterOnCurrentHost(String printerURL) throws Exception {
+  public CupsPrinter getPrinterOnCurrentHost(String printerURL) throws IOException {
     return getPrinter(URI.create(cupsURL + "/" + printerURL));
   }
 
@@ -202,10 +205,10 @@ public class CupsClient {
    * 
    * @param jobID job ID
    * @return Job attributes
-   * @throws Exception in case of problems
+   * @throws IOException in case of problems
    */
-  public PrintJobAttributes getJobAttributes(int jobID) throws Exception {
-    return getJobAttributes(getHost(), user, jobID);
+  public PrintJobAttributes getJobAttributes(int jobID) throws IOException {
+    return getJobAttributes(user, jobID);
   }
 
   /**
@@ -215,29 +218,12 @@ public class CupsClient {
    * @param userName user name
    * @param jobID    job ID
    * @return Job attributes
-   * @throws Exception in case of problems
+   * @throws IOException in case of problems
    */
-  public PrintJobAttributes getJobAttributes(String userName, int jobID) throws Exception {
-    return getJobAttributes(getHost(), userName, jobID);
-  }
-
-  /**
-   * Returns job attributes for the job associated with the provided jobID on
-   * provided host and port
-   * 
-   * @param hostname
-   * @param jobID
-   * @return Job attributes
-   * @throws Exception in case of problems
-   */
-  private PrintJobAttributes getJobAttributes(String hostname, String userName, int jobID) throws Exception {
+  public PrintJobAttributes getJobAttributes(String userName, int jobID) throws IOException {
     if (userName == null || "".equals(userName)) {
       userName = DEFAULT_USER;
     }
-    if (hostname == null || "".equals(hostname)) {
-      hostname = DEFAULT_HOST;
-    }
-
     return new IppGetJobAttributesOperation(getPort()).getPrintJobAttributes(cupsURL, userName, jobID, creds);
   }
 
@@ -250,24 +236,27 @@ public class CupsClient {
    * user and printer names are provided in the resulting PrintJobAttributes
    * </p>
    * 
-   * @param printer
-   * @param userName
+   * @param printer   printer
+   * @param whichJobs which jobs (completed, not completed or all)
+   * @param userName  user name
+   * @param myJobs    only jobs of the given user?
    * @return List of job attributes
-   * @throws Exception in case of problems
+   * @throws IOException in case of problems
    */
   public List<PrintJobAttributes> getJobs(CupsPrinter printer, WhichJobsEnum whichJobs, String userName, boolean myJobs)
-      throws Exception {
+      throws IOException {
     return new IppGetJobsOperation(getPort()).getPrintJobs(printer, whichJobs, userName, myJobs, creds);
   }
 
   /**
    * Cancel the job with the provided jobID on the current host wit current user
    * 
-   * @param jobID
+   * @param printer printer
+   * @param jobID   job ID
    * @return boolean success
-   * @throws Exception in case of problems
+   * @throws IOException in case of problems
    */
-  public boolean cancelJob(CupsPrinter printer, int jobID) throws Exception {
+  public boolean cancelJob(CupsPrinter printer, int jobID) throws IOException {
     return new IppCancelJobOperation(getPort()).cancelJob(getHost(), user, jobID, printer, creds);
   }
 
@@ -275,11 +264,12 @@ public class CupsClient {
    * Hold the job with the provided jobID on the current host wit current set
    * user
    * 
-   * @param jobID
+   * @param printer printer
+   * @param jobID   job ID
    * @return boolean success
-   * @throws Exception in case of problems
+   * @throws IOException in case of problems
    */
-  public boolean holdJob(CupsPrinter printer, int jobID) throws Exception {
+  public boolean holdJob(CupsPrinter printer, int jobID) throws IOException {
     return new IppHoldJobOperation(getPort()).holdJob(getHost(), user, jobID, printer, creds);
   }
 
@@ -287,26 +277,27 @@ public class CupsClient {
    * Release the held job with the provided jobID on the current host wit
    * current set user
    * 
-   * @param jobID
+   * @param printer printer
+   * @param jobID   job ID
    * @return boolean success
-   * @throws Exception in case of problems
+   * @throws IOException in case of problems
    */
-  public boolean releaseJob(CupsPrinter printer, int jobID) throws Exception {
+  public boolean releaseJob(CupsPrinter printer, int jobID) throws IOException {
     return new IppReleaseJobOperation(getPort()).releaseJob(getHost(), user, jobID, printer, creds);
   }
 
   /**
    * Moves the print job with job ID jobID from currentPrinter to targetPrinter
    * 
-   * @param jobID
-   * @param userName
-   * @param currentPrinter
-   * @param targetPrinter
+   * @param jobID          job ID
+   * @param userName       user name
+   * @param currentPrinter current printer
+   * @param targetPrinter  target printer
    * @return boolean successs
-   * @throws Exception in case of problems
+   * @throws IOException in case of problems
    */
   public boolean moveJob(int jobID, String userName, CupsPrinter currentPrinter, CupsPrinter targetPrinter)
-      throws Exception {
+      throws IOException {
     String currentHost = currentPrinter.getPrinterURI().getHost();
 
     return new CupsMoveJobOperation(getPort()).moveJob(currentPrinter, currentHost, userName, jobID,

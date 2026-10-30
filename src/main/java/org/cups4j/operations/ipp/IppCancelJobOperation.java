@@ -25,6 +25,7 @@ import org.cups4j.operations.IppOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
@@ -97,12 +98,11 @@ public class IppCancelJobOperation extends IppOperation {
    * @param hostname
    * @param userName
    * @param jobID
-   * @param message
    * @return true on successful cancelation otherwise false.
-   * @throws Exception
+   * @throws IOException if request fails
    */
   public boolean cancelJob(String hostname, String userName, int jobID, 
-		  CupsPrinter printer, CupsAuthentication creds) throws Exception {
+		  CupsPrinter printer, CupsAuthentication creds) throws IOException {
 
     Map<String, String> map = new HashMap<String, String>();
 
