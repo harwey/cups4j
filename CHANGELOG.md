@@ -13,11 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - printer resolution can be set in DPI or DPCM, e.g. "300dpi"
   ([issue #47](https://github.com/harwey/cups4j/issues/47))
 
-
 ### Added
 
 - automatic retry mechanism added if connection fails
   ([issue #70](https://github.com/harwey/cups4j/issues/70))
+
+### Removed
+
+- deprecated method `getPrintJobAttributes(String, String, int, int,CupsAuthentication)` was removed in IppGetJobAttributesOperation,
+  use `getPrintJobAttributes(URI, String, int, CupsAuthentication)` instead
 
 
 ## [0.8.3] (16-Aug-2026)

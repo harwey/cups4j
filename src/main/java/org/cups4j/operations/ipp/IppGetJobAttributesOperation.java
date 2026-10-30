@@ -81,12 +81,10 @@ public class IppGetJobAttributesOperation extends IppOperation {
 
     if (map.get("requested-attributes") != null) {
       String[] sta = map.get("requested-attributes").split(" ");
-      if (sta != null) {
-        ippBuf = IppTag.getKeyword(ippBuf, "requested-attributes", sta[0]);
-        int l = sta.length;
-        for (int i = 1; i < l; i++) {
-          ippBuf = IppTag.getKeyword(ippBuf, null, sta[i]);
-        }
+      ippBuf = IppTag.getKeyword(ippBuf, "requested-attributes", sta[0]);
+      int l = sta.length;
+      for (int i = 1; i < l; i++) {
+        ippBuf = IppTag.getKeyword(ippBuf, null, sta[i]);
       }
     }
 
@@ -106,24 +104,24 @@ public class IppGetJobAttributesOperation extends IppOperation {
     return ippBuf;
   }
 
-  /**
-   * Returns the job attributes of the given printer.
-   *
-   * @param hostname hostname of CUPS server
-   * @param userName user  name
-   * @param port     port of CUPS server
-   * @param jobID    job id
-   * @param creds    credentials
-   * @return job attributes
-   * @throws IOException in case of I/O problems
-   * @deprecated use {@link #getPrintJobAttributes(URI, String, int, CupsAuthentication)}
-   */
-  @Deprecated(forRemoval = true)
-  public PrintJobAttributes getPrintJobAttributes(String hostname, String userName,
-                                                  int port, int jobID, CupsAuthentication creds) throws IOException {
-    log.warn("Method getPrintJobAttributes(String, ..) is deprecated. Use getPrintJobAttributes(URI, ..) instead.");
-    return getPrintJobAttributes(URI.create("http://" + hostname + ":" + port), userName, jobID, creds);
-  }
+//  /**
+//   * Returns the job attributes of the given printer.
+//   *
+//   * @param hostname hostname of CUPS server
+//   * @param userName user  name
+//   * @param port     port of CUPS server
+//   * @param jobID    job id
+//   * @param creds    credentials
+//   * @return job attributes
+//   * @throws IOException in case of I/O problems
+//   * @deprecated use {@link #getPrintJobAttributes(URI, String, int, CupsAuthentication)}
+//   */
+//  @Deprecated(forRemoval = true)
+//  public PrintJobAttributes getPrintJobAttributes(String hostname, String userName,
+//                                                  int port, int jobID, CupsAuthentication creds) throws IOException {
+//    log.warn("Method getPrintJobAttributes(String, ..) is deprecated. Use getPrintJobAttributes(URI, ..) instead.");
+//    return getPrintJobAttributes(URI.create("http://" + hostname + ":" + port), userName, jobID, creds);
+//  }
 
   /**
    * Returns the job attributes of the given printer.
@@ -139,7 +137,7 @@ public class IppGetJobAttributesOperation extends IppOperation {
   public PrintJobAttributes getPrintJobAttributes(URI printerURI, String userName,
                                                   int jobID, CupsAuthentication creds) throws IOException {
     URI jobURI = URI.create(printerURI.getScheme() + "://" + printerURI.getAuthority() + "/jobs/" + jobID);
-    Map<String, String> map = new HashMap<String, String>();
+    Map<String, String> map = new HashMap<>();
     // map.put("requested-attributes",
     // "page-ranges print-quality sides job-uri job-id job-state job-printer-uri job-name job-originating-user-name job-k-octets time-at-creation time-at-processing time-at-completed job-media-sheets-completed");
     map.put("requested-attributes", "all");
