@@ -1,20 +1,17 @@
 package org.cups4j.operations.ipp;
 
-import org.apache.commons.io.FileUtils;
+import org.cups4j.CupsAuthentication;
+import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
 import org.cups4j.JobStateEnum;
-import org.cups4j.PrintJob.Builder;
 import org.cups4j.PrintJobAttributes;
 import org.cups4j.PrintRequestResult;
 import org.cups4j.operations.AbstractIppOperationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Tests for {@link IppGetJobAttributesOperation}
@@ -32,16 +29,31 @@ public class IppGetJobAttributesOperationTest extends AbstractIppOperationTest {
 	
 	@Test
 	public void getPrintJobAttributes() throws Exception {
-		byte[] contents = FileUtils.readFileToByteArray(new File("src/test/resources/test.pdf"));
-		Builder jobBuilder = new Builder(contents);
-		jobBuilder.userName(this.userName);
-		PrintRequestResult result = this.printer.print(jobBuilder.build());
-		
+		PrintRequestResult result = printTestJob(this.printer);
+
 		PrintJobAttributes job = this.client.getJobAttributes(this.userName, result.getJobId());
+		assertJobOfTestUser(result.getJobId(), job);
+		assertEquals(JobStateEnum.PROCESSING, job.getJobState());
+		assertEquals(this.printer.getPrinterURI(), job.getPrinterURI());
+	}
+
+	@Test
+	public void getPrintJobAttributesWithCredentials() throws Exception {
+		PrintRequestResult result = printTestJob(this.printer);
+		IppGetJobAttributesOperation command = new IppGetJobAttributesOperation(this.cups.getFirstMappedPort());
+		PrintJobAttributes job = command.getPrintJobAttributes(this.getPrinterURL(), result.getJobId(), this.creds);
+		assertJobOfTestUser(result.getJobId(), job);
+	}
+
+	private void assertJobOfTestUser(int jobId, PrintJobAttributes job) {
 		assertNotNull(job);
-		assertSame(result.getJobId(), job.getJobID());
-		assertSame(JobStateEnum.PROCESSING, job.getJobState());
+		assertEquals(jobId, job.getJobID());
 		assertEquals(this.userName, job.getUserName());
-		assertEquals(this.printer.getPrinterURL().toString(), job.getPrinterURL().toString());
+	}
+
+	@Test
+	public void testGetUserName() {
+		assertEquals("alice", IppGetJobAttributesOperation.getUserName(new CupsAuthentication("alice", "secret")));
+		assertEquals(CupsClient.DEFAULT_USER, IppGetJobAttributesOperation.getUserName(null));
 	}
 }

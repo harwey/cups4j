@@ -1,14 +1,11 @@
 package org.cups4j.operations.cups;
 
-import org.apache.commons.io.FileUtils;
 import org.cups4j.CupsPrinter;
-import org.cups4j.PrintJob.Builder;
 import org.cups4j.PrintRequestResult;
 import org.cups4j.WhichJobsEnum;
 import org.cups4j.operations.AbstractIppOperationTest;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -30,11 +27,8 @@ public class CupsMoveJobOperationTest extends AbstractIppOperationTest {
 	
 	@Test
 	public void moveJob() throws Exception {
-		byte[] contents = FileUtils.readFileToByteArray(new File("src/test/resources/test.pdf"));
-		Builder jobBuilder = new Builder(contents);
-		jobBuilder.userName(this.userName);
 		CupsPrinter printer1 = this.client.getPrinter(this.printerName);
-		PrintRequestResult result = printer1.print(jobBuilder.build());
+		PrintRequestResult result = printTestJob(printer1);
 		int jobId = result.getJobId();
 		assertTrue(this.client.getJobs(printer1, WhichJobsEnum.ALL, this.userName, true).stream().anyMatch(j -> j.getJobID() == jobId));
 		

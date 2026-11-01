@@ -18,9 +18,14 @@ package org.cups4j.operations;
 
 import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
+import org.apache.commons.io.FileUtils;
 import org.cups4j.CupsAuthentication;
 import org.cups4j.CupsClient;
 import org.cups4j.CupsPrinter;
+import org.cups4j.JobStateEnum;
+import org.cups4j.PrintJob.Builder;
+import org.cups4j.PrintJobAttributes;
+import org.cups4j.PrintRequestResult;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
 import org.junit.jupiter.api.BeforeAll;
@@ -32,6 +37,7 @@ import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -43,6 +49,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -72,6 +79,8 @@ public abstract class AbstractIppOperationTest {
     protected final CupsAuthentication creds = new CupsAuthentication(this.userName, "admin");
     protected final GenericContainer<?> cups = CUPS;
     protected CupsClient client;
+
+    protected static final String TEST_DOCUMENT = "src/test/resources/test.pdf";
 
     @BeforeAll
     public static void requireDocker() {
@@ -163,5 +172,31 @@ public abstract class AbstractIppOperationTest {
         } catch (Exception ex) {
             throw new IllegalStateException("cannot get printers", ex);
         }
+    }
+
+    /**
+     * Prints the test document with the user name of this test.
+     *
+     * @param printer printer to print on
+     * @return result of the print request
+     * @throws IOException in case of I/O problems
+     */
+    protected PrintRequestResult printTestJob(CupsPrinter printer) throws IOException {
+        byte[] contents = FileUtils.readFileToByteArray(new File(TEST_DOCUMENT));
+        return printer.print(new Builder(contents).userName(this.userName).build());
+    }
+
+    /**
+     * Checks the state of the job with the given id.
+     *
+     * @param jobId         job id
+     * @param expectedState expected job state
+     * @throws IOException in case of I/O problems
+     */
+    protected void assertJobState(int jobId, JobStateEnum expectedState) throws IOException {
+        PrintJobAttributes job = this.client.getJobAttributes(jobId);
+        assertNotNull(job);
+        assertEquals(jobId, job.getJobID());
+        assertEquals(expectedState, job.getJobState());
     }
 }
