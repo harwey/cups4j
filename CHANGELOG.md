@@ -13,11 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - printer resolution can be set in DPI or DPCM, e.g. "300dpi"
   ([issue #47](https://github.com/harwey/cups4j/issues/47))
 
-
 ### Added
 
 - automatic retry mechanism added if connection fails
   ([issue #70](https://github.com/harwey/cups4j/issues/70))
+- `getPrintJobAttributes(URI, int, CupsAuthentication)` added to `IppGetJobAttributesOperation` as
+  convenient alternative for `getPrintJobAttributes(URI, String, int, CupsAuthentication)` if the
+  IPP requesting user is the user of the credentials
+
+### Removed
+
+- deprecated method `getPrintJobAttributes(String, String, int, int,CupsAuthentication)` was removed in IppGetJobAttributesOperation,
+  use `getPrintJobAttributes(URI, String, int, CupsAuthentication)` instead
 
 
 ## [0.8.3] (16-Aug-2026)
@@ -27,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - print jobs can specify a media-source (paper tray) via the `media-col` attribute
   ([issue #21](https://github.com/harwey/cups4j/issues/21))
 - `mediaSource(..)` added to `PrintJob.Builder` as suggested in [issue #12](https://github.com/harwey/cups4j/issues/12)
+  and asked in [issue #69](https://github.com/harwey/cups4j/issues/69)
 
 
 ## [0.8.2] (02-Jun-2026)

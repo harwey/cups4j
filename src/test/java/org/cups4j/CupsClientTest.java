@@ -42,8 +42,11 @@ public class CupsClientTest {
   public void getDefaultPrinter() throws Exception {
     CupsPrinter defaultPrinter = client.getDefaultPrinter();
     if (defaultPrinter != null) {
+      LOG.info("Default printer of {} is {}.", client, defaultPrinter);
       List<CupsPrinter> printers = client.getPrinters();
       assertThat(printers, hasItem(defaultPrinter));
+    } else {
+      LOG.info("No default printer found for {}.", client);
     }
   }
 
