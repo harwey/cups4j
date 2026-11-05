@@ -19,6 +19,8 @@ import org.cups4j.ipp.units.PrinterResolution;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class PrintJob {
@@ -49,6 +51,8 @@ public class PrintJob {
    * </p>
    */
   public static class Builder {
+    private static final List<String> NUMBER_UP_LAYOUTS = List.of("btlr", "btrl", "lrbt", "lrtb",
+        "rlbt", "rltb", "tblr", "tbrl");
     private InputStream document;
     private int copies = 1;
     private String pageRanges = null;;
@@ -235,6 +239,68 @@ public class PrintJob {
     public Builder mediaSource(String value) {
       this.attributes.put("media-col", "media-source:keyword:" + value);
       return this;
+    }
+
+    /**
+     * Number of document pages printed on one side of a sheet (N-up printing).
+     * <p>
+     * Typical values are 1, 2, 4, 6, 9 and 16. Use
+     * {@link CupsPrinter#getNumberUpSupported()} to see which values are
+     * supported by the printer.
+     * </p>
+     *
+     * @param numberUp number of document pages per sheet, must be positive
+     * @return Builder
+     * @throws IllegalArgumentException if {@code numberUp} is less than 1
+     * @since 0.8.4
+     */
+    public Builder numberUp(int numberUp) {
+      if (numberUp < 1) {
+        throw new IllegalArgumentException("number-up must be greater than 0, but was " + numberUp);
+      }
+      addJobAttribute("number-up:integer:" + numberUp);
+      return this;
+    }
+
+    /**
+     * Layout of the pages when more than one document page is printed on a
+     * sheet (see {@link #numberUp(int)}).
+     * <p>
+     * Supported values are:
+     * </p>
+     * <ul>
+     * <li>{@code btlr} - bottom to top, left to right</li>
+     * <li>{@code btrl} - bottom to top, right to left</li>
+     * <li>{@code lrbt} - left to right, bottom to top</li>
+     * <li>{@code lrtb} - left to right, top to bottom (default)</li>
+     * <li>{@code rlbt} - right to left, bottom to top</li>
+     * <li>{@code rltb} - right to left, top to bottom</li>
+     * <li>{@code tblr} - top to bottom, left to right</li>
+     * <li>{@code tbrl} - top to bottom, right to left</li>
+     * </ul>
+     *
+     * @param layout one of the values above, case is not significant
+     * @return Builder
+     * @throws IllegalArgumentException if the layout is not supported
+     * @since 0.8.4
+     */
+    public Builder numberUpLayout(String layout) {
+      String value = (layout == null) ? null : layout.trim().toLowerCase(Locale.ROOT);
+      if (value == null || !NUMBER_UP_LAYOUTS.contains(value)) {
+        throw new IllegalArgumentException(
+            "unsupported number-up-layout '" + layout + "', expected one of " + NUMBER_UP_LAYOUTS);
+      }
+      addJobAttribute("number-up-layout:keyword:" + value);
+      return this;
+    }
+
+    private void addJobAttribute(String jobAttribute) {
+      String jobAttributes = this.attributes.get("job-attributes");
+      if (jobAttributes == null) {
+        this.attributes.put("job-attributes", jobAttribute);
+      } else {
+        this.attributes.put("job-attributes", jobAttributes + "#" + jobAttribute);
+      }
     }
 
     /**

@@ -17,6 +17,8 @@ package org.cups4j;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class PrintJobTest {
@@ -50,6 +52,58 @@ class PrintJobTest {
                 .build();
         assertEquals(1, printJob.getAttributes().size());
         assertEquals("media-source:keyword:tray-1", printJob.getAttributes().get("media-col"));
+    }
+
+    @Test
+    void testNumberUp() {
+        PrintJob printJob = new PrintJob.Builder("testNumberUp".getBytes())
+                .numberUp(4)
+                .numberUpLayout("tbrl")
+                .build();
+        assertEquals(1, printJob.getAttributes().size());
+        assertEquals("number-up:integer:4#number-up-layout:keyword:tbrl",
+                printJob.getAttributes().get("job-attributes"));
+    }
+
+    @Test
+    void testNumberUpLayoutIsCaseInsensitive() {
+        PrintJob printJob = new PrintJob.Builder("testNumberUpLayout".getBytes())
+                .numberUpLayout("LRBT")
+                .build();
+        assertEquals("number-up-layout:keyword:lrbt", printJob.getAttributes().get("job-attributes"));
+    }
+
+    @Test
+    void testNumberUpLayoutWithAllSupportedValues() {
+        for (String layout : List.of("btlr", "btrl", "lrbt", "lrtb", "rlbt", "rltb", "tblr", "tbrl")) {
+            PrintJob printJob = new PrintJob.Builder("test".getBytes()).numberUpLayout(layout).build();
+            assertEquals("number-up-layout:keyword:" + layout, printJob.getAttributes().get("job-attributes"));
+        }
+    }
+
+    @Test
+    void testNumberUpKeepsExistingJobAttributes() {
+        PrintJob printJob = new PrintJob.Builder("testNumberUp".getBytes())
+                .attribute("job-attributes", "sides:keyword:two-sided-long-edge")
+                .numberUp(2)
+                .build();
+        assertEquals("sides:keyword:two-sided-long-edge#number-up:integer:2",
+                printJob.getAttributes().get("job-attributes"));
+    }
+
+    @Test
+    void testNumberUpWithInvalidValue() {
+        PrintJob.Builder builder = new PrintJob.Builder("testNumberUp".getBytes());
+        assertThrows(IllegalArgumentException.class, () -> builder.numberUp(0));
+        assertThrows(IllegalArgumentException.class, () -> builder.numberUp(-2));
+    }
+
+    @Test
+    void testNumberUpLayoutWithInvalidValue() {
+        PrintJob.Builder builder = new PrintJob.Builder("testNumberUpLayout".getBytes());
+        assertThrows(IllegalArgumentException.class, () -> builder.numberUpLayout("diagonal"));
+        assertThrows(IllegalArgumentException.class, () -> builder.numberUpLayout(""));
+        assertThrows(IllegalArgumentException.class, () -> builder.numberUpLayout(null));
     }
 
 }

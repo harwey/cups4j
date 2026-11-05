@@ -18,7 +18,9 @@ package org.cups4j.operations.ipp;
 
 import ch.ethz.vppserver.ippclient.IppResponse;
 import ch.ethz.vppserver.ippclient.IppResult;
+import org.cups4j.PrintJob;
 import org.cups4j.ipp.attributes.Attribute;
+import org.cups4j.ipp.attributes.AttributeGroup;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -96,6 +98,22 @@ public class IppPrintJobOperationTest {
         assertResolution("300,300,3", ippHeader);
     }
 
+    @Test
+    void getIppHeaderWithNumberUpLayout() throws IOException {
+        // GIVEN
+        Map<String, String> map = new PrintJob.Builder(new byte[0]).numberUp(2).numberUpLayout("tbrl")
+                .build().getAttributes();
+        map.put("job-name", "testjob");
+        map.put("requesting-user-name", "oli");
+        // WHEN
+        ByteBuffer ippHeader = operation.getIppHeader(URI.create("http://localhost:631/printers/testfax"), map);
+        // THEN
+        IppResult ippResult = toIppResult(ippHeader);
+        AttributeGroup jobAttributes = ippResult.getAttributeGroup("job-attributes-tag");
+        assertEquals("2", jobAttributes.getAttribute("number-up").getValue());
+        assertEquals("tbrl", jobAttributes.getAttribute("number-up-layout").getValue());
+    }
+
     private static @NotNull Map<String, String> createMapWithJobAttributes(String value) {
         Map<String, String> map = new HashMap<>();
         map.put("job-attributes", value);
@@ -105,12 +123,16 @@ public class IppPrintJobOperationTest {
     }
 
     private static void assertResolution(String expected, ByteBuffer ippHeader) throws IOException {
-        byte[] bytes = new byte[ippHeader.limit()];
-        ippHeader.get(bytes);
-        IppResult ippResult = new IppResponse().getResponse(ByteBuffer.wrap(bytes));
+        IppResult ippResult = toIppResult(ippHeader);
         Attribute resolution = ippResult.getAttributeGroup("job-attributes-tag")
                 .getAttribute("printer-resolution");
         assertEquals(expected, resolution.getValue());
+    }
+
+    private static IppResult toIppResult(ByteBuffer ippHeader) throws IOException {
+        byte[] bytes = new byte[ippHeader.limit()];
+        ippHeader.get(bytes);
+        return new IppResponse().getResponse(ByteBuffer.wrap(bytes));
     }
 
     private static int indexOf(byte[] bytes, byte[] value) {
