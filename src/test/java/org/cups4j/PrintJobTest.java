@@ -16,10 +16,12 @@
 package org.cups4j;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PrintJobTest {
 
@@ -55,17 +57,6 @@ class PrintJobTest {
     }
 
     @Test
-    void testNumberUp() {
-        PrintJob printJob = new PrintJob.Builder("testNumberUp".getBytes())
-                .numberUp(4)
-                .numberUpLayout("tbrl")
-                .build();
-        assertEquals(1, printJob.getAttributes().size());
-        assertEquals("number-up:integer:4#number-up-layout:keyword:tbrl",
-                printJob.getAttributes().get("job-attributes"));
-    }
-
-    @Test
     void testNumberUpLayoutIsCaseInsensitive() {
         PrintJob printJob = new PrintJob.Builder("testNumberUpLayout".getBytes())
                 .numberUpLayout("LRBT")
@@ -74,36 +65,44 @@ class PrintJobTest {
     }
 
     @Test
-    void testNumberUpLayoutWithAllSupportedValues() {
-        for (String layout : List.of("btlr", "btrl", "lrbt", "lrtb", "rlbt", "rltb", "tblr", "tbrl")) {
-            PrintJob printJob = new PrintJob.Builder("test".getBytes()).numberUpLayout(layout).build();
-            assertEquals("number-up-layout:keyword:" + layout, printJob.getAttributes().get("job-attributes"));
-        }
-    }
-
-    @Test
-    void testNumberUpKeepsExistingJobAttributes() {
-        PrintJob printJob = new PrintJob.Builder("testNumberUp".getBytes())
-                .attribute("job-attributes", "sides:keyword:two-sided-long-edge")
-                .numberUp(2)
-                .build();
-        assertEquals("sides:keyword:two-sided-long-edge#number-up:integer:2",
-                printJob.getAttributes().get("job-attributes"));
-    }
-
-    @Test
-    void testNumberUpWithInvalidValue() {
-        PrintJob.Builder builder = new PrintJob.Builder("testNumberUp".getBytes());
-        assertThrows(IllegalArgumentException.class, () -> builder.numberUp(0));
-        assertThrows(IllegalArgumentException.class, () -> builder.numberUp(-2));
-    }
-
-    @Test
     void testNumberUpLayoutWithInvalidValue() {
         PrintJob.Builder builder = new PrintJob.Builder("testNumberUpLayout".getBytes());
         assertThrows(IllegalArgumentException.class, () -> builder.numberUpLayout("diagonal"));
         assertThrows(IllegalArgumentException.class, () -> builder.numberUpLayout(""));
         assertThrows(IllegalArgumentException.class, () -> builder.numberUpLayout(null));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"btlr", "btrl", "lrbt", "lrtb", "rlbt", "rltb", "tblr", "tbrl"})
+    void testNumberUpLayout(String layout) {
+        PrintJob printJob = new PrintJob.Builder("test".getBytes())
+                .numberUp(4)
+                .numberUpLayout(layout)
+                .build();
+        assertEquals("number-up:integer:4#number-up-layout:keyword:" + layout,
+                printJob.getAttributes().get("job-attributes"));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "-1, false",
+            "0, false",
+            "1, true",
+            "2, true",
+            "3, false",
+            "4, true"
+    })
+    void testNumberUp(int n, boolean valid) {
+        PrintJob.Builder builder = new PrintJob.Builder("testNumberUp".getBytes())
+                .attribute("job-attributes", "sides:keyword:two-sided-long-edge");
+        if (valid) {
+            PrintJob printJob = builder.numberUp(n).build();
+            assertEquals("sides:keyword:two-sided-long-edge#number-up:integer:" + n,
+                    printJob.getAttributes().get("job-attributes"));
+        } else {
+            assertThrows(IllegalArgumentException.class, () -> builder.numberUp(0));
+        }
+
     }
 
 }
