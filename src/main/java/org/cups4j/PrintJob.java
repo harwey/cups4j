@@ -1,6 +1,6 @@
 package org.cups4j;
 
-/**
+/*
  * Copyright (C) 2009 Harald Weyhing
  * 
  * This file is part of Cups4J. Cups4J is free software: you can redistribute it and/or modify it
@@ -14,6 +14,7 @@ package org.cups4j;
  * You should have received a copy of the GNU Lesser General Public License along with Cups4J. If
  * not, see <http://www.gnu.org/licenses/>.
  */
+import org.apache.commons.lang3.StringUtils;
 import org.cups4j.ipp.units.PrinterResolution;
 
 import java.io.ByteArrayInputStream;
@@ -32,10 +33,9 @@ public class PrintJob {
   private boolean duplex = false;
   private boolean portrait = true;
   private boolean color = false;
-  private String pageFormat;
   private PrinterResolution resolution;
 
-  private Map<String, String> attributes;
+  private final Map<String, String> attributes;
 
   /**
    * <p>
@@ -61,7 +61,6 @@ public class PrintJob {
     private boolean duplex = false;
     private boolean portrait = true;
     private boolean color = false;
-    private String pageFormat;
     private PrinterResolution resolution;
     private Map<String, String> attributes = new HashMap<>();
 
@@ -162,13 +161,16 @@ public class PrintJob {
 
     /**
      * Pageformat - one of the formats supported by this printer (a4, a5, letter
-     * ...)
+     * ...). The value is stored as {@code media} job attribute. A {@code null}
+     * or empty value is ignored.
      * 
      * @param pageFormat
      * @return
      */
     public Builder pageFormat(String pageFormat) {
-      this.pageFormat = pageFormat;
+      if (StringUtils.isNotBlank(pageFormat)) {
+        addJobAttribute("media:keyword:" + pageFormat);
+      }
       return this;
     }
 
@@ -322,7 +324,6 @@ public class PrintJob {
     this.duplex = builder.duplex;
     this.attributes = builder.attributes;
     this.color = builder.color;
-    this.pageFormat = builder.pageFormat;
     this.portrait = builder.portrait;
     this.resolution = builder.resolution;
   }
@@ -352,7 +353,8 @@ public class PrintJob {
   }
 
   public void setAttributes(Map<String, String> printJobAttributes) {
-    this.attributes = printJobAttributes;
+    this.attributes.clear();
+    this.attributes.putAll(printJobAttributes);
   }
 
   public String getJobName() {
@@ -367,8 +369,21 @@ public class PrintJob {
     return color;
   }
 
+  /**
+   * Returns the page format which is stored as {@code media} job attribute
+   * (see {@link Builder#pageFormat(String)}).
+   *
+   * @return page format or {@code null} if no page format is set
+   */
   public String getPageFormat() {
-    return pageFormat;
+    String jobAttributes = attributes.getOrDefault("job-attributes", "");
+    for (String jobAttribute : jobAttributes.split("#")) {
+      String[] parts = jobAttribute.split(":", 3);
+      if (parts.length == 3 && "media".equals(parts[0]) && "keyword".equals(parts[1])) {
+        return parts[2];
+      }
+    }
+    return "";
   }
 
   public String getResolution() {

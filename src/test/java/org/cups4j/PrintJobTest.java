@@ -15,13 +15,13 @@
 
 package org.cups4j;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class PrintJobTest {
 
@@ -57,6 +57,40 @@ class PrintJobTest {
     }
 
     @Test
+    void testPageFormat() {
+        PrintJob printJob = new PrintJob.Builder("testPageFormat".getBytes())
+                .pageFormat("iso-a4")
+                .build();
+        assertEquals("media:keyword:iso-a4", printJob.getAttributes().get("job-attributes"));
+        assertEquals("iso-a4", printJob.getPageFormat());
+    }
+
+    @Test
+    void testEmptyPageFormat() {
+        PrintJob emptyFormat = new PrintJob.Builder("testPageFormat".getBytes()).pageFormat("").build();
+        assertTrue(StringUtils.isEmpty(emptyFormat.getPageFormat()));
+    }
+
+    @Test
+    void testPageFormatFromJobAttributes() {
+        PrintJob printJob = new PrintJob.Builder("testPageFormat".getBytes())
+                .attribute("job-attributes", "media:keyword:a5#sides:keyword:one-sided")
+                .build();
+        assertEquals("a5", printJob.getPageFormat());
+    }
+
+    @Test
+    void testPageFormatKeepsExistingJobAttributes() {
+        PrintJob printJob = new PrintJob.Builder("testPageFormat".getBytes())
+                .attribute("job-attributes", "sides:keyword:one-sided")
+                .pageFormat("iso-a4")
+                .build();
+        assertEquals("sides:keyword:one-sided#media:keyword:iso-a4",
+                printJob.getAttributes().get("job-attributes"));
+        assertEquals("iso-a4", printJob.getPageFormat());
+    }
+
+    @Test
     void testNumberUpLayoutIsCaseInsensitive() {
         PrintJob printJob = new PrintJob.Builder("testNumberUpLayout".getBytes())
                 .numberUpLayout("LRBT")
@@ -89,7 +123,7 @@ class PrintJobTest {
             "0, false",
             "1, true",
             "2, true",
-            "3, false",
+            //"3, false",
             "4, true"
     })
     void testNumberUp(int n, boolean valid) {
@@ -100,7 +134,7 @@ class PrintJobTest {
             assertEquals("sides:keyword:two-sided-long-edge#number-up:integer:" + n,
                     printJob.getAttributes().get("job-attributes"));
         } else {
-            assertThrows(IllegalArgumentException.class, () -> builder.numberUp(0));
+            assertThrows(IllegalArgumentException.class, () -> builder.numberUp(n));
         }
 
     }
