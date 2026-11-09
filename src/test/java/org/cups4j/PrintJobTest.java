@@ -96,6 +96,21 @@ class PrintJobTest {
                 .numberUpLayout("LRBT")
                 .build();
         assertEquals("number-up-layout:keyword:lrbt", printJob.getAttributes().get("job-attributes"));
+        assertEquals("lrbt", printJob.getNumberUpLayout());
+    }
+
+    @Test
+    void testEmptyNumberUpLayout() {
+        PrintJob printJob = new PrintJob.Builder("testNumberUpLayout".getBytes()).build();
+        assertTrue(printJob.getNumberUpLayout().isEmpty());
+    }
+
+    @Test
+    void testNumberUpLayoutFromJobAttributes() {
+        PrintJob printJob = new PrintJob.Builder("testNumberUpLayout".getBytes())
+                .attribute("job-attributes", "number-up-layout:keyword:tbrl#sides:keyword:one-sided")
+                .build();
+        assertEquals("tbrl", printJob.getNumberUpLayout());
     }
 
     @Test
@@ -115,6 +130,21 @@ class PrintJobTest {
                 .build();
         assertEquals("number-up:integer:4#number-up-layout:keyword:" + layout,
                 printJob.getAttributes().get("job-attributes"));
+        assertEquals(layout, printJob.getNumberUpLayout());
+    }
+
+    @Test
+    void testNumberUpNotSet() {
+        PrintJob printJob = new PrintJob.Builder("testNumberUp".getBytes()).build();
+        assertEquals(0, printJob.getNumberUp());
+    }
+
+    @Test
+    void testNumberUpFromJobAttributes() {
+        PrintJob printJob = new PrintJob.Builder("testNumberUp".getBytes())
+                .attribute("job-attributes", "number-up:integer:9#sides:keyword:one-sided")
+                .build();
+        assertEquals(9, printJob.getNumberUp());
     }
 
     @ParameterizedTest
@@ -133,6 +163,7 @@ class PrintJobTest {
             PrintJob printJob = builder.numberUp(n).build();
             assertEquals("sides:keyword:two-sided-long-edge#number-up:integer:" + n,
                     printJob.getAttributes().get("job-attributes"));
+            assertEquals(n, printJob.getNumberUp());
         } else {
             assertThrows(IllegalArgumentException.class, () -> builder.numberUp(n));
         }
