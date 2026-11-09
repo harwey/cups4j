@@ -25,11 +25,11 @@ import java.util.Locale;
 import java.util.Map;
 
 public class PrintJob {
-  private InputStream document;
-  private int copies;
-  private String pageRanges;
-  private String userName;
-  private String jobName;
+  private final InputStream document;
+  private final int copies;
+  private final String pageRanges;
+  private final String userName;
+  private final String jobName;
   private boolean duplex = false;
   private boolean portrait = true;
   private boolean color = false;
@@ -53,6 +53,7 @@ public class PrintJob {
   public static class Builder {
     private static final List<String> NUMBER_UP_LAYOUTS = List.of("btlr", "btrl", "lrbt", "lrtb",
         "rlbt", "rltb", "tblr", "tbrl");
+    private static final List<Integer> NUMBER_UP_VALUES = List.of(1, 2, 4, 6, 9, 16);
     private InputStream document;
     private int copies = 1;
     private String pageRanges = null;;
@@ -257,8 +258,9 @@ public class PrintJob {
      * @since 0.8.4
      */
     public Builder numberUp(int numberUp) {
-      if (numberUp < 1) {
-        throw new IllegalArgumentException("number-up must be greater than 0, but was " + numberUp);
+      if (!NUMBER_UP_VALUES.contains(numberUp)) {
+        throw new IllegalArgumentException(
+                "unsupported number-up " + numberUp + ", expected one of " + NUMBER_UP_VALUES);
       }
       addJobAttribute("number-up:integer:" + numberUp);
       return this;

@@ -123,7 +123,7 @@ class PrintJobTest {
             "0, false",
             "1, true",
             "2, true",
-            //"3, false",
+            "3, false",
             "4, true"
     })
     void testNumberUp(int n, boolean valid) {
