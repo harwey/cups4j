@@ -15,14 +15,15 @@ package org.cups4j;
  * not, see <http://www.gnu.org/licenses/>.
  */
 import org.apache.commons.lang3.StringUtils;
+import org.cups4j.ipp.units.NumberUpLayout;
 import org.cups4j.ipp.units.PrinterResolution;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class PrintJob {
   private final InputStream document;
@@ -51,8 +52,6 @@ public class PrintJob {
    * </p>
    */
   public static class Builder {
-    private static final List<String> NUMBER_UP_LAYOUTS = List.of("btlr", "btrl", "lrbt", "lrtb",
-        "rlbt", "rltb", "tblr", "tbrl");
     private static final List<Integer> NUMBER_UP_VALUES = List.of(1, 2, 4, 6, 9, 16);
     private final InputStream document;
     private int copies = 1;
@@ -254,7 +253,7 @@ public class PrintJob {
      *
      * @param numberUp number of document pages per sheet, must be positive
      * @return Builder
-     * @throws IllegalArgumentException if {@code numberUp} is less than 1
+     * @throws IllegalArgumentException if {@code numberUp} is not valid
      * @since 0.8.4
      */
     public Builder numberUp(int numberUp) {
@@ -269,32 +268,14 @@ public class PrintJob {
     /**
      * Layout of the pages when more than one document page is printed on a
      * sheet (see {@link #numberUp(int)}).
-     * <p>
-     * Supported values are:
-     * </p>
-     * <ul>
-     * <li>{@code btlr} - bottom to top, left to right</li>
-     * <li>{@code btrl} - bottom to top, right to left</li>
-     * <li>{@code lrbt} - left to right, bottom to top</li>
-     * <li>{@code lrtb} - left to right, top to bottom (default)</li>
-     * <li>{@code rlbt} - right to left, bottom to top</li>
-     * <li>{@code rltb} - right to left, top to bottom</li>
-     * <li>{@code tblr} - top to bottom, left to right</li>
-     * <li>{@code tbrl} - top to bottom, right to left</li>
-     * </ul>
      *
-     * @param layout one of the values above, case is not significant
+     * @param layout number-up layout ({@code null} not allowed)
      * @return Builder
-     * @throws IllegalArgumentException if the layout is not supported
      * @since 0.8.4
      */
-    public Builder numberUpLayout(String layout) {
-      String value = (layout == null) ? null : layout.trim().toLowerCase(Locale.ROOT);
-      if (value == null || !NUMBER_UP_LAYOUTS.contains(value)) {
-        throw new IllegalArgumentException(
-            "unsupported number-up-layout '" + layout + "', expected one of " + NUMBER_UP_LAYOUTS);
-      }
-      addJobAttribute("number-up-layout:keyword:" + value);
+    public Builder numberUpLayout(NumberUpLayout layout) {
+      Objects.requireNonNull(layout, "layout");
+      addJobAttribute("number-up-layout:keyword:" + layout.getValue());
       return this;
     }
 
@@ -397,12 +378,12 @@ public class PrintJob {
   /**
    * Returns the layout of the pages when more than one document page is
    * printed on a sheet which is stored as {@code number-up-layout} job
-   * attribute (see {@link Builder#numberUpLayout(String)}).
+   * attribute (see {@link Builder#numberUpLayout(NumberUpLayout)}).
    *
-   * @return number-up layout or an empty string if no layout is set
+   * @return number-up layout
    */
-  public String getNumberUpLayout() {
-    return getJobAttributeValue("number-up-layout", "keyword");
+  public NumberUpLayout getNumberUpLayout() {
+    return NumberUpLayout.of(getJobAttributeValue("number-up-layout", "keyword"));
   }
 
   private String getJobAttributeValue(String name, String type) {

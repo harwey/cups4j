@@ -21,6 +21,7 @@ import ch.ethz.vppserver.ippclient.IppResult;
 import org.cups4j.PrintJob;
 import org.cups4j.ipp.attributes.Attribute;
 import org.cups4j.ipp.attributes.AttributeGroup;
+import org.cups4j.ipp.units.NumberUpLayout;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -101,8 +102,8 @@ public class IppPrintJobOperationTest {
     @Test
     void getIppHeaderWithNumberUpLayout() throws IOException {
         // GIVEN
-        Map<String, String> map = new PrintJob.Builder(new byte[0]).numberUp(2).numberUpLayout("tbrl")
-                .build().getAttributes();
+        Map<String, String> map = new PrintJob.Builder(new byte[0]).numberUp(2)
+                .numberUpLayout(NumberUpLayout.TBRL).build().getAttributes();
         map.put("job-name", "testjob");
         map.put("requesting-user-name", "oli");
         // WHEN

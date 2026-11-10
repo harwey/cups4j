@@ -16,10 +16,11 @@
 package org.cups4j;
 
 import org.apache.commons.lang3.StringUtils;
+import org.cups4j.ipp.units.NumberUpLayout;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -91,18 +92,18 @@ class PrintJobTest {
     }
 
     @Test
-    void testNumberUpLayoutIsCaseInsensitive() {
+    void testNumberUpLayout() {
         PrintJob printJob = new PrintJob.Builder("testNumberUpLayout".getBytes())
-                .numberUpLayout("LRBT")
+                .numberUpLayout(NumberUpLayout.LRBT)
                 .build();
         assertEquals("number-up-layout:keyword:lrbt", printJob.getAttributes().get("job-attributes"));
-        assertEquals("lrbt", printJob.getNumberUpLayout());
+        assertEquals(NumberUpLayout.LRBT, printJob.getNumberUpLayout());
     }
 
     @Test
     void testEmptyNumberUpLayout() {
         PrintJob printJob = new PrintJob.Builder("testNumberUpLayout".getBytes()).build();
-        assertTrue(printJob.getNumberUpLayout().isEmpty());
+        assertEquals(NumberUpLayout.NONE, printJob.getNumberUpLayout());
     }
 
     @Test
@@ -110,25 +111,23 @@ class PrintJobTest {
         PrintJob printJob = new PrintJob.Builder("testNumberUpLayout".getBytes())
                 .attribute("job-attributes", "number-up-layout:keyword:tbrl#sides:keyword:one-sided")
                 .build();
-        assertEquals("tbrl", printJob.getNumberUpLayout());
+        assertEquals(NumberUpLayout.TBRL, printJob.getNumberUpLayout());
     }
 
     @Test
-    void testNumberUpLayoutWithInvalidValue() {
+    void testNumberUpLayoutWithNull() {
         PrintJob.Builder builder = new PrintJob.Builder("testNumberUpLayout".getBytes());
-        assertThrows(IllegalArgumentException.class, () -> builder.numberUpLayout("diagonal"));
-        assertThrows(IllegalArgumentException.class, () -> builder.numberUpLayout(""));
-        assertThrows(IllegalArgumentException.class, () -> builder.numberUpLayout(null));
+        assertThrows(NullPointerException.class, () -> builder.numberUpLayout(null));
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"btlr", "btrl", "lrbt", "lrtb", "rlbt", "rltb", "tblr", "tbrl"})
-    void testNumberUpLayout(String layout) {
+    @EnumSource(NumberUpLayout.class)
+    void testNumberUpLayout(NumberUpLayout layout) {
         PrintJob printJob = new PrintJob.Builder("test".getBytes())
                 .numberUp(4)
                 .numberUpLayout(layout)
                 .build();
-        assertEquals("number-up:integer:4#number-up-layout:keyword:" + layout,
+        assertEquals("number-up:integer:4#number-up-layout:keyword:" + layout.getValue(),
                 printJob.getAttributes().get("job-attributes"));
         assertEquals(layout, printJob.getNumberUpLayout());
     }

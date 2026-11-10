@@ -20,7 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `getPrintJobAttributes(URI, int, CupsAuthentication)` added to `IppGetJobAttributesOperation` as
   convenient alternative for `getPrintJobAttributes(URI, String, int, CupsAuthentication)` if the
   IPP requesting user is the user of the credentials
-- `numberUp(int)` and `numberUpLayout(String)` added to `PrintJob.Builder` for N-up printing
+- `numberUp(int)` and `numberUpLayout(NumberUpLayout)` added to `PrintJob.Builder` for N-up printing
+  ([issue #58](https://github.com/harwey/cups4j/issues/58))
 
 ### Removed
 
