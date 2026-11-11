@@ -1,6 +1,6 @@
 package org.cups4j;
 
-/**
+/*
  * Copyright (C) 2009 Harald Weyhing
  * 
  * This file is part of Cups4J. Cups4J is free software: you can redistribute it and/or modify it
@@ -14,26 +14,29 @@ package org.cups4j;
  * You should have received a copy of the GNU Lesser General Public License along with Cups4J. If
  * not, see <http://www.gnu.org/licenses/>.
  */
+import org.apache.commons.lang3.StringUtils;
+import org.cups4j.ipp.units.NumberUpLayout;
 import org.cups4j.ipp.units.PrinterResolution;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class PrintJob {
-  private InputStream document;
-  private int copies;
-  private String pageRanges;
-  private String userName;
-  private String jobName;
+  private final InputStream document;
+  private final int copies;
+  private final String pageRanges;
+  private final String userName;
+  private final String jobName;
   private boolean duplex = false;
   private boolean portrait = true;
   private boolean color = false;
-  private String pageFormat;
-  private PrinterResolution resolution;
+  private final PrinterResolution resolution;
 
-  private Map<String, String> attributes;
+  private final Map<String, String> attributes;
 
   /**
    * <p>
@@ -49,15 +52,15 @@ public class PrintJob {
    * </p>
    */
   public static class Builder {
-    private InputStream document;
+    private static final List<Integer> NUMBER_UP_VALUES = List.of(1, 2, 4, 6, 9, 16);
+    private final InputStream document;
     private int copies = 1;
-    private String pageRanges = null;;
+    private String pageRanges = null;
     private String userName = CupsClient.DEFAULT_USER;
     private String jobName = null;
     private boolean duplex = false;
     private boolean portrait = true;
     private boolean color = false;
-    private String pageFormat;
     private PrinterResolution resolution;
     private Map<String, String> attributes = new HashMap<>();
 
@@ -80,9 +83,9 @@ public class PrintJob {
     }
 
     /**
-     * Number of copies - 0 and 1 are both treated as one copy
+     * Number of copies - 0 and 1 are both treated as one copy.
      * 
-     * @param copies
+     * @param copies number of copies
      * @return Builder
      */
     public Builder copies(int copies) {
@@ -158,13 +161,16 @@ public class PrintJob {
 
     /**
      * Pageformat - one of the formats supported by this printer (a4, a5, letter
-     * ...)
+     * ...). The value is stored as {@code media} job attribute. A {@code null}
+     * or empty value is ignored.
      * 
      * @param pageFormat
      * @return
      */
     public Builder pageFormat(String pageFormat) {
-      this.pageFormat = pageFormat;
+      if (StringUtils.isNotBlank(pageFormat)) {
+        addJobAttribute("media:keyword:" + pageFormat);
+      }
       return this;
     }
 
@@ -238,6 +244,51 @@ public class PrintJob {
     }
 
     /**
+     * Number of document pages printed on one side of a sheet (N-up printing).
+     * <p>
+     * Typical values are 1, 2, 4, 6, 9 and 16. Use
+     * {@link CupsPrinter#getNumberUpSupported()} to see which values are
+     * supported by the printer.
+     * </p>
+     *
+     * @param numberUp number of document pages per sheet, must be positive
+     * @return Builder
+     * @throws IllegalArgumentException if {@code numberUp} is not valid
+     * @since 0.8.4
+     */
+    public Builder numberUp(int numberUp) {
+      if (!NUMBER_UP_VALUES.contains(numberUp)) {
+        throw new IllegalArgumentException(
+                "unsupported number-up " + numberUp + ", expected one of " + NUMBER_UP_VALUES);
+      }
+      addJobAttribute("number-up:integer:" + numberUp);
+      return this;
+    }
+
+    /**
+     * Layout of the pages when more than one document page is printed on a
+     * sheet (see {@link #numberUp(int)}).
+     *
+     * @param layout number-up layout ({@code null} not allowed)
+     * @return Builder
+     * @since 0.8.4
+     */
+    public Builder numberUpLayout(NumberUpLayout layout) {
+      Objects.requireNonNull(layout, "layout");
+      addJobAttribute("number-up-layout:keyword:" + layout.getValue());
+      return this;
+    }
+
+    private void addJobAttribute(String jobAttribute) {
+      String jobAttributes = this.attributes.get("job-attributes");
+      if (jobAttributes == null) {
+        this.attributes.put("job-attributes", jobAttribute);
+      } else {
+        this.attributes.put("job-attributes", jobAttributes + "#" + jobAttribute);
+      }
+    }
+
+    /**
      * Builds the PrintJob object.
      * 
      * @return PrintJob
@@ -256,7 +307,6 @@ public class PrintJob {
     this.duplex = builder.duplex;
     this.attributes = builder.attributes;
     this.color = builder.color;
-    this.pageFormat = builder.pageFormat;
     this.portrait = builder.portrait;
     this.resolution = builder.resolution;
   }
@@ -286,7 +336,8 @@ public class PrintJob {
   }
 
   public void setAttributes(Map<String, String> printJobAttributes) {
-    this.attributes = printJobAttributes;
+    this.attributes.clear();
+    this.attributes.putAll(printJobAttributes);
   }
 
   public String getJobName() {
@@ -301,8 +352,49 @@ public class PrintJob {
     return color;
   }
 
+  /**
+   * Returns the page format which is stored as {@code media} job attribute
+   * (see {@link Builder#pageFormat(String)}).
+   *
+   * @return page format or an empty string if no page format is set
+   */
   public String getPageFormat() {
-    return pageFormat;
+    return getJobAttributeValue("media", "keyword");
+  }
+
+  /**
+   * Returns the number of document pages printed on one side of a sheet which
+   * is stored as {@code number-up} job attribute (see
+   * {@link Builder#numberUp(int)}).
+   *
+   * @return number of document pages per sheet or {@code 0} if no number-up
+   *         is set
+   */
+  public int getNumberUp() {
+    String value = getJobAttributeValue("number-up", "integer");
+    return value.isEmpty() ? 0 : Integer.parseInt(value);
+  }
+
+  /**
+   * Returns the layout of the pages when more than one document page is
+   * printed on a sheet which is stored as {@code number-up-layout} job
+   * attribute (see {@link Builder#numberUpLayout(NumberUpLayout)}).
+   *
+   * @return number-up layout
+   */
+  public NumberUpLayout getNumberUpLayout() {
+    return NumberUpLayout.of(getJobAttributeValue("number-up-layout", "keyword"));
+  }
+
+  private String getJobAttributeValue(String name, String type) {
+    String jobAttributes = attributes.getOrDefault("job-attributes", "");
+    for (String jobAttribute : jobAttributes.split("#")) {
+      String[] parts = jobAttribute.split(":", 3);
+      if (parts.length == 3 && name.equals(parts[0]) && type.equals(parts[1])) {
+        return parts[2];
+      }
+    }
+    return "";
   }
 
   public String getResolution() {

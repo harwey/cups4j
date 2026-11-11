@@ -15,7 +15,12 @@
 
 package org.cups4j;
 
+import org.apache.commons.lang3.StringUtils;
+import org.cups4j.ipp.units.NumberUpLayout;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -50,6 +55,118 @@ class PrintJobTest {
                 .build();
         assertEquals(1, printJob.getAttributes().size());
         assertEquals("media-source:keyword:tray-1", printJob.getAttributes().get("media-col"));
+    }
+
+    @Test
+    void testPageFormat() {
+        PrintJob printJob = new PrintJob.Builder("testPageFormat".getBytes())
+                .pageFormat("iso-a4")
+                .build();
+        assertEquals("media:keyword:iso-a4", printJob.getAttributes().get("job-attributes"));
+        assertEquals("iso-a4", printJob.getPageFormat());
+    }
+
+    @Test
+    void testEmptyPageFormat() {
+        PrintJob emptyFormat = new PrintJob.Builder("testPageFormat".getBytes()).pageFormat("").build();
+        assertTrue(StringUtils.isEmpty(emptyFormat.getPageFormat()));
+    }
+
+    @Test
+    void testPageFormatFromJobAttributes() {
+        PrintJob printJob = new PrintJob.Builder("testPageFormat".getBytes())
+                .attribute("job-attributes", "media:keyword:a5#sides:keyword:one-sided")
+                .build();
+        assertEquals("a5", printJob.getPageFormat());
+    }
+
+    @Test
+    void testPageFormatKeepsExistingJobAttributes() {
+        PrintJob printJob = new PrintJob.Builder("testPageFormat".getBytes())
+                .attribute("job-attributes", "sides:keyword:one-sided")
+                .pageFormat("iso-a4")
+                .build();
+        assertEquals("sides:keyword:one-sided#media:keyword:iso-a4",
+                printJob.getAttributes().get("job-attributes"));
+        assertEquals("iso-a4", printJob.getPageFormat());
+    }
+
+    @Test
+    void testNumberUpLayout() {
+        PrintJob printJob = new PrintJob.Builder("testNumberUpLayout".getBytes())
+                .numberUpLayout(NumberUpLayout.LRBT)
+                .build();
+        assertEquals("number-up-layout:keyword:lrbt", printJob.getAttributes().get("job-attributes"));
+        assertEquals(NumberUpLayout.LRBT, printJob.getNumberUpLayout());
+    }
+
+    @Test
+    void testEmptyNumberUpLayout() {
+        PrintJob printJob = new PrintJob.Builder("testNumberUpLayout".getBytes()).build();
+        assertEquals(NumberUpLayout.NONE, printJob.getNumberUpLayout());
+    }
+
+    @Test
+    void testNumberUpLayoutFromJobAttributes() {
+        PrintJob printJob = new PrintJob.Builder("testNumberUpLayout".getBytes())
+                .attribute("job-attributes", "number-up-layout:keyword:tbrl#sides:keyword:one-sided")
+                .build();
+        assertEquals(NumberUpLayout.TBRL, printJob.getNumberUpLayout());
+    }
+
+    @Test
+    void testNumberUpLayoutWithNull() {
+        PrintJob.Builder builder = new PrintJob.Builder("testNumberUpLayout".getBytes());
+        assertThrows(NullPointerException.class, () -> builder.numberUpLayout(null));
+    }
+
+    @ParameterizedTest
+    @EnumSource(NumberUpLayout.class)
+    void testNumberUpLayout(NumberUpLayout layout) {
+        PrintJob printJob = new PrintJob.Builder("test".getBytes())
+                .numberUp(4)
+                .numberUpLayout(layout)
+                .build();
+        assertEquals("number-up:integer:4#number-up-layout:keyword:" + layout.getValue(),
+                printJob.getAttributes().get("job-attributes"));
+        assertEquals(layout, printJob.getNumberUpLayout());
+    }
+
+    @Test
+    void testNumberUpNotSet() {
+        PrintJob printJob = new PrintJob.Builder("testNumberUp".getBytes()).build();
+        assertEquals(0, printJob.getNumberUp());
+    }
+
+    @Test
+    void testNumberUpFromJobAttributes() {
+        PrintJob printJob = new PrintJob.Builder("testNumberUp".getBytes())
+                .attribute("job-attributes", "number-up:integer:9#sides:keyword:one-sided")
+                .build();
+        assertEquals(9, printJob.getNumberUp());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "-1, false",
+            "0, false",
+            "1, true",
+            "2, true",
+            "3, false",
+            "4, true"
+    })
+    void testNumberUp(int n, boolean valid) {
+        PrintJob.Builder builder = new PrintJob.Builder("testNumberUp".getBytes())
+                .attribute("job-attributes", "sides:keyword:two-sided-long-edge");
+        if (valid) {
+            PrintJob printJob = builder.numberUp(n).build();
+            assertEquals("sides:keyword:two-sided-long-edge#number-up:integer:" + n,
+                    printJob.getAttributes().get("job-attributes"));
+            assertEquals(n, printJob.getNumberUp());
+        } else {
+            assertThrows(IllegalArgumentException.class, () -> builder.numberUp(n));
+        }
+
     }
 
 }

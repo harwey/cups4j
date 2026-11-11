@@ -99,7 +99,6 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         String pageRanges = printJob.getPageRanges();
         String resolution = printJob.getResolution();
 
-        String pageFormat = printJob.getPageFormat();
         boolean color = printJob.isColor();
         boolean portrait = printJob.isPortrait();
 
@@ -132,11 +131,6 @@ public class IppSendDocumentOperation extends IppPrintJobOperation {
         } else {
             addAttribute(attributes, "job-attributes",
                     "output-mode:keyword:monochrome");
-        }
-
-        if (pageFormat != null && !"".equals(pageFormat)) {
-            addAttribute(attributes, "job-attributes",
-                    "media:keyword:" + pageFormat);
         }
 
         if (resolution != null && !"".equals(resolution)) {

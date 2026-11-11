@@ -63,6 +63,8 @@ PrintJob printJob = new PrintJob.Builder(bytes)
                                 .color(true)
                                 .pageFormat("iso-a4")
                                 .resolution("300dpi")
+                                .numberUp(4)                        // 4 documents per sheet
+                                .numberUpLayout(NumberUpLayout.TBRL) // top to bottom, right to left
                                 // extra PrintJob attributes
                                 .attribute("compression", "none")
                                 .attribute("job-attributes", "print-quality:enum:3#fit-to-page:boolean:true#sheet-collate:keyword:collated")
