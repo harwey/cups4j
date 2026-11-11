@@ -28,6 +28,7 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,8 +59,6 @@ public class IppGetJobsOperation extends IppOperation {
   public ByteBuffer getIppHeader(URI url, Map<String, String> map) throws UnsupportedEncodingException {
     ByteBuffer ippBuf = ByteBuffer.allocateDirect(bufferSize);
 
-    map.put("requested-attributes", "job-name job-id job-state job-originating-user-name job-printer-uri copies");
-
     ippBuf = IppTag.getOperation(ippBuf, operationID);
     ippBuf = IppTag.getUri(ippBuf, "printer-uri", stripPortNumber(url));
 
@@ -72,12 +71,10 @@ public class IppGetJobsOperation extends IppOperation {
 
     if (map.get("requested-attributes") != null) {
       String[] sta = map.get("requested-attributes").split(" ");
-      if (sta != null) {
-        ippBuf = IppTag.getKeyword(ippBuf, "requested-attributes", sta[0]);
-        int l = sta.length;
-        for (int i = 1; i < l; i++) {
-          ippBuf = IppTag.getKeyword(ippBuf, null, sta[i]);
-        }
+      ippBuf = IppTag.getKeyword(ippBuf, "requested-attributes", sta[0]);
+      int l = sta.length;
+      for (int i = 1; i < l; i++) {
+        ippBuf = IppTag.getKeyword(ippBuf, null, sta[i]);
       }
     }
 
@@ -112,8 +109,8 @@ public class IppGetJobsOperation extends IppOperation {
     if (myJobs) {
       map.put("my-jobs", "true");
     }
-    map.put("requested-attributes",
-        "page-ranges print-quality sides job-uri job-id job-state job-printer-uri job-name job-originating-user-name");
+    map.put("requested-attributes", "page-ranges print-quality sides job-uri job-id job-state "
+        + "job-printer-uri job-name job-originating-user-name time-at-creation time-at-completed");
 
     IppResult result = request(printer, printer.getPrinterURI(), map, creds);
 
@@ -138,6 +135,10 @@ public class IppGetJobsOperation extends IppOperation {
               jobAttributes.setJobName(attValue);
             } else if ("job-originating-user-name".equals(attr.getName())) {
               jobAttributes.setUserName(attValue);
+            } else if ("time-at-creation".equals(attr.getName())) {
+              jobAttributes.setJobCreateTime(toDate(attValue));
+            } else if ("time-at-completed".equals(attr.getName())) {
+              jobAttributes.setJobCompleteTime(toDate(attValue));
             }
           }
         }
@@ -146,6 +147,11 @@ public class IppGetJobsOperation extends IppOperation {
     }
 
     return jobs;
+  }
+
+  private static Date toDate(String ippTimeInSeconds) {
+    long seconds = Long.parseLong(ippTimeInSeconds.trim());
+    return seconds > 0 ? new Date(1000 * seconds) : null;
   }
 
 }

@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `getJobs(..)` returns the creation and completion time of a job, because
+  `time-at-creation` and `time-at-completed` are now requested and evaluated
+  ([issue #67](https://github.com/harwey/cups4j/issues/67))
 - printer resolution can be set in DPI or DPCM, e.g. "300dpi"
   ([issue #47](https://github.com/harwey/cups4j/issues/47))
 
