@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- SBOM generation
+  ([issue #101](https://github.com/harwey/cups4j/issues/101))
 - automatic retry mechanism added if connection fails
   ([issue #70](https://github.com/harwey/cups4j/issues/70))
 - `getPrintJobAttributes(URI, int, CupsAuthentication)` added to `IppGetJobAttributesOperation` as

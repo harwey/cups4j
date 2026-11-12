@@ -193,7 +193,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.0.0</version>
+        <version>3.12.0</version>
         <executions>
           <execution>
             <id>attach-javadocs</id>
@@ -228,6 +228,26 @@
           <configuration>
             <publishingServerId>central</publishingServerId>
             <autoPublish>true</autoPublish>
+          </configuration>
+        </plugin>
+        <!-- SBOM generation: mvn cyclonedx:makeAggregateBom (also runs during package) -->
+        <plugin>
+          <groupId>org.cyclonedx</groupId>
+          <artifactId>cyclonedx-maven-plugin</artifactId>
+          <version>2.9.3</version>
+          <executions>
+            <execution>
+              <id>make-sbom</id>
+              <phase>package</phase>
+              <goals>
+                <goal>makeAggregateBom</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <outputName>${project.artifactId}-${project.version}-sbom</outputName>
+            <outputFormat>all</outputFormat>
+            <includeTestScope>false</includeTestScope>
           </configuration>
         </plugin>
     </plugins>
