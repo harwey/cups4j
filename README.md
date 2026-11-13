@@ -12,6 +12,7 @@
   * [Basic usage](#basic-usage)
   * [Connect to custom host](#connect-to-custom-host)
   * [Get specific printer by URL](#get-specific-printer-by-url)
+  * [Add and delete printers](#add-and-delete-printers)
   * [Add extra PrintJob attributes](#add-extra-printjob-attributes)
 * [More Infos](#more-infos)
 * [License](LICENSE)
@@ -70,6 +71,29 @@ PrintJob printJob = new PrintJob.Builder(bytes)
                                 .attribute("job-attributes", "print-quality:enum:3#fit-to-page:boolean:true#sheet-collate:keyword:collated")
                                 .attribute("media-col", "media-source:keyword:tray-2")
                                 .build();
+```
+
+### Add and delete printers
+Adding and deleting printers requires CUPS administrator credentials:
+```java
+CupsClient cupsClient = new CupsClient("cups.example.com", 631, "admin",
+        new CupsAuthentication("admin", "secret"));
+
+// add a network printer as raw queue
+cupsClient.addPrinter("printer-1", URI.create("ipp://192.168.1.50:631/ipp/print"),
+        "Network printer 1st floor", "1st floor");
+
+// add a printer with extra CUPS attributes, e.g. the IPP Everywhere driver
+Map<String, String> attributes = new HashMap<>();
+attributes.put("ppd-name", "everywhere");
+attributes.put("printer-is-shared", "true");
+cupsClient.addPrinter("printer-2", URI.create("ipp://192.168.1.51:631/ipp/print"),
+        attributes);
+
+// modify and delete a printer
+cupsClient.addPrinter("printer-1", URI.create("ipp://192.168.1.52:631/ipp/print"),
+        "Network printer 2nd floor", "2nd floor");
+cupsClient.deletePrinter("printer-1");
 ```
 
 ## More Infos

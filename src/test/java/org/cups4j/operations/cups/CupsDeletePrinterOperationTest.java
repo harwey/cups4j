@@ -44,7 +44,8 @@ public class CupsDeletePrinterOperationTest extends AbstractIppOperationTest {
     private static final URI CUPS_PRINTER_URI = URI.create("http://cups.example.com:631/printers/test-printer");
 
     /**
-     * Removes the printer created by a test so that the tests do not influence each other.
+     * Removes the printer created by a test so that the tests do not
+     * influence each other.
      *
      * @throws IOException          in case of I/O problems
      * @throws InterruptedException if the container command is interrupted
@@ -55,8 +56,8 @@ public class CupsDeletePrinterOperationTest extends AbstractIppOperationTest {
     }
 
     /**
-     * Verifies that the generated IPP header uses the CUPS-Delete-Printer operation ID
-     * ({@code 0x4004}).
+     * Verifies that the generated IPP header uses the CUPS-Delete-Printer
+     * operation ID ({@code 0x4004}).
      *
      * @throws IOException in case of I/O problems
      */
@@ -71,8 +72,8 @@ public class CupsDeletePrinterOperationTest extends AbstractIppOperationTest {
     }
 
     /**
-     * Verifies that the {@code printer-uri} and the requesting user are encoded in the
-     * operation-attributes group of the IPP header.
+     * Verifies that the {@code printer-uri} and the requesting user are
+     * encoded in the operation-attributes group of the IPP header.
      *
      * @throws IOException in case of I/O problems
      */
@@ -90,8 +91,9 @@ public class CupsDeletePrinterOperationTest extends AbstractIppOperationTest {
     }
 
     /**
-     * Verifies that the URI passed to {@link CupsDeletePrinterOperation#getIppHeader(URI, Map)} is
-     * used as {@code printer-uri} if the attribute map does not contain one.
+     * Verifies that the URI passed to
+     * {@link CupsDeletePrinterOperation#getIppHeader(URI, Map)} is used as
+     * {@code printer-uri} if the attribute map does not contain one.
      *
      * @throws IOException in case of I/O problems
      */
@@ -106,7 +108,8 @@ public class CupsDeletePrinterOperationTest extends AbstractIppOperationTest {
     }
 
     /**
-     * Deletes a printer from the CUPS test container and verifies that it is no longer available.
+     * Deletes a printer from the CUPS test container and verifies that it
+     * is no longer available.
      *
      * @throws Exception in case of errors
      */
@@ -124,8 +127,8 @@ public class CupsDeletePrinterOperationTest extends AbstractIppOperationTest {
     }
 
     /**
-     * Deletes a printer from the CUPS test container using the URI variant and verifies that it is
-     * no longer available.
+     * Deletes a printer from the CUPS test container using the URI variant
+     * and verifies that it is no longer available.
      *
      * @throws Exception in case of errors
      */
@@ -143,8 +146,8 @@ public class CupsDeletePrinterOperationTest extends AbstractIppOperationTest {
     }
 
     /**
-     * Verifies that deleting a printer with invalid admin credentials fails with an
-     * {@link IOException} and that the printer still exists.
+     * Verifies that deleting a printer with invalid admin credentials fails
+     * with an {@link IOException} and that the printer still exists.
      *
      * @throws Exception in case of errors
      */
@@ -163,8 +166,9 @@ public class CupsDeletePrinterOperationTest extends AbstractIppOperationTest {
     }
 
     /**
-     * Verifies that an empty printer name is rejected with an {@link IllegalArgumentException}
-     * before a request is sent to the CUPS server.
+     * Verifies that an empty printer name is rejected with an
+     * {@link IllegalArgumentException} before a request is sent to the CUPS
+     * server.
      */
     @Test
     public void deletePrinterRejectsEmptyPrinterName() {
@@ -179,7 +183,8 @@ public class CupsDeletePrinterOperationTest extends AbstractIppOperationTest {
 
     /**
      * Verifies that a {@code null} CUPS URI is rejected with an
-     * {@link IllegalArgumentException} before a request is sent to the CUPS server.
+     * {@link IllegalArgumentException} before a request is sent to the CUPS
+     * server.
      */
     @Test
     public void deletePrinterRejectsNullCupsUri() {

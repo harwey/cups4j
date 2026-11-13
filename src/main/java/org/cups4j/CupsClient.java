@@ -1,5 +1,7 @@
 package org.cups4j;
 
+import org.cups4j.operations.cups.CupsAddModifyPrinterOperation;
+import org.cups4j.operations.cups.CupsDeletePrinterOperation;
 import org.cups4j.operations.cups.CupsGetDefaultOperation;
 import org.cups4j.operations.cups.CupsGetPrintersOperation;
 import org.cups4j.operations.cups.CupsMoveJobOperation;
@@ -8,10 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Main Client for accessing CUPS features like
@@ -186,6 +191,113 @@ public class CupsClient {
    */
   public CupsPrinter getDefaultPrinter() throws IOException {
     return new CupsGetDefaultOperation().getDefaultPrinter(cupsURL, creds);
+  }
+
+  /**
+   * Adds a printer to the CUPS server or modifies an existing one.
+   * <p>
+   * The printer is created as a raw queue. To use a driver you can
+   * either pass a {@code ppd-name} in the printer attributes or upload
+   * a PPD file.
+   * </p>
+   *
+   * @param printerName name of the printer to add or modify
+   * @param deviceURI   device URI of the printer, e.g.
+   *                    {@code ipp://192.168.1.50:631/ipp/print}
+   * @return {@code true} if the operation was successful
+   * @throws IOException in case of I/O problems
+   * @since 0.8.4
+   * @see #addPrinter(String, URI, String, String)
+   * @see #addPrinter(String, URI, Map)
+   * @see #addPrinter(String, URI, Map, InputStream)
+   */
+  public boolean addPrinter(String printerName, URI deviceURI) throws IOException {
+    return addPrinter(printerName, deviceURI, Map.of());
+  }
+
+  /**
+   * Adds a printer to the CUPS server or modifies an existing one.
+   *
+   * @param printerName name of the printer to add or modify
+   * @param deviceURI   device URI of the printer, e.g.
+   *                    {@code ipp://192.168.1.50:631/ipp/print}
+   * @param info        description of the printer, may be {@code null}
+   * @param location    location of the printer, may be {@code null}
+   * @return {@code true} if the operation was successful
+   * @throws IOException in case of I/O problems
+   * @since 0.8.4
+   */
+  public boolean addPrinter(String printerName, URI deviceURI, String info, String location)
+      throws IOException {
+    Map<String, String> attributes = new HashMap<>();
+    if (info != null) {
+      attributes.put("printer-info", info);
+    }
+    if (location != null) {
+      attributes.put("printer-location", location);
+    }
+    return addPrinter(printerName, deviceURI, attributes);
+  }
+
+  /**
+   * Adds a printer to the CUPS server or modifies an existing one.
+   * <p>
+   * Supported attributes are {@code device-uri},
+   * {@code printer-info}, {@code printer-location},
+   * {@code printer-more-info}, {@code printer-is-accepting-jobs},
+   * {@code printer-is-shared}, {@code ppd-name}, {@code printer-state}
+   * and {@code printer-state-message}.
+   * </p>
+   *
+   * @param printerName       name of the printer to add or modify
+   * @param deviceURI         device URI of the printer, e.g.
+   *                          {@code ipp://192.168.1.50:631/ipp/print}
+   * @param printerAttributes additional printer attributes, may be
+   *                          {@code null}
+   * @return {@code true} if the operation was successful
+   * @throws IOException in case of I/O problems
+   * @since 0.8.4
+   */
+  public boolean addPrinter(String printerName, URI deviceURI, Map<String, String> printerAttributes)
+      throws IOException {
+    return addPrinter(printerName, deviceURI, printerAttributes, null);
+  }
+
+  /**
+   * Adds a printer to the CUPS server or modifies an existing one.
+   *
+   * @param printerName       name of the printer to add or modify
+   * @param deviceURI         device URI of the printer, e.g.
+   *                          {@code ipp://192.168.1.50:631/ipp/print}
+   * @param printerAttributes additional printer attributes, may be
+   *                          {@code null}
+   * @param ppd               optional PPD file to upload, may be
+   *                          {@code null}
+   * @return {@code true} if the operation was successful
+   * @throws IOException in case of I/O problems
+   * @since 0.8.4
+   */
+  public boolean addPrinter(String printerName, URI deviceURI, Map<String, String> printerAttributes,
+                            InputStream ppd) throws IOException {
+    Map<String, String> attributes = new HashMap<>();
+    if (printerAttributes != null) {
+      attributes.putAll(printerAttributes);
+    }
+    attributes.putIfAbsent("requesting-user-name", user);
+    return new CupsAddModifyPrinterOperation(getPort()).addModifyPrinter(cupsURL, printerName,
+        deviceURI, attributes, ppd, creds);
+  }
+
+  /**
+   * Deletes a printer from the CUPS server.
+   *
+   * @param printerName name of the printer to delete
+   * @return {@code true} if the operation was successful
+   * @throws IOException in case of I/O problems
+   * @since 0.8.4
+   */
+  public boolean deletePrinter(String printerName) throws IOException {
+    return new CupsDeletePrinterOperation(getPort()).deletePrinter(cupsURL, printerName, user, creds);
   }
 
   /**

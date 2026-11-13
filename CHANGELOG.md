@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `addPrinter(..)` and `deletePrinter(..)` added to `CupsClient` to add, modify and delete
+  printers on a CUPS server
+  ([issue #68](https://github.com/harwey/cups4j/issues/68))
+- new operations `CupsAddModifyPrinterOperation` and `CupsDeletePrinterOperation` for the CUPS
+  specific operations `CUPS-Add-Modify-Printer` and `CUPS-Delete-Printer`
+  ([issue #68](https://github.com/harwey/cups4j/issues/68))
 - SBOM generation
   ([issue #101](https://github.com/harwey/cups4j/issues/101))
 - automatic retry mechanism added if connection fails

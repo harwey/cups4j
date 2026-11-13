@@ -31,11 +31,13 @@ import java.util.Map;
 
 /**
  * Implements the CUPS specific operation <a
- * href="https://www.cups.org/doc/spec-ipp.html#CUPS_DELETE_PRINTER">CUPS-Delete-Printer</a>
- * (operation id {@code 0x4004}) to remove an existing printer from a CUPS server.
+ * href="https://www.cups.org/doc/spec-ipp.html#CUPS_DELETE_PRINTER">
+ * CUPS-Delete-Printer</a> (operation id {@code 0x4004}) to remove an
+ * existing printer from a CUPS server.
  *
  * <pre>{@code
- * CupsDeletePrinterOperation operation = new CupsDeletePrinterOperation(631);
+ * CupsDeletePrinterOperation operation =
+ *         new CupsDeletePrinterOperation(631);
  * operation.deletePrinter("cups.example.com", "my-printer", creds);
  * }</pre>
  *
@@ -59,9 +61,10 @@ public class CupsDeletePrinterOperation extends IppOperation {
   /**
    * Creates the IPP header for the CUPS-Delete-Printer request.
    * <p>
-   * The {@code printer-uri} is taken from the given attribute map if present. Otherwise it is
-   * derived from the given URI. This is necessary because the request itself is sent to the
-   * CUPS admin resource ({@code /admin/}) while the {@code printer-uri} has to point to the
+   * The {@code printer-uri} is taken from the given attribute map if
+   * present. Otherwise it is derived from the given URI. This is necessary
+   * because the request itself is sent to the CUPS admin resource
+   * ({@code /admin/}) while the {@code printer-uri} has to point to the
    * printer resource ({@code /printers/<name>}).
    * </p>
    *
@@ -101,26 +104,48 @@ public class CupsDeletePrinterOperation extends IppOperation {
    *
    * @param hostname    host name of the CUPS server
    * @param printerName name of the printer to delete
-   * @param creds       credentials of a CUPS administrator, may be {@code null}
+   * @param creds       credentials of a CUPS administrator, may be
+   *                    {@code null}
    * @return {@code true} if the operation was successful
    * @throws IOException in case of I/O problems
    */
   public boolean deletePrinter(String hostname, String printerName, CupsAuthentication creds)
       throws IOException {
-    return deletePrinter(createURI(hostname, "/admin/"), printerName, creds);
+    return deletePrinter(createURI(hostname, "/admin/"), printerName,
+        getRequestingUserName(creds), creds);
   }
 
   /**
    * Deletes a printer on the CUPS server.
    *
-   * @param cupsURI     base URI of the CUPS server, e.g. {@code http://cups.example.com:631}
+   * @param cupsURI     base URI of the CUPS server, e.g.
+   *                    {@code http://cups.example.com:631}
    * @param printerName name of the printer to delete
-   * @param creds       credentials of a CUPS administrator, may be {@code null}
+   * @param creds       credentials of a CUPS administrator, may be
+   *                    {@code null}
    * @return {@code true} if the operation was successful
    * @throws IOException in case of I/O problems
    */
   public boolean deletePrinter(URI cupsURI, String printerName, CupsAuthentication creds)
       throws IOException {
+    return deletePrinter(cupsURI, printerName, getRequestingUserName(creds), creds);
+  }
+
+  /**
+   * Deletes a printer on the CUPS server with an explicit requesting user.
+   *
+   * @param cupsURI     base URI of the CUPS server, e.g.
+   *                    {@code http://cups.example.com:631}
+   * @param printerName name of the printer to delete
+   * @param userName    name of the requesting user, ignored if
+   *                    {@code null} or empty
+   * @param creds       credentials of a CUPS administrator, may be
+   *                    {@code null}
+   * @return {@code true} if the operation was successful
+   * @throws IOException in case of I/O problems
+   */
+  public boolean deletePrinter(URI cupsURI, String printerName, String userName,
+                               CupsAuthentication creds) throws IOException {
     if (cupsURI == null) {
       throw new IllegalArgumentException("CUPS URI must not be null");
     }
@@ -128,38 +153,14 @@ public class CupsDeletePrinterOperation extends IppOperation {
       throw new IllegalArgumentException("printer name must not be empty");
     }
 
+    String requestingUser = (userName == null || userName.isEmpty())
+        ? getRequestingUserName(creds) : userName;
     Map<String, String> attributes = new HashMap<>();
     attributes.put("printer-uri", toPrinterURI(cupsURI, printerName).toString());
-    attributes.put("requesting-user-name", getUserName(creds));
+    attributes.put("requesting-user-name", requestingUser);
 
     IppResult result = request(null, toAdminURI(cupsURI), attributes, creds);
     return new PrintRequestResult(result).isSuccessfulResult();
-  }
-
-  private static URI toAdminURI(URI cupsURI) {
-    String scheme = (cupsURI.getScheme() == null) ? "http" : cupsURI.getScheme();
-    return URI.create(scheme + "://" + getAuthority(cupsURI) + "/admin/");
-  }
-
-  private static URI toPrinterURI(URI cupsURI, String printerName) {
-    String scheme = "https".equalsIgnoreCase(cupsURI.getScheme()) ? "ipps" : "ipp";
-    return URI.create(scheme + "://" + getAuthority(cupsURI) + "/printers/" + printerName);
-  }
-
-  private static String getAuthority(URI uri) {
-    String host = uri.getHost();
-    if (host == null || host.isEmpty()) {
-      throw new IllegalArgumentException("CUPS URI has no host: " + uri);
-    }
-    int port = uri.getPort();
-    return (port < 0) ? host : host + ":" + port;
-  }
-
-  private static String getUserName(CupsAuthentication creds) {
-    if (creds != null && creds.getUserid() != null) {
-      return creds.getUserid();
-    }
-    return System.getProperty("user.name", "anonymous");
   }
 
 }

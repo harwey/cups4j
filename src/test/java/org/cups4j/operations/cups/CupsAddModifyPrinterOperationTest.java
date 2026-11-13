@@ -21,9 +21,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,9 +47,12 @@ public class CupsAddModifyPrinterOperationTest extends AbstractIppOperationTest 
     private static final String ADDED_PRINTER_NAME = "test-printer-added";
     private static final URI DEVICE_URI = URI.create("socket://localhost:9100");
     private static final URI CUPS_PRINTER_URI = URI.create("http://cups.example.com:631/printers/test-printer");
+    private static final File TEST_PPD = new File("src/test/resources/test.ppd");
+    private static final String TEST_PPD_MAKE_AND_MODEL = "cups4j Test Printer";
 
     /**
-     * Removes the printer created by a test so that the tests do not influence each other.
+     * Removes the printer created by a test so that the tests do not
+     * influence each other.
      *
      * @throws IOException          in case of I/O problems
      * @throws InterruptedException if the container command is interrupted
@@ -56,8 +63,8 @@ public class CupsAddModifyPrinterOperationTest extends AbstractIppOperationTest 
     }
 
     /**
-     * Verifies that the generated IPP header uses the CUPS-Add-Modify-Printer operation ID
-     * ({@code 0x4003}).
+     * Verifies that the generated IPP header uses the
+     * CUPS-Add-Modify-Printer operation ID ({@code 0x4003}).
      *
      * @throws IOException in case of I/O problems
      */
@@ -72,8 +79,8 @@ public class CupsAddModifyPrinterOperationTest extends AbstractIppOperationTest 
     }
 
     /**
-     * Verifies that all supported printer attributes are encoded in the printer-attributes group
-     * of the IPP header.
+     * Verifies that all supported printer attributes are encoded in the
+     * printer-attributes group of the IPP header.
      *
      * @throws IOException in case of I/O problems
      */
@@ -100,10 +107,12 @@ public class CupsAddModifyPrinterOperationTest extends AbstractIppOperationTest 
     }
 
     /**
-     * Verifies that a {@code printer-uri} supplied in the attribute map takes precedence over the
-     * URI passed to {@link CupsAddModifyPrinterOperation#getIppHeader(URI, Map)}. This is required
-     * because the request is sent to the CUPS admin resource ({@code /admin/}) while the
-     * {@code printer-uri} has to point to the printer resource ({@code /printers/<name>}).
+     * Verifies that a {@code printer-uri} supplied in the attribute map
+     * takes precedence over the URI passed to
+     * {@link CupsAddModifyPrinterOperation#getIppHeader(URI, Map)}. This is
+     * required because the request is sent to the CUPS admin resource
+     * ({@code /admin/}) while the {@code printer-uri} has to point to the
+     * printer resource ({@code /printers/<name>}).
      *
      * @throws IOException in case of I/O problems
      */
@@ -123,8 +132,8 @@ public class CupsAddModifyPrinterOperationTest extends AbstractIppOperationTest 
     }
 
     /**
-     * Verifies that boolean printer attributes with the value {@code false} are encoded as
-     * {@code false} and are not omitted from the IPP header.
+     * Verifies that boolean printer attributes with the value {@code false}
+     * are encoded as {@code false} and are not omitted from the IPP header.
      *
      * @throws IOException in case of I/O problems
      */
@@ -142,8 +151,9 @@ public class CupsAddModifyPrinterOperationTest extends AbstractIppOperationTest 
     }
 
     /**
-     * Adds a new printer to the CUPS test container and verifies that the printer can be retrieved
-     * afterwards with the expected name, device URI, description and location.
+     * Adds a new printer to the CUPS test container and verifies that the
+     * printer can be retrieved afterwards with the expected name, device
+     * URI, description and location.
      *
      * @throws Exception in case of errors
      */
@@ -165,8 +175,9 @@ public class CupsAddModifyPrinterOperationTest extends AbstractIppOperationTest 
     }
 
     /**
-     * Adds a printer to the CUPS test container, modifies its location in a second call and
-     * verifies that the modified value is persisted by the CUPS server.
+     * Adds a printer to the CUPS test container, modifies its location in a
+     * second call and verifies that the modified value is persisted by the
+     * CUPS server.
      *
      * @throws Exception in case of errors
      */
@@ -190,8 +201,42 @@ public class CupsAddModifyPrinterOperationTest extends AbstractIppOperationTest 
     }
 
     /**
-     * Verifies that adding a printer with invalid admin credentials fails with an
-     * {@link IOException} instead of silently creating or modifying a printer.
+     * Adds a printer with a PPD file to the CUPS test container and verifies
+     * that the PPD file is installed on the server and that the make and
+     * model of the printer is taken from the uploaded PPD file.
+     * <p>
+     * The PPD file is sent as part of the request body (directly after the
+     * IPP header), so this test also ensures that the PPD bytes are not
+     * truncated or modified on the way to the CUPS server.
+     * </p>
+     *
+     * @throws Exception in case of errors
+     */
+    @Test
+    public void addModifyPrinterUploadsPpd() throws Exception {
+        // GIVEN
+        CupsAddModifyPrinterOperation operation = new CupsAddModifyPrinterOperation(this.cups.getFirstMappedPort());
+        URI cupsURI = URI.create("http://" + this.cups.getHost() + ":" + this.cups.getFirstMappedPort());
+        // WHEN
+        boolean success;
+        try (InputStream ppd = new FileInputStream(TEST_PPD)) {
+            success = operation.addModifyPrinter(cupsURI, ADDED_PRINTER_NAME, DEVICE_URI,
+                    createPrinterAttributes(), ppd, this.creds);
+        }
+        // THEN
+        assertTrue(success);
+        String installedPpd = this.cups.execInContainer("cat",
+                "/etc/cups/ppd/" + ADDED_PRINTER_NAME + ".ppd").getStdout();
+        assertEquals(Files.readString(TEST_PPD.toPath()), installedPpd);
+        CupsPrinter printer = this.client.getPrinter(ADDED_PRINTER_NAME);
+        assertNotNull(printer);
+        assertEquals(TEST_PPD_MAKE_AND_MODEL, printer.getMakeAndModel());
+    }
+
+    /**
+     * Verifies that adding a printer with invalid admin credentials fails
+     * with an {@link IOException} instead of silently creating or modifying
+     * a printer.
      */
     @Test
     public void addModifyPrinterRequiresAdminCredentials() {
@@ -206,8 +251,9 @@ public class CupsAddModifyPrinterOperationTest extends AbstractIppOperationTest 
     }
 
     /**
-     * Verifies that an empty printer name is rejected with an {@link IllegalArgumentException}
-     * before a request is sent to the CUPS server.
+     * Verifies that an empty printer name is rejected with an
+     * {@link IllegalArgumentException} before a request is sent to the CUPS
+     * server.
      */
     @Test
     public void addModifyPrinterRejectsEmptyPrinterName() {
@@ -221,8 +267,9 @@ public class CupsAddModifyPrinterOperationTest extends AbstractIppOperationTest 
     }
 
     /**
-     * Verifies that a missing device URI is rejected with an {@link IllegalArgumentException}
-     * before a request is sent to the CUPS server.
+     * Verifies that a missing device URI is rejected with an
+     * {@link IllegalArgumentException} before a request is sent to the CUPS
+     * server.
      */
     @Test
     public void addModifyPrinterRejectsNullDeviceUri() {

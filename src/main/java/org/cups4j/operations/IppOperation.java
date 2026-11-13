@@ -98,7 +98,8 @@ public abstract class IppOperation {
    * @param creds    credentials
    * @return IPP result
    * @throws IOException in case of I/O problems
-   * @deprecated use {@link #request(CupsPrinter, URI, Map, InputStream, CupsAuthentication)}
+   * @deprecated use {@link #request(CupsPrinter, URI, Map, InputStream,
+   *         CupsAuthentication)}
    */
   @Deprecated(forRemoval = true)
   public IppResult request(CupsPrinter printer, URL url, Map<String, String> map, InputStream document,
@@ -219,7 +220,6 @@ public abstract class IppOperation {
    */
   private IppResult sendRequest(CupsPrinter printer, URI url, ByteBuffer ippBuf, InputStream documentStream, CupsAuthentication creds)
           throws IOException {
-    IppResult ippResult = null;
     if (ippBuf == null) {
       return null;
     }
@@ -259,7 +259,7 @@ public abstract class IppOperation {
 
     IppResponse ippResponse = new IppResponse();
 
-    ippResult = ippResponse.getResponse(ByteBuffer.wrap(result));
+    IppResult ippResult = ippResponse.getResponse(ByteBuffer.wrap(result));
     ippResult.setHttpStatusResponse(ippHttpResult.getStatusLine());
     ippResult.setHttpStatusCode(ippHttpResult.getStatusCode());
 
@@ -306,6 +306,59 @@ public abstract class IppOperation {
       case 443: return URI.create("https://" + hostname + path);
       default:  return URI.create("http://" + hostname + ":" + ippPort + path);
     }
+  }
+
+  /**
+   * Converts a CUPS base URI into the URI of the CUPS admin resource.
+   *
+   * @param cupsURI base URI of the CUPS server, e.g.
+   *                {@code http://cups.example.com:631}
+   * @return URI of the admin resource, e.g.
+   *         {@code http://cups.example.com:631/admin/}
+   * @since 0.8.4
+   */
+  protected URI toAdminURI(URI cupsURI) {
+    String scheme = (cupsURI.getScheme() == null) ? "http" : cupsURI.getScheme();
+    return URI.create(scheme + "://" + getAuthority(cupsURI) + "/admin/");
+  }
+
+  /**
+   * Converts a CUPS base URI and a printer name into the IPP URI of the
+   * printer.
+   *
+   * @param cupsURI     base URI of the CUPS server
+   * @param printerName name of the printer
+   * @return IPP URI of the printer, e.g.
+   *         {@code ipp://cups.example.com:631/printers/my-printer}
+   * @since 0.8.4
+   */
+  protected URI toPrinterURI(URI cupsURI, String printerName) {
+    String scheme = "https".equalsIgnoreCase(cupsURI.getScheme()) ? "ipps" : "ipp";
+    return URI.create(scheme + "://" + getAuthority(cupsURI) + "/printers/"
+        + printerName);
+  }
+
+  /**
+   * Returns the requesting user name for the given credentials.
+   *
+   * @param creds credentials of a CUPS administrator, may be {@code null}
+   * @return user id of the credentials or the user of the current process
+   * @since 0.8.4
+   */
+  protected String getRequestingUserName(CupsAuthentication creds) {
+    if (creds != null && creds.getUserid() != null) {
+      return creds.getUserid();
+    }
+    return System.getProperty("user.name", "anonymous");
+  }
+
+  private static String getAuthority(URI uri) {
+    String host = uri.getHost();
+    if (host == null || host.isEmpty()) {
+      throw new IllegalArgumentException("CUPS URI has no host: " + uri);
+    }
+    int port = uri.getPort();
+    return (port < 0) ? host : host + ":" + port;
   }
 
 }

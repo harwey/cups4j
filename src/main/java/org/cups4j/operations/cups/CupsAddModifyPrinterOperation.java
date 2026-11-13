@@ -32,15 +32,16 @@ import java.util.Map;
 
 /**
  * Implements the CUPS specific operation <a
- * href="https://www.cups.org/doc/spec-ipp.html#CUPS_ADD_MODIFY_PRINTER">CUPS-Add-Modify-Printer</a>
- * (operation id {@code 0x4003}) to add a new printer or to modify an existing printer on a CUPS
- * server.
+ * href="https://www.cups.org/doc/spec-ipp.html#CUPS_ADD_MODIFY_PRINTER">
+ * CUPS-Add-Modify-Printer</a> (operation id {@code 0x4003}) to add a new
+ * printer or to modify an existing printer on a CUPS server.
  * <p>
  * A typical use case is adding a network printer:
  * </p>
  *
  * <pre>{@code
- * CupsAddModifyPrinterOperation operation = new CupsAddModifyPrinterOperation(631);
+ * CupsAddModifyPrinterOperation operation =
+ *         new CupsAddModifyPrinterOperation(631);
  * operation.addModifyPrinter("cups.example.com", "my-printer",
  *         URI.create("ipp://192.168.1.50:631/ipp/print"), null, creds);
  * }</pre>
@@ -65,9 +66,10 @@ public class CupsAddModifyPrinterOperation extends IppOperation {
   /**
    * Creates the IPP header for the CUPS-Add-Modify-Printer request.
    * <p>
-   * The {@code printer-uri} is taken from the given attribute map if present. Otherwise it is
-   * derived from the given URI. This is necessary because the request itself is sent to the
-   * CUPS admin resource ({@code /admin/}) while the {@code printer-uri} has to point to the
+   * The {@code printer-uri} is taken from the given attribute map if
+   * present. Otherwise it is derived from the given URI. This is necessary
+   * because the request itself is sent to the CUPS admin resource
+   * ({@code /admin/}) while the {@code printer-uri} has to point to the
    * printer resource ({@code /printers/<name>}).
    * </p>
    *
@@ -118,9 +120,12 @@ public class CupsAddModifyPrinterOperation extends IppOperation {
    *
    * @param hostname          host name of the CUPS server
    * @param printerName       name of the printer to add or modify
-   * @param deviceURI         device URI of the printer, e.g. {@code ipp://192.168.1.50:631/ipp/print}
-   * @param printerAttributes optional printer attributes, may be {@code null}
-   * @param creds             credentials of a CUPS administrator, may be {@code null}
+   * @param deviceURI         device URI of the printer, e.g.
+   *                          {@code ipp://192.168.1.50:631/ipp/print}
+   * @param printerAttributes optional printer attributes, may be
+   *                          {@code null}
+   * @param creds             credentials of a CUPS administrator, may be
+   *                          {@code null}
    * @return {@code true} if the operation was successful
    * @throws IOException in case of I/O problems
    */
@@ -134,11 +139,15 @@ public class CupsAddModifyPrinterOperation extends IppOperation {
   /**
    * Adds or modifies a printer on the CUPS server.
    *
-   * @param cupsURI           base URI of the CUPS server, e.g. {@code http://cups.example.com:631}
+   * @param cupsURI           base URI of the CUPS server, e.g.
+   *                          {@code http://cups.example.com:631}
    * @param printerName       name of the printer to add or modify
-   * @param deviceURI         device URI of the printer, e.g. {@code ipp://192.168.1.50:631/ipp/print}
-   * @param printerAttributes optional printer attributes, may be {@code null}
-   * @param creds             credentials of a CUPS administrator, may be {@code null}
+   * @param deviceURI         device URI of the printer, e.g.
+   *                          {@code ipp://192.168.1.50:631/ipp/print}
+   * @param printerAttributes optional printer attributes, may be
+   *                          {@code null}
+   * @param creds             credentials of a CUPS administrator, may be
+   *                          {@code null}
    * @return {@code true} if the operation was successful
    * @throws IOException in case of I/O problems
    */
@@ -151,12 +160,17 @@ public class CupsAddModifyPrinterOperation extends IppOperation {
   /**
    * Adds or modifies a printer on the CUPS server.
    *
-   * @param cupsURI           base URI of the CUPS server, e.g. {@code http://cups.example.com:631}
+   * @param cupsURI           base URI of the CUPS server, e.g.
+   *                          {@code http://cups.example.com:631}
    * @param printerName       name of the printer to add or modify
-   * @param deviceURI         device URI of the printer, e.g. {@code ipp://192.168.1.50:631/ipp/print}
-   * @param printerAttributes optional printer attributes, may be {@code null}
-   * @param ppd               optional PPD file to upload, may be {@code null}
-   * @param creds             credentials of a CUPS administrator, may be {@code null}
+   * @param deviceURI         device URI of the printer, e.g.
+   *                          {@code ipp://192.168.1.50:631/ipp/print}
+   * @param printerAttributes optional printer attributes, may be
+   *                          {@code null}
+   * @param ppd               optional PPD file to upload, may be
+   *                          {@code null}
+   * @param creds             credentials of a CUPS administrator, may be
+   *                          {@code null}
    * @return {@code true} if the operation was successful
    * @throws IOException in case of I/O problems
    */
@@ -179,7 +193,7 @@ public class CupsAddModifyPrinterOperation extends IppOperation {
     }
     attributes.put("printer-uri", toPrinterURI(cupsURI, printerName).toString());
     attributes.put("device-uri", deviceURI.toString());
-    attributes.putIfAbsent("requesting-user-name", getUserName(creds));
+    attributes.putIfAbsent("requesting-user-name", getRequestingUserName(creds));
 
     IppResult result = request(null, toAdminURI(cupsURI), attributes, ppd, creds);
     if (result == null) {
@@ -232,32 +246,6 @@ public class CupsAddModifyPrinterOperation extends IppOperation {
         || map.containsKey("printer-is-accepting-jobs") || map.containsKey("printer-is-shared")
         || map.containsKey("ppd-name") || map.containsKey("printer-state")
         || map.containsKey("printer-state-message");
-  }
-
-  private static URI toAdminURI(URI cupsURI) {
-    String scheme = (cupsURI.getScheme() == null) ? "http" : cupsURI.getScheme();
-    return URI.create(scheme + "://" + getAuthority(cupsURI) + "/admin/");
-  }
-
-  private static URI toPrinterURI(URI cupsURI, String printerName) {
-    String scheme = "https".equalsIgnoreCase(cupsURI.getScheme()) ? "ipps" : "ipp";
-    return URI.create(scheme + "://" + getAuthority(cupsURI) + "/printers/" + printerName);
-  }
-
-  private static String getAuthority(URI uri) {
-    String host = uri.getHost();
-    if (host == null || host.isEmpty()) {
-      throw new IllegalArgumentException("CUPS URI has no host: " + uri);
-    }
-    int port = uri.getPort();
-    return (port < 0) ? host : host + ":" + port;
-  }
-
-  private static String getUserName(CupsAuthentication creds) {
-    if (creds != null && creds.getUserid() != null) {
-      return creds.getUserid();
-    }
-    return System.getProperty("user.name", "anonymous");
   }
 
 }
