@@ -46,7 +46,7 @@ import java.util.Map;
  */
 public class CupsDeletePrinterOperation extends IppOperation {
 
-  private static final Logger LOG = LoggerFactory.getLogger(CupsDeletePrinterOperation.class);
+  private static final Logger log = LoggerFactory.getLogger(CupsDeletePrinterOperation.class);
 
   public CupsDeletePrinterOperation() {
     operationID = 0x4004;
@@ -76,7 +76,7 @@ public class CupsDeletePrinterOperation extends IppOperation {
   @Override
   public ByteBuffer getIppHeader(URI uri, Map<String, String> map) throws UnsupportedEncodingException {
     if (uri == null) {
-      LOG.error("CupsDeletePrinterOperation.getIppHeader(): uri is null");
+      log.error("CupsDeletePrinterOperation.getIppHeader(): uri is null");
       return null;
     }
 
@@ -159,8 +159,18 @@ public class CupsDeletePrinterOperation extends IppOperation {
     attributes.put("printer-uri", toPrinterURI(cupsURI, printerName).toString());
     attributes.put("requesting-user-name", requestingUser);
 
+    log.debug("Deleting printer '{}' on {} as user '{}'.", printerName, cupsURI, requestingUser);
     IppResult result = request(null, toAdminURI(cupsURI), attributes, creds);
-    return new PrintRequestResult(result).isSuccessfulResult();
+    if (result == null) {
+      log.warn("No IPP result received for printer '{}' - request failed.", printerName);
+      return false;
+    }
+    if (result.getHttpStatusCode() >= 300) {
+      log.error("Deleting printer '{}' failed: {}", printerName, result.getHttpStatusResponse());
+      throw new IOException("HTTP error! Status code: " + result.getHttpStatusResponse());
+    }
+    PrintRequestResult requestResult = new PrintRequestResult(result);
+    return requestResult.isSuccessfulResult();
   }
 
 }

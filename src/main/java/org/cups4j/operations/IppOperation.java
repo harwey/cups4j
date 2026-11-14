@@ -202,6 +202,8 @@ public abstract class IppOperation {
                                 CupsAuthentication creds) throws IOException  {
     IppResult result = sendRequest(printer, url, ippBuf, null, creds);
     if (result.getHttpStatusCode() >= 300) {
+      log.warn("{}: HTTP error {} received from {}.", getClass().getSimpleName(),
+          result.getHttpStatusResponse(), url);
       throw new IOException(
           "HTTP error! Status code:  " + result.getHttpStatusResponse());
     }
@@ -220,11 +222,9 @@ public abstract class IppOperation {
    */
   private IppResult sendRequest(CupsPrinter printer, URI url, ByteBuffer ippBuf, InputStream documentStream, CupsAuthentication creds)
           throws IOException {
-    if (ippBuf == null) {
-      return null;
-    }
-
-    if (url == null) {
+    if (ippBuf == null || url == null) {
+      log.error("{}: no IPP header or URI given - request is not sent.",
+          getClass().getSimpleName());
       return null;
     }
 
@@ -246,6 +246,8 @@ public abstract class IppOperation {
 
     ippRequest.setEntity(inputStream, IPP_MIME_TYPE);
 
+    log.debug("{}: sending request to {}.", getClass().getSimpleName(), url);
+
     final IppHttpResult ippHttpResult = new IppHttpResult();
     ippHttpResult.setStatusCode(-1);
 
@@ -262,6 +264,8 @@ public abstract class IppOperation {
     IppResult ippResult = ippResponse.getResponse(ByteBuffer.wrap(result));
     ippResult.setHttpStatusResponse(ippHttpResult.getStatusLine());
     ippResult.setHttpStatusCode(ippHttpResult.getStatusCode());
+
+    log.debug("{} received from {}.", ippResult, url);
 
     return ippResult;
   }
@@ -349,7 +353,9 @@ public abstract class IppOperation {
     if (creds != null && creds.getUserid() != null) {
       return creds.getUserid();
     }
-    return System.getProperty("user.name", "anonymous");
+    String user = System.getProperty("user.name", "anonymous");
+    log.debug("No credentials given - using user '{}' as requesting user name.", user);
+    return user;
   }
 
   private static String getAuthority(URI uri) {
