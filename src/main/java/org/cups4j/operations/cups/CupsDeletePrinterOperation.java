@@ -149,9 +149,7 @@ public class CupsDeletePrinterOperation extends IppOperation {
     if (cupsURI == null) {
       throw new IllegalArgumentException("CUPS URI must not be null");
     }
-    if (printerName == null || printerName.isEmpty()) {
-      throw new IllegalArgumentException("printer name must not be empty");
-    }
+    validatePrinterName(printerName);
 
     String requestingUser = (userName == null || userName.isEmpty())
         ? getRequestingUserName(creds) : userName;

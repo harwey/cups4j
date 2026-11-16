@@ -1,6 +1,6 @@
 package org.cups4j.operations.cups;
 
-/**
+/*
  * Copyright (C) 2009 Harald Weyhing
  * 
  * This program is free software; you can redistribute it and/or modify it under the terms of the
@@ -50,7 +50,7 @@ public class CupsGetDefaultOperation extends IppOperation {
   public CupsPrinter getDefaultPrinter(URI uri, CupsAuthentication creds) throws IOException {
     CupsGetDefaultOperation command = new CupsGetDefaultOperation(uri.getPort());
 
-    HashMap<String, String> map = new HashMap<String, String>();
+    HashMap<String, String> map = new HashMap<>();
     map.put("requested-attributes", "printer-name printer-uri-supported printer-location");
     map.put("requesting-user-name", getUserName(creds));
 
@@ -80,7 +80,7 @@ public class CupsGetDefaultOperation extends IppOperation {
     if (creds != null && creds.getUserid() != null) {
       return creds.getUserid();
     } else {
-      return System.getProperty("user.name", "anonymous");
+      return CupsClient.DEFAULT_USER;
     }
   }
 

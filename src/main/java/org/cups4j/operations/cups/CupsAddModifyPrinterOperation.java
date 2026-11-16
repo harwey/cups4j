@@ -180,9 +180,7 @@ public class CupsAddModifyPrinterOperation extends IppOperation {
     if (cupsURI == null) {
       throw new IllegalArgumentException("CUPS URI must not be null");
     }
-    if (printerName == null || printerName.isEmpty()) {
-      throw new IllegalArgumentException("printer name must not be empty");
-    }
+    validatePrinterName(printerName);
     if (deviceURI == null) {
       throw new IllegalArgumentException("device URI must not be null");
     }

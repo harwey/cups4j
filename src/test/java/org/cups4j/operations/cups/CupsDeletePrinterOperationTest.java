@@ -19,6 +19,8 @@ import org.cups4j.operations.AbstractIppOperationTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.net.URI;
@@ -179,6 +181,42 @@ public class CupsDeletePrinterOperationTest extends AbstractIppOperationTest {
                 null);
         // THEN
         assertThrows(IllegalArgumentException.class, deletePrinter);
+    }
+
+    /**
+     * Verifies that a printer name violating the CUPS naming rules is
+     * rejected with an {@link IllegalArgumentException} before a request is
+     * sent to the CUPS server.
+     *
+     * @param invalidName invalid printer name
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {"../admin", "bad/name", "bad name", "bad#name", "bad?name"})
+    public void deletePrinterRejectsInvalidPrinterName(String invalidName) {
+        // GIVEN
+        CupsDeletePrinterOperation operation = new CupsDeletePrinterOperation();
+        URI cupsURI = URI.create("http://cups.example.com:631");
+        // WHEN
+        Executable deletePrinter = () -> operation.deletePrinter(cupsURI, invalidName, null);
+        // THEN
+        assertThrows(IllegalArgumentException.class, deletePrinter, "invalid printer name: " + invalidName);
+    }
+
+    /**
+     * Verifies that a printer name longer than 127 characters is rejected
+     * with an {@link IllegalArgumentException} before a request is sent to
+     * the CUPS server.
+     */
+    @Test
+    public void deletePrinterRejectsTooLongPrinterName() {
+        // GIVEN
+        CupsDeletePrinterOperation operation = new CupsDeletePrinterOperation();
+        URI cupsURI = URI.create("http://cups.example.com:631");
+        String invalidName = "a".repeat(128);
+        // WHEN
+        Executable deletePrinter = () -> operation.deletePrinter(cupsURI, invalidName, null);
+        // THEN
+        assertThrows(IllegalArgumentException.class, deletePrinter, "invalid printer name: " + invalidName);
     }
 
     /**

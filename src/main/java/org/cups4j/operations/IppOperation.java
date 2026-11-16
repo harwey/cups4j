@@ -358,6 +358,35 @@ public abstract class IppOperation {
     return user;
   }
 
+  /**
+   * Validates a CUPS printer name.
+   * <p>
+   * A valid printer name has at most 127 characters and must not contain
+   * control characters, whitespace, {@code /}, {@code #} or {@code ?}.
+   * </p>
+   *
+   * @param printerName name of the printer
+   * @throws IllegalArgumentException if the printer name is {@code null},
+   *                                  empty or violates the CUPS naming
+   *                                  rules
+   * @since 0.8.4
+   */
+  protected static void validatePrinterName(String printerName) {
+    if (printerName == null || printerName.isEmpty()) {
+      throw new IllegalArgumentException("printer name must not be empty");
+    }
+    if (printerName.length() > 127) {
+      throw new IllegalArgumentException("printer name must not be longer than 127 characters");
+    }
+    for (int i = 0; i < printerName.length(); i++) {
+      char ch = printerName.charAt(i);
+      if (Character.isISOControl(ch) || Character.isWhitespace(ch)
+          || ch == '/' || ch == '#' || ch == '?') {
+        throw new IllegalArgumentException("printer name contains invalid characters: " + printerName);
+      }
+    }
+  }
+
   private static String getAuthority(URI uri) {
     String host = uri.getHost();
     if (host == null || host.isEmpty()) {

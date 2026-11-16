@@ -20,6 +20,8 @@ import org.cups4j.operations.AbstractIppOperationTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -264,6 +266,44 @@ public class CupsAddModifyPrinterOperationTest extends AbstractIppOperationTest 
                 URI.create("ipp://192.168.1.50"), null, null);
         // THEN
         assertThrows(IllegalArgumentException.class, addPrinter);
+    }
+
+    /**
+     * Verifies that a printer name violating the CUPS naming rules is
+     * rejected with an {@link IllegalArgumentException} before a request is
+     * sent to the CUPS server.
+     *
+     * @param invalidName invalid printer name
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {"../admin", "bad/name", "bad name", "bad#name", "bad?name"})
+    public void addModifyPrinterRejectsInvalidPrinterName(String invalidName) {
+        // GIVEN
+        CupsAddModifyPrinterOperation operation = new CupsAddModifyPrinterOperation();
+        URI cupsURI = URI.create("http://cups.example.com:631");
+        URI deviceURI = URI.create("ipp://192.168.1.50");
+        // WHEN
+        Executable addPrinter = () -> operation.addModifyPrinter(cupsURI, invalidName, deviceURI, null, null);
+        // THEN
+        assertThrows(IllegalArgumentException.class, addPrinter, "invalid printer name: " + invalidName);
+    }
+
+    /**
+     * Verifies that a printer name longer than 127 characters is rejected
+     * with an {@link IllegalArgumentException} before a request is sent to
+     * the CUPS server.
+     */
+    @Test
+    public void addModifyPrinterRejectsTooLongPrinterName() {
+        // GIVEN
+        CupsAddModifyPrinterOperation operation = new CupsAddModifyPrinterOperation();
+        URI cupsURI = URI.create("http://cups.example.com:631");
+        URI deviceURI = URI.create("ipp://192.168.1.50");
+        String invalidName = "a".repeat(128);
+        // WHEN
+        Executable addPrinter = () -> operation.addModifyPrinter(cupsURI, invalidName, deviceURI, null, null);
+        // THEN
+        assertThrows(IllegalArgumentException.class, addPrinter, "invalid printer name: " + invalidName);
     }
 
     /**
