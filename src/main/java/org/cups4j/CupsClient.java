@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -306,10 +307,50 @@ public class CupsClient {
    * @param printerURL
    *          a URL like /printers/printername
    * @return printer
-   * @throws IOException in case of problems
+   * @throws IOException              in case of problems
+   * @throws IllegalArgumentException if the path is not a safe relative path
    */
   public CupsPrinter getPrinterOnCurrentHost(String printerURL) throws IOException {
-    return getPrinter(URI.create(cupsURL + "/" + printerURL));
+    return getPrinter(resolvePrinterURI(printerURL));
+  }
+
+  /**
+   * Resolves a relative printer path against the CUPS base URI. Paths that
+   * could escape the intended resource (traversal, absolute URLs, query or
+   * fragment) are rejected.
+   *
+   * @param printerURL a relative path like {@code printers/printername}
+   * @return the resolved URI
+   * @throws IllegalArgumentException if the path is not a safe relative path
+   */
+  URI resolvePrinterURI(String printerURL) {
+    if (printerURL == null || printerURL.isBlank()) {
+      throw new IllegalArgumentException("printer URL must not be empty");
+    }
+    if (printerURL.startsWith("//") || printerURL.contains("://")) {
+      throw new IllegalArgumentException("printer URL must be relative: " + printerURL);
+    }
+    String path = printerURL.replaceFirst("^/+", "");
+    if (path.isEmpty()) {
+      throw new IllegalArgumentException("printer URL must contain a path: " + printerURL);
+    }
+    URI relative = URI.create("/" + path);
+    if (relative.getRawQuery() != null || relative.getRawFragment() != null) {
+      throw new IllegalArgumentException("printer URL must not contain query or fragment: " + printerURL);
+    }
+    validatePathTraversal(relative);
+    return cupsURL.resolve(relative);
+  }
+
+  private static void validatePathTraversal(URI relative) {
+    // getPath() decodes percent escapes, so encoded traversal is caught as well
+    String decodedPath = relative.getPath();
+    if (Arrays.stream(decodedPath.split("/")).anyMatch(s -> s.equals(".") || s.equals(".."))) {
+      throw new IllegalArgumentException("printer URL must not contain traversal: " + relative);
+    }
+    if (decodedPath.chars().anyMatch(c -> c == '\\' || Character.isISOControl(c) || Character.isWhitespace(c))) {
+      throw new IllegalArgumentException("printer URL contains invalid characters: " + relative);
+    }
   }
 
   /**
@@ -333,7 +374,7 @@ public class CupsClient {
    * @throws IOException in case of problems
    */
   public PrintJobAttributes getJobAttributes(String userName, int jobID) throws IOException {
-    if (userName == null || "".equals(userName)) {
+    if (userName == null || userName.isEmpty()) {
       userName = DEFAULT_USER;
     }
     return new IppGetJobAttributesOperation(getPort()).getPrintJobAttributes(cupsURL, userName, jobID, creds);

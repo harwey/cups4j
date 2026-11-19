@@ -55,7 +55,7 @@ public class TestCups {
     return new CupsClient(cupsURI);
   }
 
-  private static boolean isOnline(String host, int port) {
+  public static boolean isOnline(String host, int port) {
     try (Socket socket = new Socket(host, port)) {
       return socket.isConnected();
     } catch (IOException ex) {

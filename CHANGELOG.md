@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ([issue #67](https://github.com/harwey/cups4j/issues/67))
 - printer resolution can be set in DPI or DPCM, e.g. "300dpi"
   ([issue #47](https://github.com/harwey/cups4j/issues/47))
+- printer names are now validated centrally when the printer URI is built and
+  are correctly percent-encoded
+  ([issue #68](https://github.com/harwey/cups4j/issues/68))
+- `getPrinterOnCurrentHost(..)` rejects unsafe paths (traversal, absolute URLs,
+  query or fragment)
+  ([issue #68](https://github.com/harwey/cups4j/issues/68))
 
 ### Added
 

@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Map;
@@ -334,12 +335,18 @@ public abstract class IppOperation {
    * @param printerName name of the printer
    * @return IPP URI of the printer, e.g.
    *         {@code ipp://cups.example.com:631/printers/my-printer}
+   * @throws IllegalArgumentException if the printer name is invalid or the
+   *                                  printer URI cannot be built
    * @since 0.8.4
    */
   protected URI toPrinterURI(URI cupsURI, String printerName) {
+    validatePrinterName(printerName);
     String scheme = "https".equalsIgnoreCase(cupsURI.getScheme()) ? "ipps" : "ipp";
-    return URI.create(scheme + "://" + getAuthority(cupsURI) + "/printers/"
-        + printerName);
+    try {
+      return new URI(scheme, getAuthority(cupsURI), "/printers/" + printerName, null, null);
+    } catch (URISyntaxException e) {
+      throw new IllegalArgumentException("Cannot build printer URI for name: " + printerName, e);
+    }
   }
 
   /**
