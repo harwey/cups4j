@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Map;
@@ -98,7 +99,8 @@ public abstract class IppOperation {
    * @param creds    credentials
    * @return IPP result
    * @throws IOException in case of I/O problems
-   * @deprecated use {@link #request(CupsPrinter, URI, Map, InputStream, CupsAuthentication)}
+   * @deprecated use {@link #request(CupsPrinter, URI, Map, InputStream,
+   *         CupsAuthentication)}
    */
   @Deprecated(forRemoval = true)
   public IppResult request(CupsPrinter printer, URL url, Map<String, String> map, InputStream document,
@@ -201,6 +203,8 @@ public abstract class IppOperation {
                                 CupsAuthentication creds) throws IOException  {
     IppResult result = sendRequest(printer, url, ippBuf, null, creds);
     if (result.getHttpStatusCode() >= 300) {
+      log.warn("{}: HTTP error {} received from {}.", getClass().getSimpleName(),
+          result.getHttpStatusResponse(), url);
       throw new IOException(
           "HTTP error! Status code:  " + result.getHttpStatusResponse());
     }
@@ -219,12 +223,9 @@ public abstract class IppOperation {
    */
   private IppResult sendRequest(CupsPrinter printer, URI url, ByteBuffer ippBuf, InputStream documentStream, CupsAuthentication creds)
           throws IOException {
-    IppResult ippResult = null;
-    if (ippBuf == null) {
-      return null;
-    }
-
-    if (url == null) {
+    if (ippBuf == null || url == null) {
+      log.error("{}: no IPP header or URI given - request is not sent.",
+          getClass().getSimpleName());
       return null;
     }
 
@@ -246,6 +247,8 @@ public abstract class IppOperation {
 
     ippRequest.setEntity(inputStream, IPP_MIME_TYPE);
 
+    log.debug("{}: sending request to {}.", getClass().getSimpleName(), url);
+
     final IppHttpResult ippHttpResult = new IppHttpResult();
     ippHttpResult.setStatusCode(-1);
 
@@ -259,9 +262,11 @@ public abstract class IppOperation {
 
     IppResponse ippResponse = new IppResponse();
 
-    ippResult = ippResponse.getResponse(ByteBuffer.wrap(result));
+    IppResult ippResult = ippResponse.getResponse(ByteBuffer.wrap(result));
     ippResult.setHttpStatusResponse(ippHttpResult.getStatusLine());
     ippResult.setHttpStatusCode(ippHttpResult.getStatusCode());
+
+    log.debug("{} received from {}.", ippResult, url);
 
     return ippResult;
   }
@@ -306,6 +311,96 @@ public abstract class IppOperation {
       case 443: return URI.create("https://" + hostname + path);
       default:  return URI.create("http://" + hostname + ":" + ippPort + path);
     }
+  }
+
+  /**
+   * Converts a CUPS base URI into the URI of the CUPS admin resource.
+   *
+   * @param cupsURI base URI of the CUPS server, e.g.
+   *                {@code http://cups.example.com:631}
+   * @return URI of the admin resource, e.g.
+   *         {@code http://cups.example.com:631/admin/}
+   * @since 0.8.4
+   */
+  protected URI toAdminURI(URI cupsURI) {
+    String scheme = (cupsURI.getScheme() == null) ? "http" : cupsURI.getScheme();
+    return URI.create(scheme + "://" + getAuthority(cupsURI) + "/admin/");
+  }
+
+  /**
+   * Converts a CUPS base URI and a printer name into the IPP URI of the
+   * printer.
+   *
+   * @param cupsURI     base URI of the CUPS server
+   * @param printerName name of the printer
+   * @return IPP URI of the printer, e.g.
+   *         {@code ipp://cups.example.com:631/printers/my-printer}
+   * @throws IllegalArgumentException if the printer name is invalid or the
+   *                                  printer URI cannot be built
+   * @since 0.8.4
+   */
+  protected URI toPrinterURI(URI cupsURI, String printerName) {
+    validatePrinterName(printerName);
+    String scheme = "https".equalsIgnoreCase(cupsURI.getScheme()) ? "ipps" : "ipp";
+    try {
+      return new URI(scheme, getAuthority(cupsURI), "/printers/" + printerName, null, null);
+    } catch (URISyntaxException e) {
+      throw new IllegalArgumentException("Cannot build printer URI for name: " + printerName, e);
+    }
+  }
+
+  /**
+   * Returns the requesting user name for the given credentials.
+   *
+   * @param creds credentials of a CUPS administrator, may be {@code null}
+   * @return user id of the credentials or the user of the current process
+   * @since 0.8.4
+   */
+  protected String getRequestingUserName(CupsAuthentication creds) {
+    if (creds != null && creds.getUserid() != null) {
+      return creds.getUserid();
+    }
+    String user = System.getProperty("user.name", "anonymous");
+    log.debug("No credentials given - using user '{}' as requesting user name.", user);
+    return user;
+  }
+
+  /**
+   * Validates a CUPS printer name.
+   * <p>
+   * A valid printer name has at most 127 characters and must not contain
+   * control characters, whitespace, {@code /}, {@code #} or {@code ?}.
+   * </p>
+   *
+   * @param printerName name of the printer
+   * @throws IllegalArgumentException if the printer name is {@code null},
+   *                                  empty or violates the CUPS naming
+   *                                  rules
+   * @since 0.8.4
+   */
+  protected static void validatePrinterName(String printerName) {
+    if (printerName == null || printerName.isEmpty()) {
+      throw new IllegalArgumentException("printer name must not be empty");
+    }
+    if (printerName.length() > 127) {
+      throw new IllegalArgumentException("printer name must not be longer than 127 characters");
+    }
+    for (int i = 0; i < printerName.length(); i++) {
+      char ch = printerName.charAt(i);
+      if (Character.isISOControl(ch) || Character.isWhitespace(ch)
+          || ch == '/' || ch == '#' || ch == '?') {
+        throw new IllegalArgumentException("printer name contains invalid characters: " + printerName);
+      }
+    }
+  }
+
+  private static String getAuthority(URI uri) {
+    String host = uri.getHost();
+    if (host == null || host.isEmpty()) {
+      throw new IllegalArgumentException("CUPS URI has no host: " + uri);
+    }
+    int port = uri.getPort();
+    return (port < 0) ? host : host + ":" + port;
   }
 
 }

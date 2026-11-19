@@ -15,9 +15,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ([issue #67](https://github.com/harwey/cups4j/issues/67))
 - printer resolution can be set in DPI or DPCM, e.g. "300dpi"
   ([issue #47](https://github.com/harwey/cups4j/issues/47))
+- printer names are now validated centrally when the printer URI is built and
+  are correctly percent-encoded
+  ([issue #68](https://github.com/harwey/cups4j/issues/68))
+- `getPrinterOnCurrentHost(..)` rejects unsafe paths (traversal, absolute URLs,
+  query or fragment)
+  ([issue #68](https://github.com/harwey/cups4j/issues/68))
 
 ### Added
 
+- `addPrinter(..)` and `deletePrinter(..)` added to `CupsClient` to add, modify and delete
+  printers on a CUPS server
+  ([issue #68](https://github.com/harwey/cups4j/issues/68))
+- new operations `CupsAddModifyPrinterOperation` and `CupsDeletePrinterOperation` for the CUPS
+  specific operations `CUPS-Add-Modify-Printer` and `CUPS-Delete-Printer`
+  ([issue #68](https://github.com/harwey/cups4j/issues/68))
 - SBOM generation
   ([issue #101](https://github.com/harwey/cups4j/issues/101))
 - automatic retry mechanism added if connection fails
